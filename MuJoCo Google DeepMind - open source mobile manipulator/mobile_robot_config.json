@@ -1,0 +1,21 @@
+{
+  "model_file": "arm_obotx_with_mobile_base.xml",
+  "mobile_kv": 200.0,
+  "max_torque": 10.0,
+  "v_forward": 0.1,
+  "v_strafe": 0.1,
+  "v_rotate": 0.5,
+  "max_wheel_velocity": 0.10471975511965977,
+  "auto_stop_timeout": 0.3,
+  "velocity_decay_rate": 0.85,
+  "min_velocity_threshold": 0.005,
+  "enable_smoothing": true,
+  "smoothing_factor": 0.2,
+  "pygame_window_size": [
+    800,
+    600
+  ],
+  "telemetry_update_rate": 10.0,
+  "log_level": "INFO",
+  "log_file": "mobile_robot_control.log"
+}

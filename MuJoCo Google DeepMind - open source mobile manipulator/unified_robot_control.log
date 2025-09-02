@@ -1,0 +1,84 @@
+2025-07-08 01:49:18,581 - UnifiedRobotController - INFO - Loaded model: arm_obotx_with_mobile_base.xml
+2025-07-08 01:49:18,581 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-08 01:49:18,971 - UnifiedRobotController - INFO - Unified robot controller initialized
+2025-07-08 01:49:18,972 - UnifiedRobotController - INFO - Starting unified control loop
+2025-07-08 01:49:19,222 - UnifiedRobotController - INFO - MuJoCo viewer launched
+2025-07-08 01:49:32,692 - UnifiedRobotController - INFO - Switched to gripper control mode
+2025-07-08 01:49:37,342 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-08 01:49:38,189 - UnifiedRobotController - INFO - Gripper state set to: closed
+2025-07-08 01:50:26,309 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-08 01:50:30,075 - UnifiedRobotController - INFO - Gripper state set to: closed
+2025-07-08 01:50:41,374 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-08 01:50:43,270 - UnifiedRobotController - INFO - Gripper state set to: closed
+2025-07-08 01:50:48,543 - UnifiedRobotController - INFO - Switched to mobile control mode
+2025-07-08 01:52:09,793 - UnifiedRobotController - WARNING - EMERGENCY STOP ACTIVATED
+2025-07-08 01:52:24,548 - UnifiedRobotController - INFO - Manual stop executed
+2025-07-08 01:52:31,189 - UnifiedRobotController - WARNING - EMERGENCY STOP ACTIVATED
+2025-07-08 01:52:34,774 - UnifiedRobotController - INFO - Received signal 2, shutting down...
+2025-07-08 01:52:34,792 - UnifiedRobotController - INFO - Control loop finished
+2025-07-08 01:52:34,845 - UnifiedRobotController - INFO - Shutting down unified robot controller
+2025-07-08 13:48:27,869 - UnifiedRobotController - INFO - Loaded model: arm_obotx_with_mobile_base.xml
+2025-07-08 13:48:27,869 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-08 13:48:28,283 - UnifiedRobotController - INFO - Unified robot controller initialized
+2025-07-08 13:48:28,283 - UnifiedRobotController - INFO - Starting unified control loop
+2025-07-08 13:48:28,530 - UnifiedRobotController - INFO - MuJoCo viewer launched
+2025-07-08 13:49:18,126 - UnifiedRobotController - INFO - Switched to gripper control mode
+2025-07-08 13:49:22,206 - UnifiedRobotController - INFO - Gripper state set to: closed
+2025-07-08 13:49:47,680 - UnifiedRobotController - INFO - Switched to mobile control mode
+2025-07-08 13:50:19,977 - UnifiedRobotController - INFO - Switched to gripper control mode
+2025-07-08 13:50:21,663 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-08 13:51:05,162 - UnifiedRobotController - INFO - Switched to mobile control mode
+2025-07-08 13:51:35,387 - UnifiedRobotController - INFO - Switched to gripper control mode
+2025-07-08 13:51:48,291 - UnifiedRobotController - INFO - Gripper state set to: closed
+2025-07-08 13:51:58,278 - UnifiedRobotController - INFO - Received signal 2, shutting down...
+2025-07-08 13:51:58,308 - UnifiedRobotController - INFO - Control loop finished
+2025-07-08 13:51:58,367 - UnifiedRobotController - INFO - Shutting down unified robot controller
+2025-07-08 13:56:13,500 - UnifiedRobotController - INFO - Loaded model: arm_obotx_with_mobile_base.xml
+2025-07-08 13:56:13,500 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-08 13:56:13,881 - UnifiedRobotController - INFO - Unified robot controller initialized
+2025-07-08 13:56:13,881 - UnifiedRobotController - INFO - Starting unified control loop
+2025-07-08 13:56:14,217 - UnifiedRobotController - INFO - MuJoCo viewer launched
+2025-07-08 13:56:28,511 - UnifiedRobotController - INFO - Switched to gripper control mode
+2025-07-08 13:56:31,368 - UnifiedRobotController - INFO - Gripper state set to: closed
+2025-07-08 13:56:46,646 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-08 13:56:54,456 - UnifiedRobotController - INFO - Switched to mobile control mode
+2025-07-08 13:57:38,398 - UnifiedRobotController - INFO - Switched to gripper control mode
+2025-07-08 13:58:04,709 - UnifiedRobotController - INFO - Gripper state set to: closed
+2025-07-08 14:25:26,095 - UnifiedRobotController - INFO - Received signal 2, shutting down...
+2025-07-08 14:25:26,115 - UnifiedRobotController - INFO - Control loop finished
+2025-07-08 14:25:26,192 - UnifiedRobotController - INFO - Shutting down unified robot controller
+2025-07-08 15:08:43,412 - UnifiedRobotController - INFO - Loaded model: arm_obotx_with_mobile_base.xml
+2025-07-08 15:08:43,412 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-08 15:08:43,735 - UnifiedRobotController - INFO - Unified robot controller initialized
+2025-07-08 15:08:43,735 - UnifiedRobotController - INFO - Starting unified control loop
+2025-07-08 15:08:44,021 - UnifiedRobotController - INFO - MuJoCo viewer launched
+2025-07-08 15:11:58,523 - UnifiedRobotController - INFO - Received signal 2, shutting down...
+2025-07-08 15:11:58,545 - UnifiedRobotController - INFO - Control loop finished
+2025-07-08 15:11:58,628 - UnifiedRobotController - INFO - Shutting down unified robot controller
+2025-07-24 22:23:57,791 - UnifiedRobotController - INFO - Loaded model: arm_obotx_with_mobile_base.xml
+2025-07-24 22:23:57,791 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-24 22:24:00,856 - UnifiedRobotController - INFO - Unified robot controller initialized
+2025-07-24 22:24:00,856 - UnifiedRobotController - INFO - Starting unified control loop
+2025-07-24 22:24:02,014 - UnifiedRobotController - INFO - MuJoCo viewer launched
+2025-07-24 22:25:19,563 - UnifiedRobotController - INFO - Switched to gripper control mode
+2025-07-24 22:25:22,389 - UnifiedRobotController - INFO - Gripper state set to: closed
+2025-07-24 22:25:29,227 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-07-24 22:25:43,800 - UnifiedRobotController - INFO - Switched to mobile control mode
+2025-07-24 22:26:16,904 - UnifiedRobotController - INFO - Manual stop executed
+2025-07-24 22:26:18,387 - UnifiedRobotController - INFO - Manual stop executed
+2025-07-24 22:26:18,809 - UnifiedRobotController - INFO - Manual stop executed
+2025-07-24 22:26:19,025 - UnifiedRobotController - INFO - Manual stop executed
+2025-07-24 22:26:19,676 - UnifiedRobotController - INFO - Manual stop executed
+2025-07-24 22:26:20,167 - UnifiedRobotController - INFO - Manual stop executed
+2025-07-24 22:26:20,364 - UnifiedRobotController - INFO - Manual stop executed
+2025-07-24 22:26:30,029 - UnifiedRobotController - WARNING - EMERGENCY STOP ACTIVATED
+2025-07-24 22:26:34,465 - UnifiedRobotController - INFO - Control loop finished
+2025-07-24 22:26:34,526 - UnifiedRobotController - INFO - Shutting down unified robot controller
+2025-08-04 21:29:56,360 - UnifiedRobotController - INFO - Loaded model: arm_obotx_with_mobile_base.xml
+2025-08-04 21:29:56,362 - UnifiedRobotController - INFO - Gripper state set to: open
+2025-08-04 21:29:56,584 - UnifiedRobotController - INFO - Unified robot controller initialized
+2025-08-04 21:29:56,584 - UnifiedRobotController - INFO - Starting unified control loop
+2025-08-04 21:29:56,942 - UnifiedRobotController - INFO - MuJoCo viewer launched
+2025-08-04 21:30:09,646 - UnifiedRobotController - INFO - Received signal 2, shutting down...
+2025-08-04 21:30:09,658 - UnifiedRobotController - INFO - Control loop finished
+2025-08-04 21:30:09,732 - UnifiedRobotController - INFO - Shutting down unified robot controller
