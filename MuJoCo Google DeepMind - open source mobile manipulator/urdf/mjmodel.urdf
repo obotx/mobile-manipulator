@@ -1,0 +1,2408 @@
+<?xml version="1.0" ?>
+<robot name="converted_robot">
+   <!--generated with mjcf_urdf_simple_converter (https://github.com/Yasu31/mjcf_urdf_simple_converter)-->
+   <link name="world">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.0"/>
+         <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="base_footprint">
+      <inertial>
+         <origin xyz="0.0 0.0 -0.009" rpy="0.0 0.0 0.0"/>
+         <mass value="0.0"/>
+         <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="joint_0_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="fixed" name="joint_0">
+      <parent link="world"/>
+      <child link="joint_0_jointbody"/>
+      <origin xyz="0.0 0.0 -0.009" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <joint type="fixed" name="joint_0_offset">
+      <parent link="joint_0_jointbody"/>
+      <child link="base_footprint"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="base">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="125.0"/>
+         <inertia ixx="1.391" iyy="6.853" izz="6.125" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="summit_xls_chassis">
+         <origin xyz="0.0005791479353828309 -0.000605353634665891 0.06826648665955386" rpy="1.2409365243098311 -1.5672357580321692 1.8942942197684625"/>
+         <geometry>
+            <mesh filename="converted_summit_xls_chassis.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+      <visual name="summit_xls_chapas_inox_tapas">
+         <origin xyz="-0.034658507871625784 0.000529077127803952 0.1554499997446565" rpy="3.136873813906232 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_summit_xls_chapas_inox_tapas.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <joint type="fixed" name="base_footprint2base_fixed">
+      <parent link="base_footprint"/>
+      <child link="base"/>
+      <origin xyz="0.0 0.0 0.127" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_wheel_intermediate_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="6.5"/>
+         <inertia ixx="0.0524193" iyy="0.0303095" izz="0.0303095" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="summit_xls_omni_wheel_2">
+         <origin xyz="-5.192183106217796e-11 4.127381754261939e-06 2.339832613805578e-10" rpy="0.0 0.0 1.5707963267948966"/>
+         <geometry>
+            <mesh filename="converted_summit_xls_omni_wheel_2.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="front_right_wheel_rolling_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_wheel_rolling_joint">
+      <parent link="base"/>
+      <child link="front_right_wheel_rolling_joint_jointbody"/>
+      <origin xyz="0.2225 -0.2045 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_wheel_rolling_joint_offset">
+      <parent link="front_right_wheel_rolling_joint_jointbody"/>
+      <child link="front_right_wheel_intermediate_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_0_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_0_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_0_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_0_joint_jointbody"/>
+      <origin xyz="0.0438516 0.0 0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.12633702040223024 0.8727711409442593 0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_0_joint_offset">
+      <parent link="front_right_slipping_0_joint_jointbody"/>
+      <child link="front_right_roller_0_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_1_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_1_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_1_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_1_joint_jointbody"/>
+      <origin xyz="0.0321016 0.0 0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.3451599879813569 0.8727709696096789 0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_1_joint_offset">
+      <parent link="front_right_slipping_1_joint_jointbody"/>
+      <child link="front_right_roller_1_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_2_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_2_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_2_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_2_joint_jointbody"/>
+      <origin xyz="0.01175 0.0 0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.47149707614230474 0.8727711409442593 0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_2_joint_offset">
+      <parent link="front_right_slipping_2_joint_jointbody"/>
+      <child link="front_right_roller_2_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_3_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_3_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_3_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_3_joint_jointbody"/>
+      <origin xyz="-0.01175 0.0 0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.47149707614230474 0.8727711409442593 -0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_3_joint_offset">
+      <parent link="front_right_slipping_3_joint_jointbody"/>
+      <child link="front_right_roller_3_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_4_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_4_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_4_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_4_joint_jointbody"/>
+      <origin xyz="-0.0321016 0.0 0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.3451599879813569 0.8727709696096789 -0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_4_joint_offset">
+      <parent link="front_right_slipping_4_joint_jointbody"/>
+      <child link="front_right_roller_4_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_5_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_5_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_5_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_5_joint_jointbody"/>
+      <origin xyz="-0.0438516 0.0 0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.12633702040223024 0.8727711409442593 -0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_5_joint_offset">
+      <parent link="front_right_slipping_5_joint_jointbody"/>
+      <child link="front_right_roller_5_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_6_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_6_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_6_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_6_joint_jointbody"/>
+      <origin xyz="-0.0438516 0.0 -0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.12633702040223024 0.8727711409442593 -0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_6_joint_offset">
+      <parent link="front_right_slipping_6_joint_jointbody"/>
+      <child link="front_right_roller_6_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_7_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_7_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_7_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_7_joint_jointbody"/>
+      <origin xyz="-0.0321016 0.0 -0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.3451599879813569 0.8727709696096789 -0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_7_joint_offset">
+      <parent link="front_right_slipping_7_joint_jointbody"/>
+      <child link="front_right_roller_7_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_8_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_8_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_8_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_8_joint_jointbody"/>
+      <origin xyz="-0.01175 0.0 -0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.47149707614230474 0.8727711409442593 -0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_8_joint_offset">
+      <parent link="front_right_slipping_8_joint_jointbody"/>
+      <child link="front_right_roller_8_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_9_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_9_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_9_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_9_joint_jointbody"/>
+      <origin xyz="0.01175 0.0 -0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.47149707614230474 0.8727711409442593 0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_9_joint_offset">
+      <parent link="front_right_slipping_9_joint_jointbody"/>
+      <child link="front_right_roller_9_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_10_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_10_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_10_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_10_joint_jointbody"/>
+      <origin xyz="0.0321016 0.0 -0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.3451599879813569 0.8727709696096789 0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_10_joint_offset">
+      <parent link="front_right_slipping_10_joint_jointbody"/>
+      <child link="front_right_roller_10_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_right_roller_11_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_right_slipping_11_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_right_slipping_11_joint">
+      <parent link="front_right_wheel_intermediate_link"/>
+      <child link="front_right_slipping_11_joint_jointbody"/>
+      <origin xyz="0.0438516 0.0 -0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.12633702040223024 0.8727711409442593 0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_right_slipping_11_joint_offset">
+      <parent link="front_right_slipping_11_joint_jointbody"/>
+      <child link="front_right_roller_11_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_wheel_intermediate_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="6.5"/>
+         <inertia ixx="0.0524193" iyy="0.0303095" izz="0.0303095" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="summit_xls_omni_wheel_1">
+         <origin xyz="2.4982216148945716e-10 1.4135233640656888e-06 1.3482770306453256e-10" rpy="0.0 0.0 1.5707963267948966"/>
+         <geometry>
+            <mesh filename="converted_summit_xls_omni_wheel_1.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="front_left_wheel_rolling_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_wheel_rolling_joint">
+      <parent link="base"/>
+      <child link="front_left_wheel_rolling_joint_jointbody"/>
+      <origin xyz="0.2225 0.2045 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_wheel_rolling_joint_offset">
+      <parent link="front_left_wheel_rolling_joint_jointbody"/>
+      <child link="front_left_wheel_intermediate_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_0_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_0_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_0_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_0_joint_jointbody"/>
+      <origin xyz="0.0438516 0.0 -0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.12633702040223024 0.8727711409442593 -0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_0_joint_offset">
+      <parent link="front_left_slipping_0_joint_jointbody"/>
+      <child link="front_left_roller_0_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_1_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_1_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_1_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_1_joint_jointbody"/>
+      <origin xyz="0.0438516 0.0 0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.12633702040223024 0.8727711409442593 -0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_1_joint_offset">
+      <parent link="front_left_slipping_1_joint_jointbody"/>
+      <child link="front_left_roller_1_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_2_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_2_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_2_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_2_joint_jointbody"/>
+      <origin xyz="0.0321016 0.0 0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.3451599879813569 0.8727709696096789 -0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_2_joint_offset">
+      <parent link="front_left_slipping_2_joint_jointbody"/>
+      <child link="front_left_roller_2_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_3_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_3_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_3_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_3_joint_jointbody"/>
+      <origin xyz="0.01175 0.0 0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.47149707614230474 0.8727711409442593 -0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_3_joint_offset">
+      <parent link="front_left_slipping_3_joint_jointbody"/>
+      <child link="front_left_roller_3_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_4_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_4_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_4_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_4_joint_jointbody"/>
+      <origin xyz="-0.01175 0.0 0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.47149707614230474 0.8727711409442593 0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_4_joint_offset">
+      <parent link="front_left_slipping_4_joint_jointbody"/>
+      <child link="front_left_roller_4_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_5_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_5_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_5_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_5_joint_jointbody"/>
+      <origin xyz="-0.0321016 0.0 0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.3451599879813569 0.8727709696096789 0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_5_joint_offset">
+      <parent link="front_left_slipping_5_joint_jointbody"/>
+      <child link="front_left_roller_5_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_6_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_6_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_6_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_6_joint_jointbody"/>
+      <origin xyz="-0.0438516 0.0 0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.12633702040223024 0.8727711409442593 0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_6_joint_offset">
+      <parent link="front_left_slipping_6_joint_jointbody"/>
+      <child link="front_left_roller_6_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_7_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_7_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_7_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_7_joint_jointbody"/>
+      <origin xyz="-0.0438516 0.0 -0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.12633702040223024 0.8727711409442593 0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_7_joint_offset">
+      <parent link="front_left_slipping_7_joint_jointbody"/>
+      <child link="front_left_roller_7_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_8_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_8_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_8_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_8_joint_jointbody"/>
+      <origin xyz="-0.0321016 0.0 -0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.3451599879813569 0.8727709696096789 0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_8_joint_offset">
+      <parent link="front_left_slipping_8_joint_jointbody"/>
+      <child link="front_left_roller_8_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_9_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_9_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_9_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_9_joint_jointbody"/>
+      <origin xyz="-0.01175 0.0 -0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.47149707614230474 0.8727711409442593 0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_9_joint_offset">
+      <parent link="front_left_slipping_9_joint_jointbody"/>
+      <child link="front_left_roller_9_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_10_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_10_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_10_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_10_joint_jointbody"/>
+      <origin xyz="0.01175 0.0 -0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.47149707614230474 0.8727711409442593 -0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_10_joint_offset">
+      <parent link="front_left_slipping_10_joint_jointbody"/>
+      <child link="front_left_roller_10_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="front_left_roller_11_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="front_left_slipping_11_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="front_left_slipping_11_joint">
+      <parent link="front_left_wheel_intermediate_link"/>
+      <child link="front_left_slipping_11_joint_jointbody"/>
+      <origin xyz="0.0321016 0.0 -0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.3451599879813569 0.8727709696096789 -0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="front_left_slipping_11_joint_offset">
+      <parent link="front_left_slipping_11_joint_jointbody"/>
+      <child link="front_left_roller_11_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_wheel_intermediate_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="6.5"/>
+         <inertia ixx="0.0524193" iyy="0.0303095" izz="0.0303095" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="summit_xls_omni_wheel_1">
+         <origin xyz="2.4982216148945716e-10 1.4135233640656888e-06 1.3482770306453256e-10" rpy="0.0 0.0 1.5707963267948966"/>
+         <geometry>
+            <mesh filename="converted_summit_xls_omni_wheel_1.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="back_right_wheel_rolling_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_wheel_rolling_joint">
+      <parent link="base"/>
+      <child link="back_right_wheel_rolling_joint_jointbody"/>
+      <origin xyz="-0.2225 -0.2045 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_wheel_rolling_joint_offset">
+      <parent link="back_right_wheel_rolling_joint_jointbody"/>
+      <child link="back_right_wheel_intermediate_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_0_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_0_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_0_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_0_joint_jointbody"/>
+      <origin xyz="0.0438516 0.0 -0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.12633702040223024 0.8727711409442593 -0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_0_joint_offset">
+      <parent link="back_right_slipping_0_joint_jointbody"/>
+      <child link="back_right_roller_0_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_1_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_1_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_1_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_1_joint_jointbody"/>
+      <origin xyz="0.0438516 0.0 0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.12633702040223024 0.8727711409442593 -0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_1_joint_offset">
+      <parent link="back_right_slipping_1_joint_jointbody"/>
+      <child link="back_right_roller_1_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_2_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_2_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_2_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_2_joint_jointbody"/>
+      <origin xyz="0.0321016 0.0 0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.3451599879813569 0.8727709696096789 -0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_2_joint_offset">
+      <parent link="back_right_slipping_2_joint_jointbody"/>
+      <child link="back_right_roller_2_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_3_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_3_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_3_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_3_joint_jointbody"/>
+      <origin xyz="0.01175 0.0 0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.47149707614230474 0.8727711409442593 -0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_3_joint_offset">
+      <parent link="back_right_slipping_3_joint_jointbody"/>
+      <child link="back_right_roller_3_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_4_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_4_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_4_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_4_joint_jointbody"/>
+      <origin xyz="-0.01175 0.0 0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.47149707614230474 0.8727711409442593 0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_4_joint_offset">
+      <parent link="back_right_slipping_4_joint_jointbody"/>
+      <child link="back_right_roller_4_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_5_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_5_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_5_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_5_joint_jointbody"/>
+      <origin xyz="-0.0321016 0.0 0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.3451599879813569 0.8727709696096789 0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_5_joint_offset">
+      <parent link="back_right_slipping_5_joint_jointbody"/>
+      <child link="back_right_roller_5_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_6_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_6_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_6_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_6_joint_jointbody"/>
+      <origin xyz="-0.0438516 0.0 0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.12633702040223024 0.8727711409442593 0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_6_joint_offset">
+      <parent link="back_right_slipping_6_joint_jointbody"/>
+      <child link="back_right_roller_6_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_7_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_7_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_7_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_7_joint_jointbody"/>
+      <origin xyz="-0.0438516 0.0 -0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.12633702040223024 0.8727711409442593 0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_7_joint_offset">
+      <parent link="back_right_slipping_7_joint_jointbody"/>
+      <child link="back_right_roller_7_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_8_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_8_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_8_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_8_joint_jointbody"/>
+      <origin xyz="-0.0321016 0.0 -0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.3451599879813569 0.8727709696096789 0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_8_joint_offset">
+      <parent link="back_right_slipping_8_joint_jointbody"/>
+      <child link="back_right_roller_8_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_9_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_9_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_9_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_9_joint_jointbody"/>
+      <origin xyz="-0.01175 0.0 -0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.47149707614230474 0.8727711409442593 0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_9_joint_offset">
+      <parent link="back_right_slipping_9_joint_jointbody"/>
+      <child link="back_right_roller_9_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_10_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_10_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_10_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_10_joint_jointbody"/>
+      <origin xyz="0.01175 0.0 -0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.47149707614230474 0.8727711409442593 -0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_10_joint_offset">
+      <parent link="back_right_slipping_10_joint_jointbody"/>
+      <child link="back_right_roller_10_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_right_roller_11_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_right_slipping_11_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_right_slipping_11_joint">
+      <parent link="back_right_wheel_intermediate_link"/>
+      <child link="back_right_slipping_11_joint_jointbody"/>
+      <origin xyz="0.0321016 0.0 -0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.3451599879813569 0.8727709696096789 -0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_right_slipping_11_joint_offset">
+      <parent link="back_right_slipping_11_joint_jointbody"/>
+      <child link="back_right_roller_11_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_wheel_intermediate_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="6.5"/>
+         <inertia ixx="0.0524193" iyy="0.0303095" izz="0.0303095" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="summit_xls_omni_wheel_2">
+         <origin xyz="-5.192183106217796e-11 4.127381754261939e-06 2.339832613805578e-10" rpy="0.0 0.0 1.5707963267948966"/>
+         <geometry>
+            <mesh filename="converted_summit_xls_omni_wheel_2.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="back_left_wheel_rolling_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_wheel_rolling_joint">
+      <parent link="base"/>
+      <child link="back_left_wheel_rolling_joint_jointbody"/>
+      <origin xyz="-0.2225 0.2045 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_wheel_rolling_joint_offset">
+      <parent link="back_left_wheel_rolling_joint_jointbody"/>
+      <child link="back_left_wheel_intermediate_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_0_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_0_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_0_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_0_joint_jointbody"/>
+      <origin xyz="0.0438516 0.0 0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.12633702040223024 0.8727711409442593 0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_0_joint_offset">
+      <parent link="back_left_slipping_0_joint_jointbody"/>
+      <child link="back_left_roller_0_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_1_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_1_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_1_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_1_joint_jointbody"/>
+      <origin xyz="0.0321016 0.0 0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.3451599879813569 0.8727709696096789 0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_1_joint_offset">
+      <parent link="back_left_slipping_1_joint_jointbody"/>
+      <child link="back_left_roller_1_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_2_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_2_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_2_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_2_joint_jointbody"/>
+      <origin xyz="0.01175 0.0 0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.47149707614230474 0.8727711409442593 0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_2_joint_offset">
+      <parent link="back_left_slipping_2_joint_jointbody"/>
+      <child link="back_left_roller_2_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_3_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_3_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_3_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_3_joint_jointbody"/>
+      <origin xyz="-0.01175 0.0 0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.47149707614230474 0.8727711409442593 -0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_3_joint_offset">
+      <parent link="back_left_slipping_3_joint_jointbody"/>
+      <child link="back_left_roller_3_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_4_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_4_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_4_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_4_joint_jointbody"/>
+      <origin xyz="-0.0321016 0.0 0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.3451599879813569 0.8727709696096789 -0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_4_joint_offset">
+      <parent link="back_left_slipping_4_joint_jointbody"/>
+      <child link="back_left_roller_4_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_5_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_5_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_5_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_5_joint_jointbody"/>
+      <origin xyz="-0.0438516 0.0 0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="-0.12633702040223024 0.8727711409442593 -0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_5_joint_offset">
+      <parent link="back_left_slipping_5_joint_jointbody"/>
+      <child link="back_left_roller_5_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_6_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_6_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_6_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_6_joint_jointbody"/>
+      <origin xyz="-0.0438516 0.0 -0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.12633702040223024 0.8727711409442593 -0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_6_joint_offset">
+      <parent link="back_left_slipping_6_joint_jointbody"/>
+      <child link="back_left_roller_6_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_7_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_7_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_7_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_7_joint_jointbody"/>
+      <origin xyz="-0.0321016 0.0 -0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.3451599879813569 0.8727709696096789 -0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_7_joint_offset">
+      <parent link="back_left_slipping_7_joint_jointbody"/>
+      <child link="back_left_roller_7_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_8_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_8_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_8_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_8_joint_jointbody"/>
+      <origin xyz="-0.01175 0.0 -0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.47149707614230474 0.8727711409442593 -0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_8_joint_offset">
+      <parent link="back_left_slipping_8_joint_jointbody"/>
+      <child link="back_left_roller_8_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_9_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_9_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_9_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_9_joint_jointbody"/>
+      <origin xyz="0.01175 0.0 -0.0438516" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.47149707614230474 0.8727711409442593 0.12633702040223024"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_9_joint_offset">
+      <parent link="back_left_slipping_9_joint_jointbody"/>
+      <child link="back_left_roller_9_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_10_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_10_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_10_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_10_joint_jointbody"/>
+      <origin xyz="0.0321016 0.0 -0.0321016" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.3451599879813569 0.8727709696096789 0.3451599879813569"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_10_joint_offset">
+      <parent link="back_left_slipping_10_joint_jointbody"/>
+      <child link="back_left_roller_10_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="back_left_roller_11_link">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948963 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="back_left_slipping_11_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="back_left_slipping_11_joint">
+      <parent link="back_left_wheel_intermediate_link"/>
+      <child link="back_left_slipping_11_joint_jointbody"/>
+      <origin xyz="0.0438516 0.0 -0.01175" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.12633702040223024 0.8727711409442593 0.47149707614230474"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="back_left_slipping_11_joint_offset">
+      <parent link="back_left_slipping_11_joint_jointbody"/>
+      <child link="back_left_roller_11_link"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Arm">
+      <inertial>
+         <origin xyz="0.0 0.0 0.2925" rpy="0.0 0.0 0.7878985461944297"/>
+         <mass value="1.0"/>
+         <inertia ixx="0.511811" iyy="0.471811" izz="0.0770056" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="Column_Rotation">
+         <origin xyz="2.665171038707146e-18 -8.883903462357154e-19 0.02500001434236766" rpy="3.141592653589793 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_Column_Rotation.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+      <visual name="Column_Left">
+         <origin xyz="0.0986516198870188 -0.10785114234413577 0.47259189561985854" rpy="0.0006161477275694605 -0.00462832380647793 1.5625555723058273"/>
+         <geometry>
+            <mesh filename="converted_Column_Left.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+      <visual name="Column_Right">
+         <origin xyz="-0.10273325988194695 0.10869062216018016 0.47068425224844473" rpy="-0.001714974802656588 0.005379322023348898 1.5572684615280192"/>
+         <geometry>
+            <mesh filename="converted_Column_Right.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="BaseJoint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="BaseJoint">
+      <parent link="base"/>
+      <child link="BaseJoint_jointbody"/>
+      <origin xyz="0.0 0.0 0.158566" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="-3.14159" upper="3.14159" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="BaseJoint_offset">
+      <parent link="BaseJoint_jointbody"/>
+      <child link="Arm"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Bearing_Column_Left">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="0.1"/>
+         <inertia ixx="0.000125" iyy="6.58333e-05" izz="6.58333e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="Bearing_Column_Left">
+         <origin xyz="0.0017616454081747501 -0.011408938862996557 0.001286783395165747" rpy="-0.0014842339950732475 0.00021400349192646217 1.5680140856849802"/>
+         <geometry>
+            <mesh filename="converted_Bearing_Column_Left.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="ColumnLeftBearingJoint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="fixed" name="ColumnLeftBearingJoint">
+      <parent link="Arm"/>
+      <child link="ColumnLeftBearingJoint_jointbody"/>
+      <origin xyz="0.1 -0.08 0.1" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <joint type="fixed" name="ColumnLeftBearingJoint_offset">
+      <parent link="ColumnLeftBearingJoint_jointbody"/>
+      <child link="Bearing_Column_Left"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Rotation_Link_Left">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="0.05"/>
+         <inertia ixx="8.33333e-06" iyy="7.08333e-06" izz="2.08333e-06" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="Left_Rotation">
+         <origin xyz="0.0010567435621933186 0.007146783686085442 -0.0006458721254076205" rpy="1.5669816365005698 -0.00398636830001764 1.5764722950340513"/>
+         <geometry>
+            <mesh filename="converted_Left_Rotation.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="RotationLeftJoint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="RotationLeftJoint">
+      <parent link="Bearing_Column_Left"/>
+      <child link="RotationLeftJoint_jointbody"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="RotationLeftJoint_offset">
+      <parent link="RotationLeftJoint_jointbody"/>
+      <child link="Rotation_Link_Left"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Arm_Left">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="0.7"/>
+         <inertia ixx="0.0584267" iyy="0.0583567" izz="0.000116667" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="Arm_Left">
+         <origin xyz="-0.044971695249669014 0.0066333335273010136 -0.0009104885724117717" rpy="1.5748264133535124 -0.007226248367968147 1.5700517101245313"/>
+         <geometry>
+            <mesh filename="converted_Arm_Left.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="ArmLeftJoint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="fixed" name="ArmLeftJoint">
+      <parent link="Rotation_Link_Left"/>
+      <child link="ArmLeftJoint_jointbody"/>
+      <origin xyz="-0.4 0.02 0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <joint type="fixed" name="ArmLeftJoint_offset">
+      <parent link="ArmLeftJoint_jointbody"/>
+      <child link="Arm_Left"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Hand_Bearing">
+      <inertial>
+         <origin xyz="0.0138889 0.05 0.0" rpy="1.5707963267948966 -1.5707963267948966 0.0"/>
+         <mass value="0.45"/>
+         <inertia ixx="0.000358507" iyy="0.000276042" izz="0.00022309" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="Hand_Bearing">
+         <origin xyz="1.80852895992345e-08 0.05000000007706685 7.582575678455328e-10" rpy="1.5707963267948966 0.0 0.0"/>
+         <geometry>
+            <mesh filename="converted_Hand_Bearing.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="HandBearingJoint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="HandBearingJoint">
+      <parent link="Arm_Left"/>
+      <child link="HandBearingJoint_jointbody"/>
+      <origin xyz="0.475 0.01 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="HandBearingJoint_offset">
+      <parent link="HandBearingJoint_jointbody"/>
+      <child link="Hand_Bearing"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Contact_Cylinder">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="0.001"/>
+         <inertia ixx="3.125e-07" iyy="1.56333e-07" izz="1.56333e-07" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="Contact_Cylinder">
+         <origin xyz="1.3468726134391318e-08 -3.033761401816104e-09 2.2491124518353445e-09" rpy="0.0 0.0 1.5707963267948966"/>
+         <geometry>
+            <mesh filename="converted_Contact_Cylinder.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="ContactCylinderJoint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="ContactCylinderJoint">
+      <parent link="Hand_Bearing"/>
+      <child link="ContactCylinderJoint_jointbody"/>
+      <origin xyz="0.0 0.1 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="ContactCylinderJoint_offset">
+      <parent link="ContactCylinderJoint_jointbody"/>
+      <child link="Contact_Cylinder"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Gripper_Link1">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.5707963267948966 -1.5707963267948966 0.0"/>
+         <mass value="0.05"/>
+         <inertia ixx="2.25e-05" iyy="1.5e-05" izz="1.5e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="gripper_z_rotation_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="gripper_z_rotation">
+      <parent link="Hand_Bearing"/>
+      <child link="gripper_z_rotation_jointbody"/>
+      <origin xyz="0.05 0.05 0.0" rpy="-0.0 1.5707963267948966 0.0"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="-3.14159" upper="3.14159" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="gripper_z_rotation_offset">
+      <parent link="gripper_z_rotation_jointbody"/>
+      <child link="Gripper_Link1"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Gripper_Link2">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.05"/>
+         <inertia ixx="5.33333e-05" iyy="5.33333e-05" izz="5.33333e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <link name="gripper_y_rotation_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="gripper_y_rotation">
+      <parent link="Gripper_Link1"/>
+      <child link="gripper_y_rotation_jointbody"/>
+      <origin xyz="0.0 0.0 0.015" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="-1.5708" upper="1.5708" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="gripper_y_rotation_offset">
+      <parent link="gripper_y_rotation_jointbody"/>
+      <child link="Gripper_Link2"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Gripper_Link3">
+      <inertial>
+         <origin xyz="0.00014944025487861247 2.7646028171146326e-09 0.04354902633111996" rpy="-0.00010710959593107638 -1.4587411949136413 -3.1415275946470196"/>
+         <mass value="1.3604855583573172"/>
+         <inertia ixx="0.002969414427901836" iyy="0.0025076195669898357" izz="0.0023333980584918667" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="palm">
+         <origin xyz="-0.001342357158156279 1.0020696554958753e-08 0.04263073121096801" rpy="-0.00023929099197683712 -1.530667663225772 -3.141437341642907"/>
+         <geometry>
+            <mesh filename="converted_palm.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+      <visual name="link_0">
+         <origin xyz="0.03812929460845285 -1.819691827031021e-07 0.06692801506794598" rpy="-1.3339051878100372 0.0 -1.5707963267948966"/>
+         <geometry>
+            <mesh filename="converted_link_0.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="gripper_x_rotation_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="gripper_x_rotation">
+      <parent link="Gripper_Link2"/>
+      <child link="gripper_x_rotation_jointbody"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="1.0 0.0 0.0"/>
+      <limit lower="-1.5708" upper="1.5708" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="gripper_x_rotation_offset">
+      <parent link="gripper_x_rotation_jointbody"/>
+      <child link="Gripper_Link3"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_c_link_0">
+      <inertial>
+         <origin xyz="0.005522139915825562 0.007375083353230685 1.819691827031021e-07" rpy="1.8084834657377258 -1.5707963267948963 0.0"/>
+         <mass value="0.05141839131611109"/>
+         <inertia ixx="1.4517770664830322e-05" iyy="1.1482856156747051e-05" izz="1.0380478148249346e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_0">
+         <origin xyz="0.005522139915825562 0.007375083353230685 1.819691827031021e-07" rpy="1.8084834657377258 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_link_0.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="palm_finger_c_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="palm_finger_c_joint">
+      <parent link="Gripper_Link3"/>
+      <child link="palm_finger_c_joint_jointbody"/>
+      <origin xyz="-0.0455 -0.036 0.0614" rpy="1.5607464139019647 -1.570000286636943 -3.1315427406968612"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="-0.1784" upper="0.192" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="palm_finger_c_joint_offset">
+      <parent link="palm_finger_c_joint_jointbody"/>
+      <child link="finger_c_link_0"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_c_link_1">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.1"/>
+         <inertia ixx="1.5e-05" iyy="1.5e-05" izz="1.5e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_1">
+         <origin xyz="0.018440683204204576 -0.021998433743170294 2.0397952458409572e-19" rpy="2.654510537528886 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_link_1.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="finger_c_joint_1_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="finger_c_joint_1">
+      <parent link="finger_c_link_0"/>
+      <child link="finger_c_joint_1_jointbody"/>
+      <origin xyz="0.02 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="0.0495" upper="1.2218" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="finger_c_joint_1_offset">
+      <parent link="finger_c_joint_1_jointbody"/>
+      <child link="finger_c_link_1"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_c_link_2">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.1"/>
+         <inertia ixx="1.5e-05" iyy="1.5e-05" izz="1.5e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_2">
+         <origin xyz="0.014751571448068882 -0.008232853522230738 -0.0005466450764828913" rpy="-2.9662389064285977 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_link_2.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="finger_c_joint_2_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="finger_c_joint_2">
+      <parent link="finger_c_link_1"/>
+      <child link="finger_c_joint_2_jointbody"/>
+      <origin xyz="0.05 -0.028 0.0" rpy="0.0 0.0 -0.5200008548513616"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="0.0" upper="1.5708" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="finger_c_joint_2_offset">
+      <parent link="finger_c_joint_2_jointbody"/>
+      <child link="finger_c_link_2"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_c_link_3">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.4246487271921695 -1.5072822332090616 -0.31016507053350495"/>
+         <mass value="0.05"/>
+         <inertia ixx="0.00163315" iyy="0.00136097" izz="0.000726883" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_3">
+         <origin xyz="0.008660203624656977 0.002393567311556963 2.1108593149351357e-08" rpy="1.5707963267948966 0.0 2.3587355697185077"/>
+         <geometry>
+            <mesh filename="converted_link_3.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="finger_c_joint_3_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="finger_c_joint_3">
+      <parent link="finger_c_link_2"/>
+      <child link="finger_c_joint_3_jointbody"/>
+      <origin xyz="0.039 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="-1.2217" upper="-0.0523" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="finger_c_joint_3_offset">
+      <parent link="finger_c_joint_3_jointbody"/>
+      <child link="finger_c_link_3"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_b_link_0">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.1"/>
+         <inertia ixx="1.5e-05" iyy="1.5e-05" izz="1.5e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_0">
+         <origin xyz="0.005522139915825562 0.007375083353230685 1.819691827031021e-07" rpy="1.8084834657377258 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_link_0.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="palm_finger_b_joint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="palm_finger_b_joint">
+      <parent link="Gripper_Link3"/>
+      <child link="palm_finger_b_joint_jointbody"/>
+      <origin xyz="-0.0455 0.036 0.0614" rpy="1.5607464139019647 -1.570000286636943 -3.1315427406968612"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="-0.192" upper="0.1784" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="palm_finger_b_joint_offset">
+      <parent link="palm_finger_b_joint_jointbody"/>
+      <child link="finger_b_link_0"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_b_link_1">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.1"/>
+         <inertia ixx="1.5e-05" iyy="1.5e-05" izz="1.5e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_1">
+         <origin xyz="0.018440683204204576 -0.021998433743170294 2.0397952458409572e-19" rpy="2.654510537528886 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_link_1.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="finger_b_joint_1_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="finger_b_joint_1">
+      <parent link="finger_b_link_0"/>
+      <child link="finger_b_joint_1_jointbody"/>
+      <origin xyz="0.02 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="0.0495" upper="1.2218" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="finger_b_joint_1_offset">
+      <parent link="finger_b_joint_1_jointbody"/>
+      <child link="finger_b_link_1"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_b_link_2">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.1"/>
+         <inertia ixx="1.5e-05" iyy="1.5e-05" izz="1.5e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_2">
+         <origin xyz="0.014751571448068882 -0.008232853522230738 -0.0005466450764828913" rpy="-2.9662389064285977 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_link_2.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="finger_b_joint_2_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="finger_b_joint_2">
+      <parent link="finger_b_link_1"/>
+      <child link="finger_b_joint_2_jointbody"/>
+      <origin xyz="0.05 -0.028 0.0" rpy="0.0 0.0 -0.5200008548513616"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="0.0" upper="1.5708" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="finger_b_joint_2_offset">
+      <parent link="finger_b_joint_2_jointbody"/>
+      <child link="finger_b_link_2"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_b_link_3">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.4246487271921695 -1.5072822332090616 -0.31016507053350495"/>
+         <mass value="0.05"/>
+         <inertia ixx="0.00163315" iyy="0.00136097" izz="0.000726883" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_3">
+         <origin xyz="0.008660203624656977 0.002393567311556963 2.1108593149351357e-08" rpy="1.5707963267948966 0.0 2.3587355697185077"/>
+         <geometry>
+            <mesh filename="converted_link_3.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="finger_b_joint_3_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="finger_b_joint_3">
+      <parent link="finger_b_link_2"/>
+      <child link="finger_b_joint_3_jointbody"/>
+      <origin xyz="0.039 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="-1.2217" upper="-0.0523" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="finger_b_joint_3_offset">
+      <parent link="finger_b_joint_3_jointbody"/>
+      <child link="finger_b_link_3"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_a_link_1">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.1"/>
+         <inertia ixx="1.5e-05" iyy="1.5e-05" izz="1.5e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_1">
+         <origin xyz="0.018440683204204576 -0.021998433743170294 2.0397952458409572e-19" rpy="2.654510537528886 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_link_1.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="finger_a_joint_1_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="finger_a_joint_1">
+      <parent link="Gripper_Link3"/>
+      <child link="finger_a_joint_1_jointbody"/>
+      <origin xyz="0.0455159 0.0 0.0814" rpy="1.5707963267948966 -1.5700003268369265 0.0"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="0.0495" upper="1.2218" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="finger_a_joint_1_offset">
+      <parent link="finger_a_joint_1_jointbody"/>
+      <child link="finger_a_link_1"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_a_link_2">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.1"/>
+         <inertia ixx="1.5e-05" iyy="1.5e-05" izz="1.5e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_2">
+         <origin xyz="0.014751571448068882 -0.008232853522230738 -0.0005466450764828913" rpy="-2.9662389064285977 -1.5707963267948966 0.0"/>
+         <geometry>
+            <mesh filename="converted_link_2.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="finger_a_joint_2_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="finger_a_joint_2">
+      <parent link="finger_a_link_1"/>
+      <child link="finger_a_joint_2_jointbody"/>
+      <origin xyz="0.05 -0.028 0.0" rpy="0.0 0.0 -0.5200008548513616"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="0.0" upper="1.5708" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="finger_a_joint_2_offset">
+      <parent link="finger_a_joint_2_jointbody"/>
+      <child link="finger_a_link_2"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="finger_a_link_3">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="1.4246487271921695 -1.5072822332090616 -0.31016507053350495"/>
+         <mass value="0.05"/>
+         <inertia ixx="0.00163315" iyy="0.00136097" izz="0.000726883" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="link_3">
+         <origin xyz="0.008660203624656977 0.002393567311556963 2.1108593149351357e-08" rpy="1.5707963267948966 0.0 2.3587355697185077"/>
+         <geometry>
+            <mesh filename="converted_link_3.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="finger_a_joint_3_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="finger_a_joint_3">
+      <parent link="finger_a_link_2"/>
+      <child link="finger_a_joint_3_jointbody"/>
+      <origin xyz="0.039 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <limit lower="-1.2217" upper="-0.0523" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="finger_a_joint_3_offset">
+      <parent link="finger_a_joint_3_jointbody"/>
+      <child link="finger_a_link_3"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Bearing_Column_Right">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="0.1"/>
+         <inertia ixx="0.000125" iyy="6.58333e-05" izz="6.58333e-05" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="Bearing_Column_Right">
+         <origin xyz="-0.0017625142687297396 0.011454242397557934 0.0012624859469126948" rpy="0.0017437303197895826 -0.0002167751126738171 1.5687611992728383"/>
+         <geometry>
+            <mesh filename="converted_Bearing_Column_Right.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="ColumnRightBearingJoint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="fixed" name="ColumnRightBearingJoint">
+      <parent link="Arm"/>
+      <child link="ColumnRightBearingJoint_jointbody"/>
+      <origin xyz="-0.1 0.08 0.1" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <joint type="fixed" name="ColumnRightBearingJoint_offset">
+      <parent link="ColumnRightBearingJoint_jointbody"/>
+      <child link="Bearing_Column_Right"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Rotation_Link_Right">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="0.05"/>
+         <inertia ixx="8.33333e-06" iyy="7.08333e-06" izz="2.08333e-06" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="Right_Rotation">
+         <origin xyz="-0.0012121387546055323 -0.007133559386341887 -0.0007025130539875524" rpy="1.5749808053004632 0.0017001945111612127 1.5775410852837646"/>
+         <geometry>
+            <mesh filename="converted_Right_Rotation.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="RotationRightJoint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="revolute" name="RotationRightJoint">
+      <parent link="Bearing_Column_Right"/>
+      <child link="RotationRightJoint_jointbody"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit lower="0.0" upper="0.0" effort="100" velocity="100"/>
+   </joint>
+   <joint type="fixed" name="RotationRightJoint_offset">
+      <parent link="RotationRightJoint_jointbody"/>
+      <child link="Rotation_Link_Right"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="Arm_Right">
+      <inertial>
+         <origin xyz="0.2 0.0 0.0" rpy="0.0 0.0 1.5707963267948963"/>
+         <mass value="0.7"/>
+         <inertia ixx="0.0584267" iyy="0.0583567" izz="0.000116667" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+      <visual name="Arm_Right">
+         <origin xyz="0.1390888066755831 -0.0067088312999771735 0.001975130366238531" rpy="1.5657761562521118 0.021876725209351244 1.5666504517060078"/>
+         <geometry>
+            <mesh filename="converted_Arm_Right.stl"/>
+         </geometry>
+         <material name="white"/>
+      </visual>
+   </link>
+   <link name="ArmRightJoint_jointbody">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="0.001"/>
+         <inertia ixx="1e-09" iyy="1e-09" izz="1e-09" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="fixed" name="ArmRightJoint">
+      <parent link="Rotation_Link_Right"/>
+      <child link="ArmRightJoint_jointbody"/>
+      <origin xyz="-0.4 -0.02 0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <joint type="fixed" name="ArmRightJoint_offset">
+      <parent link="ArmRightJoint_jointbody"/>
+      <child link="Arm_Right"/>
+      <origin xyz="-0.0 -0.0 -0.0" rpy="0.0 0.0 0.0"/>
+   </joint>
+   <link name="target_arm">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="1.0000000000000002"/>
+         <inertia ixx="0.0016666666666666672" iyy="0.0016666666666666672" izz="0.0016666666666666672" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="fixed" name="world2target_arm_fixed">
+      <parent link="world"/>
+      <child link="target_arm"/>
+      <origin xyz="0.6 0.0 0.8" rpy="3.141592653589793 0.0 0.0"/>
+   </joint>
+   <link name="target_base">
+      <inertial>
+         <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+         <mass value="1.0000000000000002"/>
+         <inertia ixx="0.0016666666666666672" iyy="0.0016666666666666672" izz="0.0016666666666666672" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+   </link>
+   <joint type="fixed" name="world2target_base_fixed">
+      <parent link="world"/>
+      <child link="target_base"/>
+      <origin xyz="0.0 0.0 -0.009" rpy="3.141592653589793 0.0 0.0"/>
+   </joint>
+   <material name="white">
+      <color rgba="1 1 1 1"/>
+   </material>
+
+   <ros2_control name="MujocoSystem" type="system">
+   <hardware>
+      <plugin>mujoco_ros2_control/MujocoSystem</plugin>
+   </hardware>
+
+   <!-- Wheels (velocity control) -->
+   <joint name="front_right_wheel_rolling_joint">
+      <command_interface name="velocity">
+         <param name="min">-50</param>
+         <param name="max">50</param>
+      </command_interface>
+      <state_interface name="velocity"/>
+   </joint>
+   <joint name="front_left_wheel_rolling_joint">
+      <command_interface name="velocity">
+         <param name="min">-50</param>
+         <param name="max">50</param>
+      </command_interface>
+      <state_interface name="velocity"/>
+   </joint>
+   <joint name="back_right_wheel_rolling_joint">
+      <command_interface name="velocity">
+         <param name="min">-50</param>
+         <param name="max">50</param>
+      </command_interface>
+      <state_interface name="velocity"/>
+   </joint>
+   <joint name="back_left_wheel_rolling_joint">
+      <command_interface name="velocity">
+         <param name="min">-50</param>
+         <param name="max">50</param>
+      </command_interface>
+      <state_interface name="velocity"/>
+   </joint>
+
+   <!-- Base joint motor (effort control) -->
+   <joint name="BaseJoint">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+
+   <!-- Arm & Column joints (position control) -->
+   <joint name="ColumnLeftBearingJoint">
+      <command_interface name="position">
+         <param name="min">0</param>
+         <param name="max">90</param>
+      </command_interface>
+      <state_interface name="position"/>
+   </joint>
+   <joint name="ColumnRightBearingJoint">
+      <command_interface name="position">
+         <param name="min">0</param>
+         <param name="max">90</param>
+      </command_interface>
+      <state_interface name="position"/>
+   </joint>
+   <joint name="ArmLeftJoint">
+      <command_interface name="position">
+         <param name="min">0</param>
+         <param name="max">70</param>
+      </command_interface>
+      <state_interface name="position"/>
+   </joint>
+   <joint name="ArmRightJoint">
+      <command_interface name="position">
+         <param name="min">0</param>
+         <param name="max">70</param>
+      </command_interface>
+      <state_interface name="position"/>
+   </joint>
+
+   <!-- Fingers (effort control) -->
+   <joint name="finger_c_joint_1">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="finger_c_joint_2">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="finger_c_joint_3">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="finger_b_joint_1">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="finger_b_joint_2">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="finger_b_joint_3">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="finger_a_joint_1">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="finger_a_joint_2">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="finger_a_joint_3">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+
+   <!-- Palm joints -->
+   <joint name="palm_finger_c_joint">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="palm_finger_b_joint">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+
+   <!-- Wrist rotations -->
+   <joint name="gripper_x_rotation">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="gripper_y_rotation">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   <joint name="gripper_z_rotation">
+      <command_interface name="effort">
+         <param name="min">-255</param>
+         <param name="max">255</param>
+      </command_interface>
+      <state_interface name="effort"/>
+   </joint>
+   </ros2_control>
+
+</robot>
+
+
