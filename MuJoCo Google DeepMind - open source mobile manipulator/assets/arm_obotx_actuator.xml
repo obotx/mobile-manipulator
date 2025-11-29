@@ -1,9 +1,0 @@
-<mujocoinclude>
-    <actuator>
-        <motor joint="BaseJoint" name="BaseJointMotor" ctrlrange="-255 255"/>
-        <position joint="ColumnLeftBearingJoint" name="ColumnLeftBearingJointMotor"     ctrlrange="0 90"                kp="500"/>
-        <position joint="ColumnRightBearingJoint" name="ColumnRightBearingJointMotor"   ctrlrange="0 90"                kp="500"/>
-        <position joint="ArmLeftJoint" name="ArmLeftJointMotor"                         ctrlrange="0 70"                kp="500"/>
-        <position joint="ArmRightJoint" name="ArmRightJointMotor"                       ctrlrange="0 70"                kp="500"/>
-    </actuator>
-</mujocoinclude>
