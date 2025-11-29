@@ -1,5 +1,9 @@
 # Mobile Manipulator
 
+
+https://github.com/user-attachments/assets/ace3e387-373c-48c0-a6cd-64db6422f6d3
+
+
 ## Table of Contents
 - [MORPH Series Overview](#morph-series--mobile-omni-robotic-platform-with-hands)
 - [MORPH-I (Type I)](#morph-i-type-i)
@@ -128,32 +132,32 @@ Plain environtment with free movement (GUI) :
 ```bash
 python src/gui/play.py
 ```
-![gui_morph_i_free_move](https://github.com/obotx/mobile-manipulator/blob/dev/assets/gui_morph_i_free_move.png)
+<img width="1217" height="958" alt="gui_morph_i_free_move" src="https://github.com/user-attachments/assets/8fd9bc01-5db9-42e8-a700-2ef37f784be7" />
 
 Plain environtment with free movement :
 ```bash
 python src/simulations/morph_i_free_move.py
 ```
-![morph_i_free_move](https://github.com/obotx/mobile-manipulator/blob/dev/assets/basic_glfw_morph_i_free_move.png)
+<img width="1217" height="958" alt="basic_glfw_morph_i_free_move" src="https://github.com/user-attachments/assets/050e4e1e-ac6f-4f04-96ef-5fc0bd90b04d" />
 
 Market Environtment with Trajectory :
 ```bash
 python src/simulations/morph_i_market_trajectory.py
 ```
-![morph_i_market_trajectory](https://github.com/obotx/mobile-manipulator/blob/dev/assets/basic_glfw_morph_i_trajectory.png)
+<img width="1217" height="905" alt="basic_glfw_morph_i_trajectory" src="https://github.com/user-attachments/assets/aeaa1eab-2f9d-456a-9728-123f56364058" />
 
 ### MORPH - II
 Plain environtment with free movement :
 ```bash
 python src/simulations/morph_ii_free_move.py
 ```
-![morph_ii_free_move](https://github.com/obotx/mobile-manipulator/blob/dev/assets/basic_glfw_morph_ii_free_move.png)
+<img width="1217" height="905" alt="basic_glfw_morph_ii_free_move" src="https://github.com/user-attachments/assets/ef014d18-7159-4b32-a7e8-b8f082fec64b" />
 
 Market Environtment with Trajectory :
 ```bash
 python src/simulations/morph_ii_kitchen_trajectory.py
 ```
-![morph_ii_kitchen_trajectory](https://github.com/obotx/mobile-manipulator/blob/dev/assets/basic_glfw_morph_ii_trajectory.png)
+<img width="1217" height="905" alt="basic_glfw_morph_ii_trajectory" src="https://github.com/user-attachments/assets/322246bc-0129-4935-b5e4-dabebf4e39c9" />
 
 ## Acknowledgements
 
