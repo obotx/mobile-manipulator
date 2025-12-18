@@ -8,6 +8,7 @@ import numpy as np
 import imgui
 from imgui.integrations.glfw import GlfwRenderer
 from simulations.morph_i_free_move import ParallelRobot
+from scipy.spatial.transform import Rotation as R
 
 
 class Joystick:
@@ -249,14 +250,14 @@ def main():
 
                 if ik_enabled:
                     l_enc, r_enc = sim.get_encoder()
-                    fk_left = sim.fk(*l_enc)
-                    fk_right = sim.fk(*r_enc)
+                    fk_left = sim.manipulator_control_left.fk(l_enc)
+                    fk_right = sim.manipulator_control_right.fk(r_enc)
                     sim.target_left = np.array(fk_left) if fk_left is not None else np.array([0.5, 0.0, 0.5])
                     sim.target_right = np.array(fk_right) if fk_right is not None else np.array([-0.5, 0.0, 0.5])
                 else:
                     l_enc, r_enc = sim.get_encoder()
-                    sim.direct_arm_commands[0:4] = l_enc  
-                    sim.direct_arm_commands[4:8] = r_enc
+                    sim.direct_arm_commands[0:8] = l_enc  
+                    sim.direct_arm_commands[8:16] = r_enc
 
         # ARM CONNTROLS
         imgui.separator()
@@ -266,7 +267,7 @@ def main():
             tl = list(sim.target_left)
             _, x = imgui.slider_float("X##ARM1", tl[0], -1.0, 1.0, "%.3f")
             _, y = imgui.slider_float("Y##ARM1", tl[1], -1.0, 1.0, "%.3f")
-            _, z = imgui.slider_float("Z##ARM1", tl[2], -1.0, 1.0, "%.3f")
+            _, z = imgui.slider_float("Z##ARM1", tl[2], -0.5, 2.0, "%.3f")
             imgui.pop_item_width()
             if x != tl[0] or y != tl[1] or z != tl[2]:
                 with sim._target_lock:
@@ -301,7 +302,7 @@ def main():
             tr = list(sim.target_right)
             _, x = imgui.slider_float("X##ARM2", tr[0], -1.0, 1.0, "%.3f")
             _, y = imgui.slider_float("Y##ARM2", tr[1], -1.0, 1.0, "%.3f")
-            _, z = imgui.slider_float("Z##ARM2", tr[2], -1.0, 1.0, "%.3f")
+            _, z = imgui.slider_float("Z##ARM2", tr[2], -.5, 2.0, "%.3f")
             imgui.pop_item_width()
             if x != tr[0] or y != tr[1] or z != tr[2]:
                 with sim._target_lock:
@@ -372,90 +373,151 @@ def main():
         WRIST_X_RANGE = (-0.8, 0.8)
         WRIST_Y_RANGE = (-0.8, 0.8)
         WRIST_Z_RANGE = (-np.pi, np.pi)
-
+        BEARING_RANGE = (-1.57, 1.57)  # ±90°
+        
+        # --- LEFT WRIST ---
         imgui.text("Left Wrist")
         imgui.text_disabled("(0% = Min, 100% = Max)")
         imgui.push_item_width(180)
         if len(sim.gripper_ids_left) > 13:
-            wx_val = sim.data.ctrl[sim.gripper_ids_left[11]]
-            wx_pct = _map_value_to_pct(wx_val, *WRIST_X_RANGE)
-            wx_pct = np.clip(wx_pct, 0, 100)
-            changed, wx_pct = imgui.slider_float("X##LW", wx_pct, 0.0, 100.0, "%.0f%%")
-            if changed:
-                sim.data.ctrl[sim.gripper_ids_left[11]] = _map_pct_to_value(wx_pct, *WRIST_X_RANGE)
+            if ik_enabled:
+                rot = sim.target_rot_left
+                if len(rot) == 4:  # quat
+                    r = R.from_quat(rot)
+                else:
+                    r = R.from_matrix(rot)
+                roll_left, pitch_left, yaw_left = r.as_euler('xyz', degrees=False)
 
-            wy_val = sim.data.ctrl[sim.gripper_ids_left[12]]
-            wy_pct = _map_value_to_pct(wy_val, *WRIST_Y_RANGE)
-            wy_pct = np.clip(wy_pct, 0, 100)
-            changed, wy_pct = imgui.slider_float("Y##LW", wy_pct, 0.0, 100.0, "%.0f%%")
-            if changed:
-                sim.data.ctrl[sim.gripper_ids_left[12]] = _map_pct_to_value(wy_pct, *WRIST_Y_RANGE)
+                roll_pct = np.clip(_map_value_to_pct(roll_left, *WRIST_X_RANGE), 0, 100)
+                changed, roll_pct = imgui.slider_float("X##LW", roll_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    roll_left = _map_pct_to_value(roll_pct, *WRIST_X_RANGE)
+                    new_rot_left = R.from_euler('xyz', [roll_left, pitch_left, yaw_left]).as_matrix()
+                    with sim._target_lock:
+                        sim.target_rot_left = new_rot_left
 
-            wz_val = sim.data.ctrl[sim.gripper_ids_left[13]]
-            wz_pct = _map_value_to_pct(wz_val, *WRIST_Z_RANGE)
-            wz_pct = np.clip(wz_pct, 0, 100)
-            changed, wz_pct = imgui.slider_float("Z##LW", wz_pct, 0.0, 100.0, "%.0f%%")
-            if changed:
-                sim.data.ctrl[sim.gripper_ids_left[13]] = _map_pct_to_value(wz_pct, *WRIST_Z_RANGE)
+                pitch_pct = np.clip(_map_value_to_pct(pitch_left, *WRIST_Y_RANGE), 0, 100)
+                changed, pitch_pct = imgui.slider_float("Y##LW", pitch_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    pitch_left = _map_pct_to_value(pitch_pct, *WRIST_Y_RANGE)
+                    new_rot_left = R.from_euler('xyz', [roll_left, pitch_left, yaw_left]).as_matrix()
+                    with sim._target_lock:
+                        sim.target_rot_left = new_rot_left
+
+                yaw_pct = np.clip(_map_value_to_pct(yaw_left, *WRIST_Z_RANGE), 0, 100)
+                changed, yaw_pct = imgui.slider_float("Z##LW", yaw_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    yaw_left = _map_pct_to_value(yaw_pct, *WRIST_Z_RANGE)
+                    new_rot_left = R.from_euler('xyz', [roll_left, pitch_left, yaw_left]).as_matrix()
+                    with sim._target_lock:
+                        sim.target_rot_left = new_rot_left
+            else:
+                wx_val = sim.direct_arm_commands[19]
+                wx_pct = np.clip(_map_value_to_pct(wx_val, *WRIST_X_RANGE), 0, 100)
+                changed, wx_pct = imgui.slider_float("X##LW", wx_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    sim.direct_arm_commands[19] = _map_pct_to_value(wx_pct, *WRIST_X_RANGE)
+
+                wy_val = sim.direct_arm_commands[20]
+                wy_pct = np.clip(_map_value_to_pct(wy_val, *WRIST_Y_RANGE), 0, 100)
+                changed, wy_pct = imgui.slider_float("Y##LW", wy_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    sim.direct_arm_commands[20] = _map_pct_to_value(wy_pct, *WRIST_Y_RANGE)
+
+                wz_val = sim.direct_arm_commands[21]
+                wz_pct = np.clip(_map_value_to_pct(wz_val, *WRIST_Z_RANGE), 0, 100)
+                changed, wz_pct = imgui.slider_float("Z##LW", wz_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    sim.direct_arm_commands[21] = _map_pct_to_value(wz_pct, *WRIST_Z_RANGE)
         else:
             imgui.text("Left wrist not available")
         imgui.pop_item_width()
 
+        # --- RIGHT WRIST ---
+        imgui.separator()
         imgui.text("Right Wrist")
         imgui.text_disabled("(0% = Min, 100% = Max)")
         imgui.push_item_width(180)
         if len(sim.gripper_ids_right) > 13:
-            wx_val = sim.data.ctrl[sim.gripper_ids_right[11]]
-            wx_pct = _map_value_to_pct(wx_val, *WRIST_X_RANGE)
-            wx_pct = np.clip(wx_pct, 0, 100)
-            changed, wx_pct = imgui.slider_float("X##RW", wx_pct, 0.0, 100.0, "%.0f%%")
-            if changed:
-                sim.data.ctrl[sim.gripper_ids_right[11]] = _map_pct_to_value(wx_pct, *WRIST_X_RANGE)
+            if ik_enabled:
+                rot = sim.target_rot_right
+                if len(rot) == 4:
+                    r = R.from_quat(rot)
+                else:
+                    r = R.from_matrix(rot)
+                roll_right, pitch_right, yaw_right = r.as_euler('xyz', degrees=False)
 
-            wy_val = sim.data.ctrl[sim.gripper_ids_right[12]]
-            wy_pct = _map_value_to_pct(wy_val, *WRIST_Y_RANGE)
-            wy_pct = np.clip(wy_pct, 0, 100)
-            changed, wy_pct = imgui.slider_float("Y##RW", wy_pct, 0.0, 100.0, "%.0f%%")
-            if changed:
-                sim.data.ctrl[sim.gripper_ids_right[12]] = _map_pct_to_value(wy_pct, *WRIST_Y_RANGE)
+                roll_pct = np.clip(_map_value_to_pct(roll_right, *WRIST_X_RANGE), 0, 100)
+                changed, roll_pct = imgui.slider_float("X##RW", roll_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    roll_right = _map_pct_to_value(roll_pct, *WRIST_X_RANGE)
+                    new_rot_right = R.from_euler('xyz', [roll_right, pitch_right, yaw_right]).as_matrix()
+                    with sim._target_lock:
+                        sim.target_rot_right = new_rot_right
 
-            wz_val = sim.data.ctrl[sim.gripper_ids_right[13]]
-            wz_pct = _map_value_to_pct(wz_val, *WRIST_Z_RANGE)
-            wz_pct = np.clip(wz_pct, 0, 100)
-            changed, wz_pct = imgui.slider_float("Z##RW", wz_pct, 0.0, 100.0, "%.0f%%")
-            if changed:
-                sim.data.ctrl[sim.gripper_ids_right[13]] = _map_pct_to_value(wz_pct, *WRIST_Z_RANGE)
+                pitch_pct = np.clip(_map_value_to_pct(pitch_right, *WRIST_Y_RANGE), 0, 100)
+                changed, pitch_pct = imgui.slider_float("Y##RW", pitch_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    pitch_right = _map_pct_to_value(pitch_pct, *WRIST_Y_RANGE)
+                    new_rot_right = R.from_euler('xyz', [roll_right, pitch_right, yaw_right]).as_matrix()
+                    with sim._target_lock:
+                        sim.target_rot_right = new_rot_right
+
+                yaw_pct = np.clip(_map_value_to_pct(yaw_right, *WRIST_Z_RANGE), 0, 100)
+                changed, yaw_pct = imgui.slider_float("Z##RW", yaw_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    yaw_right = _map_pct_to_value(yaw_pct, *WRIST_Z_RANGE)
+                    new_rot_right = R.from_euler('xyz', [roll_right, pitch_right, yaw_right]).as_matrix()
+                    with sim._target_lock:
+                        sim.target_rot_right = new_rot_right
+            else:
+                wx_val = sim.direct_arm_commands[34]
+                wx_pct = np.clip(_map_value_to_pct(wx_val, *WRIST_X_RANGE), 0, 100)
+                changed, wx_pct = imgui.slider_float("X##RW", wx_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    sim.direct_arm_commands[34] = _map_pct_to_value(wx_pct, *WRIST_X_RANGE)
+
+                wy_val = sim.direct_arm_commands[35]
+                wy_pct = np.clip(_map_value_to_pct(wy_val, *WRIST_Y_RANGE), 0, 100)
+                changed, wy_pct = imgui.slider_float("Y##RW", wy_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    sim.direct_arm_commands[35] = _map_pct_to_value(wy_pct, *WRIST_Y_RANGE)
+
+                wz_val = sim.direct_arm_commands[36]
+                wz_pct = np.clip(_map_value_to_pct(wz_val, *WRIST_Z_RANGE), 0, 100)
+                changed, wz_pct = imgui.slider_float("Z##RW", wz_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    sim.direct_arm_commands[36] = _map_pct_to_value(wz_pct, *WRIST_Z_RANGE)
         else:
             imgui.text("Right wrist not available")
         imgui.pop_item_width()
-        
-        # HAND BEARINGS
-        imgui.separator()
-        imgui.text("Hand Bearings")
-        imgui.text_disabled("(0% = -90°, 100% = +90°)")
 
-        BEARING_RANGE = (-1.57, 1.57)  # ≈ (-π/2, π/2)
-        
+        # --- HAND BEARINGS ---
+        if not ik_enabled:
+            imgui.separator()
+            imgui.text("Hand Bearings")
+            imgui.text_disabled("(0% = -90°, 100% = +90°)")
+
         imgui.push_item_width(180)
         if len(sim.gripper_ids_left) > 14:
-            bearing_val = sim.data.ctrl[sim.gripper_ids_left[14]]
-            bearing_pct = _map_value_to_pct(bearing_val, *BEARING_RANGE)
-            bearing_pct = np.clip(bearing_pct, 0, 100)
-            changed, bearing_pct = imgui.slider_float("Left##HB", bearing_pct, 0.0, 100.0, "%.0f%%")
-            if changed:
-                sim.data.ctrl[sim.gripper_ids_left[14]] = _map_pct_to_value(bearing_pct, *BEARING_RANGE)
+            if not ik_enabled:
+                bearing_val = sim.direct_arm_commands[22]
+                bearing_pct = np.clip(_map_value_to_pct(bearing_val, *BEARING_RANGE), 0, 100)
+                changed, bearing_pct = imgui.slider_float("Left##HB", bearing_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    sim.direct_arm_commands[22] = _map_pct_to_value(bearing_pct, *BEARING_RANGE)
         else:
             imgui.text("Left bearing not available")
         imgui.pop_item_width()
 
         imgui.push_item_width(180)
         if len(sim.gripper_ids_right) > 14:
-            bearing_val = sim.data.ctrl[sim.gripper_ids_right[14]]
-            bearing_pct = _map_value_to_pct(bearing_val, *BEARING_RANGE)
-            bearing_pct = np.clip(bearing_pct, 0, 100)
-            changed, bearing_pct = imgui.slider_float("Right##HB", bearing_pct, 0.0, 100.0, "%.0f%%")
-            if changed:
-                sim.data.ctrl[sim.gripper_ids_right[14]] = _map_pct_to_value(bearing_pct, *BEARING_RANGE)
+            if not ik_enabled:
+                bearing_val = sim.direct_arm_commands[37]
+                bearing_pct = np.clip(_map_value_to_pct(bearing_val, *BEARING_RANGE), 0, 100)
+                changed, bearing_pct = imgui.slider_float("Right##HB", bearing_pct, 0.0, 100.0, "%.0f%%")
+                if changed:
+                    sim.direct_arm_commands[37] = _map_pct_to_value(bearing_pct, *BEARING_RANGE)
         else:
             imgui.text("Right bearing not available")
         imgui.pop_item_width()
@@ -469,8 +531,8 @@ def main():
             joystick.update_robot_yaw(ryaw)
             with sim._target_lock:
                 sim.target_base = np.array([target_x, target_y, target_yaw])
-                sim.target_left = sim.fk(*sim.get_encoder()[0]) 
-                sim.target_right = sim.fk(*sim.get_encoder()[1])
+                sim.target_left = sim.manipulator_control_left.fk(sim.get_encoder()[0]) 
+                sim.target_right = sim.manipulator_control_right.fk(sim.get_encoder()[1])
 
         imgui.separator()
         imgui.text("Joystick:")

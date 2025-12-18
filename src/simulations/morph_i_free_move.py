@@ -8,63 +8,12 @@ import numpy as np
 import datetime, cv2
 from scipy.optimize import minimize
 import argparse
-from modules.pubsub import IPCPubSub
+from modules.utils.pubsub import IPCPubSub
+from scipy.spatial.transform import Rotation as R
+from modules.controllers.morph_i import MorphIManipulatorV2
 import threading
 
 np.set_printoptions(suppress=True, precision=4)
-
-def quaternion_multiply(q1, q2):
-    w1, x1, y1, z1 = q1
-    w2, x2, y2, z2 = q2
-
-    w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
-    x = w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2
-    y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2
-    z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2
-    return np.array([w, x, y, z])
-
-def quaternion_to_matrix(q):
-    w, x, y, z = q
-    n = w*w + x*x + y*y + z*z
-    if n < 1e-10:
-        raise ValueError("Quaternion has near-zero norm")
-
-    s = 2.0 / n
-    wx, wy, wz = s * w * x, s * w * y, s * w * z
-    xx, xy, xz = s * x * x, s * x * y, s * x * z
-    yy, yz, zz = s * y * y, s * y * z, s * z * z
-
-    R = np.array([
-        [1.0 - (yy + zz),        xy - wz,        xz + wy],
-        [       xy + wz, 1.0 - (xx + zz),        yz - wx],
-        [       xz - wy,        yz + wx, 1.0 - (xx + yy)]
-    ])
-    return R
-
-def quaternion_inverse(q):
-    q_conj = quaternion_conjugate(q)
-    norm_sq = np.dot(q, q)
-    return q_conj / norm_sq
-
-def rotate_quaternion(quat, axis, angle):
-    angle_rad = np.deg2rad(angle)
-    axis = axis / np.linalg.norm(axis)
-    cos_half = np.cos(angle_rad / 2)
-    sin_half = np.sin(angle_rad / 2)
-    delta_quat = np.array([cos_half, sin_half * axis[0], sin_half * axis[1], sin_half * axis[2]])
-    new_quat = quaternion_multiply(quat, delta_quat)
-    new_quat /= np.linalg.norm(new_quat)
-    return new_quat
-
-def quaternion_conjugate(q):
-    w, x, y, z = q
-    return np.array([w, -x, -y, -z])
-
-def quaternion_rotate_vector(quat, vec):
-    vec_quat = np.array([0.0, vec[0], vec[1], vec[2]])
-    qv = quaternion_multiply(quat, vec_quat)
-    rotated_quat = quaternion_multiply(qv, quaternion_conjugate(quat))
-    return rotated_quat[1:]
 
 class ParallelRobot:
     DAMPING = 8e-4
@@ -89,21 +38,27 @@ class ParallelRobot:
     prev_delta_y = 0.0
     prev_delta_yaw = 0.0
     
-    JOINT_NAMES = [
+    ARM_JOINT_LEFT = [
         "ColumnLeftBearingJoint_1",
         "ColumnRightBearingJoint_1",
         "ArmLeftJoint_1",
-        "BaseJoint_1",
+        "BaseJoint_1",]
+    
+    ARM_JOINT_RIGHT = [
         "ColumnLeftBearingJoint_2",
         "ColumnRightBearingJoint_2",
         "ArmLeftJoint_2",
         "BaseJoint_2",
     ]
-    ACTUATOR_NAMES = [
+    
+    ARM_ACTUATOR_LEFT = [
         "ColumnLeftBearingJointMotor_1",
         "ColumnRightBearingJointMotor_1",
         "ArmLeftJointMotor_1",
         "BaseJointMotor_1",
+    ]
+    
+    ARM_ACTUATOR_RIGHT = [
         "ColumnLeftBearingJointMotor_2",
         "ColumnRightBearingJointMotor_2",
         "ArmLeftJointMotor_2",
@@ -149,6 +104,8 @@ class ParallelRobot:
     def __init__(self, path: str, run_mode: str, record: bool):
         self.model = mujoco.MjModel.from_xml_path(path)
         self.data = mujoco.MjData(self.model)
+        self.manipulator_control_left = MorphIManipulatorV2()
+        self.manipulator_control_right = MorphIManipulatorV2()
         self.reset("home")
         self._target_lock = threading.Lock()
         self._initialize_ids()
@@ -158,7 +115,7 @@ class ParallelRobot:
         self.paused = False 
         self.run_mode = run_mode.lower()
         self.record = record
-        self.current_ctrl = np.zeros(len(self.ACTUATOR_NAMES))
+        self.current_ctrl = np.zeros(len(self.ARM_ACTUATOR_LEFT) + len(self.ARM_ACTUATOR_RIGHT))
         
         self.camera = mujoco.MjvCamera()
         self.camera.distance = 5.0         
@@ -167,10 +124,20 @@ class ParallelRobot:
         self.camera.lookat[:] = [0, 0, 0]
         
         self.use_ik = False 
-        self.direct_arm_commands = np.concatenate([self.data.ctrl[self.actuator_ids[0:3]]/100, 
-                                                   [0], 
-                                                   self.data.ctrl[self.actuator_ids[4:7]]/100, 
-                                                   [0]])
+        self.direct_arm_commands = np.concatenate([
+            np.concatenate([
+                self.data.ctrl[self.arm_ids_left[:3]] / 100.0,
+                [0.0],
+                self.data.ctrl[self.arm_ids_left[4:]]
+            ]),
+            np.concatenate([
+                self.data.ctrl[self.arm_ids_right[:3]] / 100.0,
+                [0.0],
+                self.data.ctrl[self.arm_ids_right[4:]]
+            ]),
+            self.data.ctrl[self.gripper_ids_left],
+            self.data.ctrl[self.gripper_ids_right]
+        ])
 
         if self.run_mode == "glfw":
             if not glfw.init():
@@ -231,15 +198,16 @@ class ParallelRobot:
         self.end_effector_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "Gripper_Link1")
         self.base_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "base_footprint")
 
-        self.dof_ids = np.array([self.model.joint(name).id for name in self.JOINT_NAMES])
-        self.actuator_ids = np.array([self.model.actuator(name).id for name in self.ACTUATOR_NAMES])
+        self.arm_ids_left = np.array([self.model.actuator(name).id for name in self.ARM_ACTUATOR_LEFT])
+        self.arm_ids_right = np.array([self.model.actuator(name).id for name in self.ARM_ACTUATOR_RIGHT])
+        
         self.gripper_ids_left = [mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_ACTUATOR, name) for name in self.GRIPPER_ACT_LEFT]
         self.gripper_ids_right = [mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_ACTUATOR, name) for name in self.GRIPPER_ACT_RIGHT]
         
         self.qpos_indices = []
         self.qvel_indices = []
 
-        for name in self.JOINT_NAMES:
+        for name in self.ARM_ACTUATOR_LEFT + self.ARM_ACTUATOR_LEFT:
             joint_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, name)
             qpos_adr = self.model.jnt_qposadr[joint_id]
             dof_adr = self.model.jnt_dofadr[joint_id]
@@ -259,8 +227,8 @@ class ParallelRobot:
         self.qvel_indices = np.array(self.qvel_indices)
 
         l0, r0 = self.get_encoder()
-        self.target_left = np.array(self.fk(*l0))
-        self.target_right = np.array(self.fk(*r0))
+        self.target_left = np.array(self.manipulator_control_left.fk(l0))
+        self.target_right = np.array(self.manipulator_control_right.fk(r0))
         self.target_base = self.localization()
 
     def _initialize_arrays(self):
@@ -272,12 +240,18 @@ class ParallelRobot:
         self.site_quat = np.zeros(4)
         self.site_quat_conj = np.zeros(4)
         self.error_quat = np.zeros(4)
+        self.target_rot_left = np.eye(3)
+        self.target_rot_right = np.eye(3)
         
     def _on_ik_mode(self, msg):
         try:
             enabled = bool(msg)
             with self._target_lock:
                 self.use_ik = enabled
+                self.target_right = arr.copy()
+        except Exception as e:
+            print(f"[PubSub] Invalid target_right message: {msg}, error: {e}")
+
             print(f"[INFO] IK mode: {'ENABLED' if enabled else 'DISABLED'}")
         except Exception as e:
             print(f"[ERROR] Invalid ik_mode message: {msg}, error: {e}")
@@ -374,113 +348,160 @@ class ParallelRobot:
         return np.array([x, y, yaw])
     
     def get_encoder(self):
-        z1_left  = self.data.qpos[self.get_joint_qpos_addr("ColumnLeftBearingJoint_1")]
-        z1_right = self.data.qpos[self.get_joint_qpos_addr("ColumnRightBearingJoint_1")]
+        col_left_1 = self.data.qpos[self.get_joint_qpos_addr("ColumnLeftBearingJoint_1")]
+        col_right_1 = self.data.qpos[self.get_joint_qpos_addr("ColumnRightBearingJoint_1")]
+        horiz_left = self.data.qpos[self.get_joint_qpos_addr("ArmLeftJoint_1")]
+        base_left = self.data.qpos[self.get_joint_qpos_addr("BaseJoint_1")]
+        hand_bearing_left = self.data.qpos[self.get_joint_qpos_addr("HandBearingJoint_1")]
         
-        z2_left  = self.data.qpos[self.get_joint_qpos_addr("ColumnLeftBearingJoint_2")]
-        z2_right = self.data.qpos[self.get_joint_qpos_addr("ColumnRightBearingJoint_2")]
-        
-        horizontal_1  = self.data.qpos[self.get_joint_qpos_addr("ArmLeftJoint_1")]
-        horizontal_2 = self.data.qpos[self.get_joint_qpos_addr("ArmLeftJoint_2")]
+        roll_left  = self.data.qpos[self.get_joint_qpos_addr("gripper_x_rotation_1")]
+        pitch_left = self.data.qpos[self.get_joint_qpos_addr("gripper_y_rotation_1")]
+        yaw_left   = self.data.qpos[self.get_joint_qpos_addr("gripper_z_rotation_1")]
 
-        yaw_1 = self.data.qpos[self.get_joint_qpos_addr("BaseJoint_1")]
-        yaw_2 = self.data.qpos[self.get_joint_qpos_addr("BaseJoint_2")]
+        col_left_2 = self.data.qpos[self.get_joint_qpos_addr("ColumnLeftBearingJoint_2")]
+        col_right_2 = self.data.qpos[self.get_joint_qpos_addr("ColumnRightBearingJoint_2")]
+        horiz_right = self.data.qpos[self.get_joint_qpos_addr("ArmLeftJoint_2")]
+        base_right = self.data.qpos[self.get_joint_qpos_addr("BaseJoint_2")]
+        hand_bearing_right = self.data.qpos[self.get_joint_qpos_addr("HandBearingJoint_2")]
         
-        encoder_left = np.array([z1_left, z1_right, horizontal_1, yaw_1])
-        encoder_right = np.array([z2_left, z2_right, horizontal_2, yaw_2])
-        return encoder_left, encoder_right
-        
-    def send_command_arm(self, u_control):
-        u_control = np.asarray(u_control)
-        if u_control.shape != (len(self.actuator_ids),):
-            raise ValueError(f"Control input shape {u_control.shape} does not match number of actuators ({len(self.actuator_ids)})")
+        roll_right  = self.data.qpos[self.get_joint_qpos_addr("gripper_x_rotation_2")]
+        pitch_right = self.data.qpos[self.get_joint_qpos_addr("gripper_y_rotation_2")]
+        yaw_right   = self.data.qpos[self.get_joint_qpos_addr("gripper_z_rotation_2")]
 
-        ctrl_ranges = self.model.actuator_ctrlrange[self.actuator_ids]  
-        lo = ctrl_ranges[:, 0]
-        hi = ctrl_ranges[:, 1]
-        u_clipped = np.clip(u_control, lo, hi)
-        self.data.ctrl[self.actuator_ids] = u_clipped
-        
-    def fk(self, h1, h2, a1, theta, d2=0.1, l3_max=1.0, eps=1e-9):
-        p1 = np.array([0.0, 0.0, h1])
-        p2 = np.array([d2 * np.cos(theta), d2 * np.sin(theta), h2])
-        vec = p1 - p2
-        dist = np.linalg.norm(vec)
-        if dist < eps:
-            return None, None 
-        u = vec / dist
-        ee = p1 + a1 * u
+        arm_encoder_left = np.array([
+            col_left_1, col_right_1,
+            horiz_left,
+            base_left,
+            hand_bearing_left,
+            roll_left, pitch_left, yaw_left
+        ])
 
-        if np.linalg.norm(ee - p1) > l3_max + 1e-9:
-            return None, np.degrees(np.arctan2(h2 - h1, d2))
-        alpha_deg = np.degrees(np.arctan2(h2 - h1, d2))
-        return ee
+        arm_encoder_right = np.array([
+            col_left_2, col_right_2,
+            horiz_right,
+            base_right,
+            hand_bearing_right,
+            roll_right, pitch_right, yaw_right
+        ])
+
+        return arm_encoder_left, arm_encoder_right
+        
+    def send_command_arm(self, u_arm_control, side='both'):
+        u_arm_control = np.asarray(u_arm_control)
+
+        if side == 'left':
+            actuator_ids = self.arm_ids_left
+        elif side == 'right':
+            actuator_ids = self.arm_ids_right
+        elif side == 'both':
+            actuator_ids = self.arm_ids_left + self.arm_ids_right
+        else:
+            raise ValueError("side must be 'left', 'right', or 'both'")
+
+        if u_arm_control.shape != (len(actuator_ids),):
+            raise ValueError(
+                f"Arm control input shape {u_arm_control.shape} does not match "
+                f"number of {side} arm actuators ({len(actuator_ids)})"
+            )
+
+        ctrl_ranges = self.model.actuator_ctrlrange[actuator_ids]
+        lo, hi = ctrl_ranges[:, 0], ctrl_ranges[:, 1]
+        u_clipped = np.clip(u_arm_control, lo, hi)
+        self.data.ctrl[actuator_ids] = u_clipped
+        
+    def send_command_hand(self, u_hand_control, side='both'):
+        u_hand_control = np.asarray(u_hand_control)
+
+        if side == 'left':
+            actuator_ids = self.gripper_ids_left
+        elif side == 'right':
+            actuator_ids = self.gripper_ids_right
+        elif side == 'both':
+            actuator_ids = self.gripper_ids_left + self.gripper_ids_right
+        else:
+            raise ValueError("side must be 'left', 'right', or 'both'")
+
+        if u_hand_control.shape != (len(actuator_ids),):
+            raise ValueError(
+                f"Hand control input shape {u_hand_control.shape} does not match "
+                f"number of {side} hand actuators ({len(actuator_ids)})"
+            )
+
+        ctrl_ranges = self.model.actuator_ctrlrange[actuator_ids]
+        lo, hi = ctrl_ranges[:, 0], ctrl_ranges[:, 1]
+        u_clipped = np.clip(u_hand_control, lo, hi)
+        self.data.ctrl[actuator_ids] = u_clipped
     
-    def ik(self, target, arm="left", d2=0.1, l3_max=0.7, alpha_min_deg=10.0,
-        bounds_h=(0.0, 1.5), bounds_a=(0.0, 0.7), tol=1e-6, 
-        cache_threshold=0.001):
+    def ik(self, 
+        target_pos, 
+        target_rot=None,
+        arm="left",
+        pos_weight=1.0,
+        ori_weight=0.3,
+        cache_threshold_pos=0.001,
+        cache_threshold_ori=0.001,  
+        max_iter=50,
+        tol=1e-6):
 
-        target = np.array(target, dtype=float)
+        target_pos = np.asarray(target_pos, dtype=float)
+        
+        if target_rot is None:
+            curr_q_left, curr_q_right = self.get_encoder()
+            curr_q = curr_q_left if arm == "left" else curr_q_right
+            curr_pose = self.manipulator_control_left.fk(curr_q) if arm == "left" else self.manipulator_control_right.fk(curr_q)
+            target_rot = R.from_quat(curr_pose[3:]).as_matrix()
+        elif len(target_rot) == 4:
+            target_rot = R.from_quat(target_rot).as_matrix()
+        else:
+            target_rot = np.asarray(target_rot, dtype=float)
+            if target_rot.shape != (3, 3):
+                raise ValueError("target_rot must be quat (4,) or rotmat (3,3)")
+
+        target_key = (tuple(target_pos), tuple(target_rot.ravel()))
 
         if not hasattr(self, '_ik_cache'):
-            self._ik_cache = {
-                'left': {'target': None, 'result': None},
-                'right': {'target': None, 'result': None}
-            }
+            self._ik_cache = {'left': {'target': None, 'result': None},
+                            'right': {'target': None, 'result': None}}
 
         cache = self._ik_cache[arm]
 
         if cache['target'] is not None:
-            dist = np.linalg.norm(target - cache['target'])
-            if dist <= cache_threshold:
-                return cache['result'].copy()
-
-        prev_target = cache['target'] if cache['target'] is not None else np.zeros(3)
-        delta_norm = np.linalg.norm(target - prev_target)
-
-        print(f"[IK] Recomputing for {arm} arm: target = {target} (Δ = {delta_norm:.4f} m)")
-        
-        def cost(vars, w_a1=1e-2):
-            h1, h2, a1, theta = vars
-            ee = self.fk(h1, h2, a1, theta, d2=d2, l3_max=l3_max)
-            if ee is None:
-                return 1e3 + 1e2 * np.linalg.norm(np.array([h1, h2, a1]) - 0.5)
-            dist_err = np.sum((ee - target)**2)
-            return float(dist_err + w_a1 * a1)
-        
-        def angle_ineq(vars):
-            h1, h2, a1, theta = vars
-            alpha_deg = np.degrees(np.arctan2(h2 - h1, d2))
-            return alpha_deg * alpha_deg - alpha_min_deg * alpha_min_deg
-
-        cons = ({'type': 'ineq', 'fun': angle_ineq},)
-        b = [(bounds_h[0], bounds_h[1]),  # h1
-            (bounds_h[0], bounds_h[1]),  # h2
-            (bounds_a[0], bounds_a[1]),  # a1
-            (-np.pi, np.pi)]            # theta
-
-        if arm == "left":
-            x0, _ = self.get_encoder()
-        elif arm == "right":
-            _, x0 = self.get_encoder()
-        else:
-            x0 = np.array([0.0, 0.0, 0.0, 0.0])
+            prev_pos, prev_rot_flat = cache['target']
+            prev_pos = np.array(prev_pos)
+            prev_rot = np.array(prev_rot_flat).reshape(3, 3)
             
-        res = minimize(cost, x0, method='SLSQP', bounds=b, constraints=cons,
-                    options={'ftol': 1e-9, 'maxiter': 50, 'disp': False})
-
-        if not res.success:
-            print(f"[IK] Failed for {arm} arm! Using fallback.")
-            if cache['result'] is not None:
+            pos_dist = np.linalg.norm(target_pos - prev_pos)
+            rot_error = R.from_matrix(target_rot @ prev_rot.T)
+            ori_dist = np.linalg.norm(rot_error.as_rotvec())
+            
+            if pos_dist <= cache_threshold_pos and ori_dist <= cache_threshold_ori:
                 return cache['result'].copy()
-            else:
-                return x0
 
-        result = np.array([float(res.x[0]), float(res.x[1]), float(res.x[2]), float(res.x[3])])
+        q_left, q_right = self.get_encoder()
+        q0 = q_left if arm == "left" else q_right
+        
+        if arm == "left" :
+            control = self.manipulator_control_left
+        else :
+            control = self.manipulator_control_right
 
-        self._ik_cache[arm]['target'] = target.copy()
-        self._ik_cache[arm]['result'] = result.copy()
-        return result
+        q_ik = control.ik(
+            target_pos=target_pos,
+            target_rot=target_rot,
+            q0=q0,
+            pos_weight=pos_weight,
+            ori_weight=ori_weight,
+            max_iter=max_iter,
+            tol=tol,
+        )
+
+        self._ik_cache[arm]['target'] = (tuple(target_pos), tuple(target_rot.ravel()))
+        self._ik_cache[arm]['result'] = q_ik.copy() if q_ik is not None else q0.copy()
+
+        if q_ik is None:
+            print(f"[IK] Warning: Failed for {arm} arm. Returning current or fallback configuration.")
+        
+        return q_ik
             
     def pid_base_joints(self, target_angle_1, target_angle_2, kp=10, ki=0.0, kd=7):
         dt = self.model.opt.timestep
@@ -567,43 +588,121 @@ class ParallelRobot:
         self.data.ctrl[2] = self.command[3]
         self.data.ctrl[3] = self.command[2]
         
-    def control_arms(self):
-        q_left, q_right = self.get_encoder()        
-        current_u_left = self.data.ctrl[self.actuator_ids[0:3]]
-        current_u_right = self.data.ctrl[self.actuator_ids[4:7]]
-        
+    def control_arms_hands(self):
+        q_left, q_right = self.get_encoder()
+
         if self.use_ik:
-            u_left_desired = self.ik(target=self.target_left, arm="left")
-            u_right_desired = self.ik(target=self.target_right, arm="right")
+            u_left_desired = self.ik(
+                target_pos=self.target_left,
+                target_rot=self.target_rot_left,
+            )
+            u_right_desired = self.ik(
+                target_pos=self.target_right,
+                target_rot=self.target_rot_right,
+            )
+
+            if u_left_desired is None or u_right_desired is None:
+                print("[Control] IK failed; skipping command update.")
+                return
+
+            arm_cmd_left = u_left_desired[:4]
+            arm_cmd_right = u_right_desired[:4]
+            phi_left, roll_left, pitch_left, yaw_left = u_left_desired[4], u_left_desired[5], u_left_desired[6], u_left_desired[7]
+            phi_right, roll_right, pitch_right, yaw_right = u_right_desired[4], u_right_desired[5], u_right_desired[6], u_right_desired[7]
+
         else:
-            u_left_desired = self.direct_arm_commands[0:4]   
-            u_right_desired = self.direct_arm_commands[4:8] 
-            
-        u_base_left, u_base_right = self.pid_base_joints(u_left_desired[3], u_right_desired[3])
-        
+            if len(self.direct_arm_commands) != 38:
+                print("[Control] direct_arm_commands has wrong length.")
+                return
+
+            arm_cmd_left = self.direct_arm_commands[0:4]
+            arm_cmd_right = self.direct_arm_commands[4:8]
+
+            grip_left = self.direct_arm_commands[8:23]
+            grip_right = self.direct_arm_commands[23:38]
+
+            roll_left, pitch_left, yaw_left = grip_left[11], grip_left[12], grip_left[13]
+            phi_left = grip_left[14]
+            roll_right, pitch_right, yaw_right = grip_right[11], grip_right[12], grip_right[13]
+            phi_right = grip_right[14]
+
+        theta_left = arm_cmd_left[3]
+        theta_right = arm_cmd_right[3]
+        u_base_left, u_base_right = self.pid_base_joints(theta_left, theta_right)
+
         offset = np.array([-0.0036, -0.0062, -0.0006])
-        raw_cmd_L = (u_left_desired[:3] + offset) * 100
-        raw_cmd_R = (u_right_desired[:3] + offset) * 100
+        gain = 100.0
+        raw_L = (arm_cmd_left[:3] + offset) * gain
+        raw_R = (arm_cmd_right[:3] + offset) * gain
 
-        alpha = 0.05
-        self._smooth_cmd_L = (1 - alpha) * current_u_left + alpha * raw_cmd_L
-        self._smooth_cmd_R = (1 - alpha) * current_u_right + alpha * raw_cmd_R
+        alpha = 0.1
+        if not hasattr(self, '_smooth_cmd_L'):
+            self._smooth_cmd_L = raw_L.copy()
+            self._smooth_cmd_R = raw_R.copy()
+        self._smooth_cmd_L = (1 - alpha) * self._smooth_cmd_L + alpha * raw_L
+        self._smooth_cmd_R = (1 - alpha) * self._smooth_cmd_R + alpha * raw_R
 
-        u_cmd = np.concatenate([
-            self._smooth_cmd_L,  
-            [u_base_left],      
-            self._smooth_cmd_R,  
-            [u_base_right]      
+        final_arm_cmd_left = np.array([
+            self._smooth_cmd_L[0],
+            self._smooth_cmd_L[1],
+            self._smooth_cmd_L[2],
+            u_base_left
         ])
-        
-        self.send_command_arm(u_cmd)
-        
+        final_arm_cmd_right = np.array([
+            self._smooth_cmd_R[0],
+            self._smooth_cmd_R[1],
+            self._smooth_cmd_R[2],
+            u_base_right
+        ])
+
+        self.send_command_arm(final_arm_cmd_left, side='left')
+        self.send_command_arm(final_arm_cmd_right, side='right')
+
+        current_hand_left = self.data.ctrl[self.gripper_ids_left].copy()
+        current_hand_right = self.data.ctrl[self.gripper_ids_right].copy()
+
+        current_hand_left[14] = phi_left   # HandBearing_1
+        current_hand_left[11] = roll_left  # wrist_X_1
+        current_hand_left[12] = pitch_left # wrist_Y_1
+        current_hand_left[13] = yaw_left   # wrist_Z_1
+
+        current_hand_right[14] = phi_right
+        current_hand_right[11] = roll_right
+        current_hand_right[12] = pitch_right
+        current_hand_right[13] = yaw_right
+
+        self.send_command_hand(current_hand_left, side='left')
+        self.send_command_hand(current_hand_right, side='right')
+            
     def step_simulation(self, render=True):
+        # self.get_keyframe("home")
         self.control_base(target=self.target_base, alpha=0.1)
-        self.control_arms()
+        self.control_arms_hands()
+            
+        q_left, q_right = self.get_encoder()
+        fk_left = self.manipulator_control_left.fk(q_left)
+        print("-----------")
+        print(q_left)
+        print(fk_left)
 
+        # # Print joint angles
+        # print(f"Joint Angles (q_left):")
+        # joint_names = ['z_act_a', 'z_act_b', 'l_telesc', 'theta_base', 'phi_wrist', 
+        #             'roll_grip', 'pitch_grip', 'yaw_grip']
+        # for i, (name, val) in enumerate(zip(joint_names, q_left)):
+        #     print(f"  {name:12}: {np.rad2deg(val):+.4f} {'rad' if i >= 3 else 'm'}")
+
+        # # Print FK results
+        # pos = fk_left[:3]
+        # quat = fk_left[3:]
+        # rpy = R.from_quat(quat).as_euler('xyz', degrees=True)
+
+        # print(f"\nFK Result (Left Arm):")
+        # print(f"  Position: [{pos[0]:+.3f}, {pos[1]:+.3f}, {pos[2]:+.3f}] m")
+        # print(f"  Rotation: [{rpy[0]:+.1f}°, {rpy[1]:+.1f}°, {rpy[2]:+.1f}°] (roll, pitch, yaw)")
+        # print(f"  Quaternion: [{quat[0]:+.3f}, {quat[1]:+.3f}, {quat[2]:+.3f}, {quat[3]:+.3f}]")
+                
         mujoco.mj_step(self.model, self.data, nstep=5)
-
         if self.run_mode == "glfw" and render:
             mujoco.mjv_updateScene(
                 self.model, self.data, self.opt, None, self.camera, 0xFFFF, self.scene

@@ -8,7 +8,7 @@ import numpy as np
 import datetime, cv2
 from scipy.optimize import minimize
 import argparse
-from modules.trajectory_opt import TrajectoryOptimizer
+from modules.utils.trajectory_optajectory_opt import TrajectoryOptimizer
 
 np.set_printoptions(suppress=True, precision=4)
 
