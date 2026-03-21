@@ -1,4 +1,4 @@
-# Mobile Manipulator
+# Universal Mobile Manipulator
 
 
 https://github.com/user-attachments/assets/ace3e387-373c-48c0-a6cd-64db6422f6d3
@@ -25,7 +25,7 @@ https://github.com/user-attachments/assets/ace3e387-373c-48c0-a6cd-64db6422f6d3
 
 ## MORPH Series – `Mobile Omni Robotic Platform with Hands`
 
-The **MORPH** series implements two distinct parallel manipulator configurations mounted on an omnidirectional mobile base. Both variants use chained mechanisms but differ fundamentally in their kinematic architecture.
+The **MORPH** series implements two distinct parallel universal mobile manipulator configurations mounted on an omnidirectional mobile base. Both variants use chained mechanisms but differ fundamentally in their kinematic architecture.
 
 ---
 
