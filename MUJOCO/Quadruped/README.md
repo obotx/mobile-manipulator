@@ -19,7 +19,7 @@
 
 ---
 
-The **MORPH** series implements two distinct parallel manipulator configurations mounted on an omnidirectional mobile base. Both variants use chained mechanisms but differ fundamentally in their kinematic architecture.
+The **MORPH** series implements two distinct parallel universal manipulator configurations mounted on an omnidirectional mobile base. Both variants use chained mechanisms but differ fundamentally in their kinematic architecture.
 
 ---
 

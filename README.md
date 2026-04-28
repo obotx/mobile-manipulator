@@ -1,4 +1,4 @@
-# Mobile Manipulator
+# Universal Mobile Manipulator
 
 https://github.com/user-attachments/assets/ace3e387-373c-48c0-a6cd-64db6422f6d3
 
@@ -18,7 +18,7 @@ https://github.com/user-attachments/assets/ace3e387-373c-48c0-a6cd-64db6422f6d3
 - [Acknowledgements](#acknowledgements)
 
 ## Introduction
-This repository contains the implementation of the ObotX Mobile Manipulator, featuring two distinct simulation environments:
+This repository contains the implementation of the ObotX Universal Mobile Manipulator, featuring two distinct simulation environments:
 
 - ROS 2 (Jazzy) with Gazebo Harmonic
 - MuJoCo
