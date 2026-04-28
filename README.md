@@ -6,15 +6,15 @@ https://github.com/user-attachments/assets/ace3e387-373c-48c0-a6cd-64db6422f6d3
 
 - [Introduction](#introduction)
 - [Mobile Manipulator Type](#mobile-manipulator-type)
-  - [1. Quadruped Mobile Manipulator](#1-quadruped-mobile-manipulator)
-    - [MuJoCo](#mujoco-1)
-      - [Morph - I : Dual Independent Parallel Manipulators](#morph---i--dual-independent-parallel-manipulators)
-      - [Morph - II : Single Closed-Chain Parallel Manipulator](#morph---ii--single-closed-chain-parallel-manipulator)
-    - [ROS](#ros-1)
-      - [Morph - I : Dual Independent Parallel Manipulators](#morph---i--dual-independent-parallel-manipulators-1)
-  - [2. Tripod Mobile Manipulator](#2-tripod-mobile-manipulator)
-    - [MuJoCo](#mujoco-2)
-    - [ROS](#ros-2)
+  1. Quadruped Mobile Manipulator
+      - MuJoCo
+        - Morph - I : Dual Independent Parallel Manipulators
+        - Morph - II : Single Closed-Chain Parallel Manipulator
+      - ROS
+        - Morph - I : Dual Independent Parallel Manipulators
+  2. Tripod Mobile Manipulator
+      - MuJoCo
+      - ROS
 - [Acknowledgements](#acknowledgements)
 
 ## Introduction
@@ -36,8 +36,14 @@ The project focuses on mobile manipulation systems integrating locomotion and ro
 
     - [ROS](./ROS/Quadruped)
       - **Morph - I** : Dual Independent Parallel Manipulators
+
+        https://github.com/user-attachments/assets/3f2eaa68-c19b-483a-8e48-4a6852301f11
+
 2. Tripod Mobile Manipulator
     - [MuJoco](./MUJOCO/Tripod)
+      
+      https://github.com/user-attachments/assets/5699a624-a83a-4c6a-859a-ceb459501354
+      
     - [ROS](./ROS/Tripod) (***Coming Soon***)
 
 ## Acknowledgements
