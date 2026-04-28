@@ -107,7 +107,7 @@ The **MORPH** series implements two distinct parallel universal manipulator conf
 
 ```bash
 git clone https://github.com/obotx/mobile-manipulator.git
-cd mobile-manipulator
+cd mobile-manipulator/MUJOCO/Quadruped
 ```
 
 
