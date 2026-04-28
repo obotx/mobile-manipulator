@@ -16,8 +16,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 source ~/.bashrc
 
 # unzip project
-unzip obotx_mujoco_sim.zip
-cd obot_mujoco_sim
+cd MUJOCO/Tripod
 
 # create a virtual environment
 uv venv
