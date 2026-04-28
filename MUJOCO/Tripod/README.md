@@ -1,4 +1,4 @@
-# Mujoco simulation for ObotX mobile manipulator
+# Tripod Mobile Manipulator
 
 A MuJoCo simulation package of the Obotx tripod mobile manipulator, including model, simulation scripts, and documentation, with a one-command launch.
 
