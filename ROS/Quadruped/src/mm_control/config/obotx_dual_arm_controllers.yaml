@@ -1,0 +1,144 @@
+/**:
+  controller_manager:
+    ros__parameters:
+      update_rate: 100
+      use_sim_time: true
+
+  mecanum_drive_controller:
+    ros__parameters:
+      type: mecanum_drive_controller/MecanumDriveController
+      reference_timeout: 1.0
+      front_left_wheel_command_joint_name:  "obotx_front_left_wheel_joint"
+      front_right_wheel_command_joint_name: "obotx_front_right_wheel_joint"
+      rear_right_wheel_command_joint_name:  "obotx_rear_right_wheel_joint"
+      rear_left_wheel_command_joint_name:   "obotx_rear_left_wheel_joint"
+      kinematics:
+          base_frame_offset: { x: 0.0, y: 0.0, theta: 0.0 }
+          wheels_radius: 0.127
+          sum_of_robot_center_projection_on_X_Y_axis: 0.427
+      base_frame_id: "base_link"
+      odom_frame_id: "odom"
+      enable_odom_tf: true
+
+  joint_state_broadcaster:
+    ros__parameters:
+      type: joint_state_broadcaster/JointStateBroadcaster
+      use_sim_time: true
+
+  # ===== LEFT ARM CONTROLLER =====
+  left_arm_controller:
+    ros__parameters:
+      type: joint_trajectory_controller/JointTrajectoryController
+      joints:
+        # Arm
+        - obotx_left_arm_mount_joint
+        - obotx_left_joint_slider_left_slide
+        - obotx_left_joint_slider_left_hinge
+        - obotx_left_joint_telescopic_slide
+        - obotx_left_joint_hinge_telescopic_hand
+        - obotx_left_joint_slider_right_slide
+        # Gripper
+        - obotx_left_j_dg_1_1
+        - obotx_left_j_dg_1_2
+        - obotx_left_j_dg_1_3
+        - obotx_left_j_dg_1_4
+        - obotx_left_j_dg_2_1
+        - obotx_left_j_dg_2_2
+        - obotx_left_j_dg_2_3
+        - obotx_left_j_dg_2_4
+        - obotx_left_j_dg_3_1
+        - obotx_left_j_dg_3_2
+        - obotx_left_j_dg_3_3
+        - obotx_left_j_dg_3_4
+        - obotx_left_j_dg_4_1
+        - obotx_left_j_dg_4_2
+        - obotx_left_j_dg_4_3
+        - obotx_left_j_dg_4_4
+        - obotx_left_j_dg_1_inner
+        - obotx_left_j_dg_4_inner
+      gains:
+        obotx_left_j_dg_1_1: { p: 50.0 }
+        obotx_left_j_dg_1_2: { p: 50.0 }
+        obotx_left_j_dg_1_3: { p: 50.0 }
+        obotx_left_j_dg_1_4: { p: 50.0 }
+        obotx_left_j_dg_2_1: { p: 50.0 }
+        obotx_left_j_dg_2_2: { p: 50.0 }
+        obotx_left_j_dg_2_3: { p: 50.0 }
+        obotx_left_j_dg_2_4: { p: 50.0 }
+        obotx_left_j_dg_3_1: { p: 50.0 }
+        obotx_left_j_dg_3_2: { p: 50.0 }
+        obotx_left_j_dg_3_3: { p: 50.0 }
+        obotx_left_j_dg_3_4: { p: 50.0 }
+        obotx_left_j_dg_4_1: { p: 50.0 }
+        obotx_left_j_dg_4_2: { p: 50.0 }
+        obotx_left_j_dg_4_3: { p: 50.0 }
+        obotx_left_j_dg_4_4: { p: 50.0 }
+        obotx_left_j_dg_1_inner: { p: 50.0 }
+        obotx_left_j_dg_4_inner: { p: 50.0 }
+      command_interfaces: [position]
+      state_interfaces: [position, velocity]
+      allow_partial_joints_goal: true
+      start_with_holding: false
+      state_publish_rate: 100.0
+      constraints:
+        goal_time: 3.0
+        stopped_velocity_tolerance: 0.01
+
+  # ===== RIGHT ARM CONTROLLER (SAME STRUCTURE) =====
+  right_arm_controller:
+    ros__parameters:
+      type: joint_trajectory_controller/JointTrajectoryController
+      joints:
+        # Arm
+        - obotx_right_arm_mount_joint
+        - obotx_right_joint_slider_left_slide
+        - obotx_right_joint_slider_left_hinge
+        - obotx_right_joint_telescopic_slide
+        - obotx_right_joint_hinge_telescopic_hand
+        - obotx_right_joint_slider_right_slide
+        # Gripper
+        - obotx_right_j_dg_1_1
+        - obotx_right_j_dg_1_2
+        - obotx_right_j_dg_1_3
+        - obotx_right_j_dg_1_4
+        - obotx_right_j_dg_2_1
+        - obotx_right_j_dg_2_2
+        - obotx_right_j_dg_2_3
+        - obotx_right_j_dg_2_4
+        - obotx_right_j_dg_3_1
+        - obotx_right_j_dg_3_2
+        - obotx_right_j_dg_3_3
+        - obotx_right_j_dg_3_4
+        - obotx_right_j_dg_4_1
+        - obotx_right_j_dg_4_2
+        - obotx_right_j_dg_4_3
+        - obotx_right_j_dg_4_4
+        - obotx_right_j_dg_1_inner
+        - obotx_right_j_dg_4_inner
+      gains:
+        obotx_right_j_dg_1_1: { p: 50.0 }
+        obotx_right_j_dg_1_2: { p: 50.0 }
+        obotx_right_j_dg_1_3: { p: 50.0 }
+        obotx_right_j_dg_1_4: { p: 50.0 }
+        obotx_right_j_dg_2_1: { p: 50.0 }
+        obotx_right_j_dg_2_2: { p: 50.0 }
+        obotx_right_j_dg_2_3: { p: 50.0 }
+        obotx_right_j_dg_2_4: { p: 50.0 }
+        obotx_right_j_dg_3_1: { p: 50.0 }
+        obotx_right_j_dg_3_2: { p: 50.0 }
+        obotx_right_j_dg_3_3: { p: 50.0 }
+        obotx_right_j_dg_3_4: { p: 50.0 }
+        obotx_right_j_dg_4_1: { p: 50.0 }
+        obotx_right_j_dg_4_2: { p: 50.0 }
+        obotx_right_j_dg_4_3: { p: 50.0 }
+        obotx_right_j_dg_4_4: { p: 50.0 }
+        obotx_right_j_dg_1_inner: { p: 50.0 }
+        obotx_right_j_dg_4_inner: { p: 50.0 }
+      command_interfaces: [position]
+      state_interfaces: [position, velocity]
+      allow_partial_joints_goal: true
+      start_with_holding: false
+      state_publish_rate: 100.0
+      constraints:
+        goal_time: 3.0
+        stopped_velocity_tolerance: 0.01

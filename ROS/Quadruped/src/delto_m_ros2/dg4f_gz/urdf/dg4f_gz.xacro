@@ -1,0 +1,329 @@
+<?xml version="1.0"?>
+
+<robot name="delto_4f_gz" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Include the main robot description -->
+    <!-- Note: Ensure you renamed dg4f.urdf to dg4f.xacro in src/dg_description/urdf/ 
+         OR change this line to filename="$(find dg_description)/urdf/dg4f.urdf" if you kept the .urdf extension -->
+    <xacro:include filename="$(find dg_description)/urdf/dg4f.urdf" />
+  
+    <link name="world" />
+
+    <joint name="world_to_base_fixed" type="fixed">
+        <parent link="world" />
+        <!-- Changed from 'base_link' to 'l_dg_mount' to match the root link in dg4f.urdf -->
+        <child link="l_dg_mount" />
+        <origin xyz="0 0 0.1" rpy="0 0 0" />
+    </joint>
+
+
+    <ros2_control name="GazeboSimSystem" type="system">
+        <hardware>
+            <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+        </hardware>
+
+        <!-- ========================================== -->
+        <!-- FINGER 1 ACTIVE JOINTS (Commandable)       -->
+        <!-- ========================================== -->
+        
+        <joint name="j_dg_1_1">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_1_2">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_1_3">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_1_4">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <!-- ========================================== -->
+        <!-- FINGER 2 ACTIVE JOINTS (Commandable)       -->
+        <!-- ========================================== -->
+
+        <joint name="j_dg_2_1">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_2_2">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_2_3">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_2_4">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <!-- ========================================== -->
+        <!-- FINGER 3 ACTIVE JOINTS (Commandable)       -->
+        <!-- ========================================== -->
+
+        <joint name="j_dg_3_1">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_3_2">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_3_3">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_3_4">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <!-- ========================================== -->
+        <!-- FINGER 4 ACTIVE JOINTS (Commandable)       -->
+        <!-- ========================================== -->
+
+        <joint name="j_dg_4_1">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_4_2">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_4_3">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <joint name="j_dg_4_4">
+            <command_interface name="position">
+                <param name="min_position">-1.5708</param>
+                <param name="max_position">1.5708</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <!-- ========================================== -->
+        <!-- BASE / MIMIC JOINTS                        -->
+        <!-- ========================================== -->
+
+        <!-- j_dg_1_inner is ACTIVE (Master for mimic) -->
+        <joint name="j_dg_1_inner">
+            <command_interface name="position">
+                <param name="min_position">-3.14</param>
+                <param name="max_position">3.14</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.01</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>    
+
+        <!-- j_dg_1_outer is MIMIC (Slave). NO command interface allowed. -->
+        <joint name="j_dg_1_outer">
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+            <state_interface name="effort"/>
+        </joint>
+
+        <!-- j_dg_1_mimic is MIMIC (Slave). NO command interface allowed. -->
+        <joint name="j_dg_1_mimic">
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+            <state_interface name="effort"/>
+        </joint>
+
+        <!-- j_dg_4_inner is ACTIVE (Master for mimic) -->
+        <joint name="j_dg_4_inner">
+            <command_interface name="position">
+                <param name="min_position">-3.14</param>
+                <param name="max_position">3.14</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_position">0.0</param>
+            </state_interface>
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+
+        <!-- j_dg_4_outer is MIMIC (Slave). NO command interface allowed. -->
+        <joint name="j_dg_4_outer">
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+            <state_interface name="effort"/>
+        </joint>
+
+        <!-- j_dg_4_mimic is MIMIC (Slave). NO command interface allowed. -->
+        <joint name="j_dg_4_mimic">
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+            <state_interface name="effort"/>
+        </joint>
+
+    </ros2_control>
+
+    <gazebo>
+        <gravity>false</gravity>
+        <physics type="dart">
+            <max_step_size>0.001</max_step_size>
+            <real_time_factor>1.0</real_time_factor>
+            <real_time_update_rate>1000</real_time_update_rate>
+            <max_contacts>5</max_contacts>
+            <solver>
+                <type>quick</type>
+                <iters>10</iters>
+                <precon_iters>0</precon_iters>
+                <sor>1.0</sor>
+            </solver>
+        </physics>
+
+        <self_collide>0</self_collide>
+
+        <visual>
+            <shadows>false</shadows>
+            <grid>false</grid>
+        </visual>
+
+        <collision_detector>ode</collision_detector>
+        <constraints>
+            <contact_max_correcting_vel>0.0</contact_max_correcting_vel>
+            <cfm>0.0</cfm>
+            <erp>0.0</erp>
+        </constraints>
+
+        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+            <robot_param_node>robot_state_publisher</robot_param_node>
+            <robot_param>robot_description</robot_param>
+            <parameters>$(find dg4f_gz)/config/dg4f_gz_controller.yaml</parameters>
+        </plugin>
+    </gazebo>
+
+</robot>

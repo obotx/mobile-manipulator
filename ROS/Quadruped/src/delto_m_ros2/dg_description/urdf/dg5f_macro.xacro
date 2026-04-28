@@ -1,0 +1,362 @@
+<?xml version="1.0" ?>
+<!--
+    dg5f_macro.xacro - DG5F Hand Macro Definition (Include Only)
+    Licensed under the BSD-3-Clause
+    Copyright (c) 2025 Tesollo Inc.
+    
+    Usage (include in other xacro):
+      <xacro:include filename="$(find dg_description)/urdf/dg5f_macro.xacro"/>
+      <xacro:dg5f_hand side="left" base_type="default" with_mount="true" ... />
+      <xacro:dg5f_hand side="right" base_type="default" with_mount="true" ... />
+    
+    Macro Parameters:
+      prefix     - Prefix for all link/joint names (default: "")
+      side       - left or right (default: left)
+      base_type  - default or short (default: default)
+      with_mount - true or false (default: true)
+      tip1_type  - default, type1 (default: default)
+      tip2_type  - default, type1 (default: default)
+      tip3_type  - default, type1 (default: default)
+      tip4_type  - default, type1 (default: default)
+      tip5_type  - default, type1 (default: default)
+-->
+<robot name="dg5f_macro" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Include finger macro files -->
+    <xacro:include filename="$(find dg_description)/urdf/dg5f_left_fingers.urdf.xacro"/>
+    <xacro:include filename="$(find dg_description)/urdf/dg5f_right_fingers.urdf.xacro"/>
+
+    <!-- ==================== DG5F HAND MACRO ==================== -->
+    <xacro:macro name="dg5f_hand" params="prefix:='' side:='left' base_type:='default' with_mount:='true' tip1_type:='default' tip2_type:='default' tip3_type:='default' tip4_type:='default' tip5_type:='default'">
+        
+        <!-- ==================== LEFT HAND ==================== -->
+        <xacro:if value="${side == 'left'}">
+            
+            <!-- Base Link -->
+            <link name="${prefix}ll_dg_base_link" />
+
+            <!-- ===== DEFAULT BASE TYPE ===== -->
+            <xacro:if value="${base_type == 'default'}">
+                
+                <!-- With Mount -->
+                <xacro:if value="${with_mount == 'true' or with_mount == True}">
+                    <joint name="${prefix}lj_dg_mount" type="fixed">
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <parent link="${prefix}ll_dg_base_link" />
+                        <child link="${prefix}ll_dg_mount" />
+                    </joint>
+
+                    <link name="${prefix}ll_dg_mount">
+                        <inertial>
+                            <origin xyz="6.4721E-09 2.1674E-05 0.0049997" rpy="0.0 0.0 0.0" />
+                            <inertia ixx="1.0999E-05" ixy="-2.1734E-12" ixz="-1.2441E-12" iyy="1.1018E-05" iyz="-4.0435E-09" izz="2.0531E-05" />
+                            <mass value="0.05" />
+                        </inertial>
+                        <visual>
+                            <geometry>
+                                <mesh filename="package://dg_description/meshes/dg5f_left_base/visual/ll_dg_mount.dae"/>
+                            </geometry>
+                        </visual>
+                        <collision>
+                            <geometry>
+                                <mesh filename="package://dg_description/meshes/dg5f_left_base/collision/ll_dg_mount_c.STL"/>
+                            </geometry>
+                        </collision>
+                    </link>
+
+                    <joint name="${prefix}lj_dg_base" type="fixed">
+                        <parent link="${prefix}ll_dg_mount"/>
+                        <child link="${prefix}ll_dg_base"/>
+                        <origin rpy="0 0 0" xyz="0 0 0.004"/>
+                    </joint>
+                </xacro:if>
+
+                <!-- Without Mount -->
+                <xacro:if value="${with_mount == 'false' or with_mount == False}">
+                    <joint name="${prefix}lj_dg_base" type="fixed">
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <parent link="${prefix}ll_dg_base_link" />
+                        <child link="${prefix}ll_dg_base" />
+                    </joint>
+                </xacro:if>
+
+                <link name="${prefix}ll_dg_base">
+                    <inertial>
+                        <origin xyz="-0.00058969 -0.00051381 0.037363" rpy="0.0 0.0 0.0" />
+                        <inertia ixx="0.00048608" ixy="-1.041E-05" ixz="1.7229E-05" iyy="0.00049085" iyz="5.191E-06" izz="0.00043369" />
+                        <mass value="0.45" />
+                    </inertial>
+                    <visual>
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <geometry>
+                            <mesh filename="package://dg_description/meshes/dg5f_left_base/visual/ll_dg_base.dae" />
+                        </geometry>
+                    </visual>
+                    <collision>
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <geometry>
+                            <mesh filename="package://dg_description/meshes/dg5f_left_base/collision/ll_dg_base_c.STL" />
+                        </geometry>
+                    </collision>
+                </link>
+
+                <!-- Call finger macro -->
+                <xacro:dg5f_left_fingers 
+                    prefix="${prefix}" 
+                    parent_link="${prefix}ll_dg_base"
+                    palm_offset_z="0.0698"
+                    tip1_type="${tip1_type}"
+                    tip2_type="${tip2_type}"
+                    tip3_type="${tip3_type}"
+                    tip4_type="${tip4_type}"
+                    tip5_type="${tip5_type}"
+                />
+
+            </xacro:if>
+
+            <!-- ===== SHORT BASE TYPE ===== -->
+            <xacro:if value="${base_type == 'short'}">
+                
+                <!-- With Mount -->
+                <xacro:if value="${with_mount == 'true' or with_mount == True}">
+                    <joint name="${prefix}lj_dg_mount" type="fixed">
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <parent link="${prefix}ll_dg_base_link" />
+                        <child link="${prefix}ll_dg_mount" />
+                    </joint>
+
+                    <link name="${prefix}ll_dg_mount">
+                        <inertial>
+                            <origin xyz="6.4721E-09 2.1674E-05 0.0049997" rpy="0.0 0.0 0.0" />
+                            <inertia ixx="1.0999E-05" ixy="-2.1734E-12" ixz="-1.2441E-12" iyy="1.1018E-05" iyz="-4.0435E-09" izz="2.0531E-05" />
+                            <mass value="0.05" />
+                        </inertial>
+                        <visual>
+                            <geometry>
+                                <mesh filename="package://dg_description/meshes/dg5f_left_short/visual/ll_dg_s_mount.dae"/>
+                            </geometry>
+                        </visual>
+                        <collision>
+                            <geometry>
+                                <mesh filename="package://dg_description/meshes/dg5f_left_short/collision/ll_dg_s_mount_c.STL"/>
+                            </geometry>
+                        </collision>
+                    </link>
+
+                    <joint name="${prefix}lj_dg_base" type="fixed">
+                        <parent link="${prefix}ll_dg_mount"/>
+                        <child link="${prefix}ll_dg_base"/>
+                        <origin rpy="0 0 0" xyz="0 0 0.0045"/>
+                    </joint>
+                </xacro:if>
+
+                <!-- Without Mount -->
+                <xacro:if value="${with_mount == 'false' or with_mount == False}">
+                    <joint name="${prefix}lj_dg_base" type="fixed">
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <parent link="${prefix}ll_dg_base_link" />
+                        <child link="${prefix}ll_dg_base" />
+                    </joint>
+                </xacro:if>
+
+                <link name="${prefix}ll_dg_base">
+                    <inertial>
+                        <origin xyz="-0.00058969 -0.00051381 0.037363" rpy="0.0 0.0 0.0" />
+                        <inertia ixx="0.00048608" ixy="-1.041E-05" ixz="1.7229E-05" iyy="0.00049085" iyz="5.191E-06" izz="0.00043369" />
+                        <mass value="0.45" />
+                    </inertial>
+                    <visual>
+                        <geometry>
+                            <mesh filename="package://dg_description/meshes/dg5f_left_short/visual/ll_dg_s_base.dae" />
+                        </geometry>
+                    </visual>
+                    <collision>
+                        <geometry>
+                            <mesh filename="package://dg_description/meshes/dg5f_left_short/collision/ll_dg_s_base_c.STL" />
+                        </geometry>
+                    </collision>
+                </link>
+
+                <!-- Call finger macro -->
+                <xacro:dg5f_left_fingers 
+                    prefix="${prefix}" 
+                    parent_link="${prefix}ll_dg_base"
+                    palm_offset_z="0.022"
+                    tip1_type="${tip1_type}"
+                    tip2_type="${tip2_type}"
+                    tip3_type="${tip3_type}"
+                    tip4_type="${tip4_type}"
+                    tip5_type="${tip5_type}"
+                />
+
+            </xacro:if>
+
+        </xacro:if>
+
+        <!-- ==================== RIGHT HAND ==================== -->
+        <xacro:if value="${side == 'right'}">
+            
+            <!-- Base Link -->
+            <link name="${prefix}rl_dg_base_link" />
+
+            <!-- ===== DEFAULT BASE TYPE ===== -->
+            <xacro:if value="${base_type == 'default'}">
+                
+                <!-- With Mount -->
+                <xacro:if value="${with_mount == 'true' or with_mount == True}">
+                    <joint name="${prefix}rj_dg_mount" type="fixed">
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <parent link="${prefix}rl_dg_base_link" />
+                        <child link="${prefix}rl_dg_mount" />
+                    </joint>
+
+                    <link name="${prefix}rl_dg_mount">
+                        <inertial>
+                            <origin xyz="-6.4721E-09 -2.1674E-05 0.0049997" rpy="0.0 0.0 0.0" />
+                            <inertia ixx="1.0999E-05" ixy="-2.1734E-12" ixz="1.2441E-12" iyy="1.1018E-05" iyz="4.0435E-09" izz="2.0531E-05" />
+                            <mass value="0.05" />
+                        </inertial>
+                        <visual>
+                            <geometry>
+                                <mesh filename="package://dg_description/meshes/dg5f_right_base/visual/rl_dg_mount.dae"/>
+                            </geometry>
+                        </visual>
+                        <collision>
+                            <geometry>
+                                <mesh filename="package://dg_description/meshes/dg5f_right_base/collision/rl_dg_mount_c.STL"/>
+                            </geometry>
+                        </collision>
+                    </link>
+
+                    <joint name="${prefix}rj_dg_base" type="fixed">
+                        <parent link="${prefix}rl_dg_mount"/>
+                        <child link="${prefix}rl_dg_base"/>
+                        <origin rpy="0 0 0" xyz="0 0 0.004"/>
+                    </joint>
+                </xacro:if>
+
+                <!-- Without Mount -->
+                <xacro:if value="${with_mount == 'false' or with_mount == False}">
+                    <joint name="${prefix}rj_dg_base" type="fixed">
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <parent link="${prefix}rl_dg_base_link" />
+                        <child link="${prefix}rl_dg_base" />
+                    </joint>
+                </xacro:if>
+
+                <link name="${prefix}rl_dg_base">
+                    <inertial>
+                        <origin xyz="-0.00058969 0.0005138 0.037363" rpy="0.0 0.0 0.0" />
+                        <inertia ixx="0.00048608" ixy="1.041E-05" ixz="1.7229E-05" iyy="0.00049085" iyz="-5.1908E-06" izz="0.00043369" />
+                        <mass value="0.45" />
+                    </inertial>
+                    <visual>
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <geometry>
+                            <mesh filename="package://dg_description/meshes/dg5f_right_base/visual/rl_dg_base.dae" />
+                        </geometry>
+                    </visual>
+                    <collision>
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <geometry>
+                            <mesh filename="package://dg_description/meshes/dg5f_right_base/collision/rl_dg_base_c.STL" />
+                        </geometry>
+                    </collision>
+                </link>
+
+                <!-- Call finger macro -->
+                <xacro:dg5f_right_fingers 
+                    prefix="${prefix}" 
+                    parent_link="${prefix}rl_dg_base"
+                    palm_offset_z="0.0698"
+                    tip1_type="${tip1_type}"
+                    tip2_type="${tip2_type}"
+                    tip3_type="${tip3_type}"
+                    tip4_type="${tip4_type}"
+                    tip5_type="${tip5_type}"
+                />
+
+            </xacro:if>
+
+            <!-- ===== SHORT BASE TYPE ===== -->
+            <xacro:if value="${base_type == 'short'}">
+                
+                <!-- With Mount -->
+                <xacro:if value="${with_mount == 'true' or with_mount == True}">
+                    <joint name="${prefix}rj_dg_mount" type="fixed">
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <parent link="${prefix}rl_dg_base_link" />
+                        <child link="${prefix}rl_dg_mount" />
+                    </joint>
+
+                    <link name="${prefix}rl_dg_mount">
+                        <inertial>
+                            <origin xyz="-6.4721E-09 -2.1674E-05 0.0049997" rpy="0.0 0.0 0.0" />
+                            <inertia ixx="1.0999E-05" ixy="-2.1734E-12" ixz="1.2441E-12" iyy="1.1018E-05" iyz="4.0435E-09" izz="2.0531E-05" />
+                            <mass value="0.05" />
+                        </inertial>
+                        <visual>
+                            <geometry>
+                                <mesh filename="package://dg_description/meshes/dg5f_right_short/visual/rl_dg_s_mount.dae"/>
+                            </geometry>
+                        </visual>
+                        <collision>
+                            <geometry>
+                                <mesh filename="package://dg_description/meshes/dg5f_right_short/collision/rl_dg_s_mount_c.STL"/>
+                            </geometry>
+                        </collision>
+                    </link>
+
+                    <joint name="${prefix}rj_dg_base" type="fixed">
+                        <parent link="${prefix}rl_dg_mount"/>
+                        <child link="${prefix}rl_dg_base"/>
+                        <origin rpy="0 0 0" xyz="0 0 0.0045"/>
+                    </joint>
+                </xacro:if>
+
+                <!-- Without Mount -->
+                <xacro:if value="${with_mount == 'false' or with_mount == False}">
+                    <joint name="${prefix}rj_dg_base" type="fixed">
+                        <origin xyz="0 0 0" rpy="0 0 0" />
+                        <parent link="${prefix}rl_dg_base_link" />
+                        <child link="${prefix}rl_dg_base" />
+                    </joint>
+                </xacro:if>
+
+                <link name="${prefix}rl_dg_base">
+                    <inertial>
+                        <origin xyz="-0.00058969 0.0005138 0.037363" rpy="0.0 0.0 0.0" />
+                        <inertia ixx="0.00048608" ixy="1.041E-05" ixz="1.7229E-05" iyy="0.00049085" iyz="-5.1908E-06" izz="0.00043369" />
+                        <mass value="0.45" />
+                    </inertial>
+                    <visual>
+                        <geometry>
+                            <mesh filename="package://dg_description/meshes/dg5f_right_short/visual/rl_dg_s_base.dae" />
+                        </geometry>
+                    </visual>
+                    <collision>
+                        <geometry>
+                            <mesh filename="package://dg_description/meshes/dg5f_right_short/collision/rl_dg_s_base_c.STL" />
+                        </geometry>
+                    </collision>
+                </link>
+
+                <!-- Call finger macro -->
+                <xacro:dg5f_right_fingers 
+                    prefix="${prefix}" 
+                    parent_link="${prefix}rl_dg_base"
+                    palm_offset_z="0.022"
+                    tip1_type="${tip1_type}"
+                    tip2_type="${tip2_type}"
+                    tip3_type="${tip3_type}"
+                    tip4_type="${tip4_type}"
+                    tip5_type="${tip5_type}"
+                />
+
+            </xacro:if>
+
+        </xacro:if>
+
+    </xacro:macro>
+
+</robot>

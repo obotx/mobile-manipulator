@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<robot name="summit_xl" xmlns:xacro="http://wiki.ros.org/xacro" xmlns:gz="http://gazebosim.org/schema">
+	<xacro:include filename="$(find summit_xl_description)/urdf/bases/summit_xls_base.urdf.xacro" />
+
+	<xacro:include filename="$(find summit_xl_description)/urdf/wheels/omni_wheel.urdf.xacro" />
+
+	<xacro:property name="PI" value="3.1415926535897931"/> 
+
+	<!-- Wheel parameters -->
+	<xacro:property name="wheel_offset_x" value="0.2225" />    <!-- x,y,z in translation from base_link_platform to the center of the wheel -->
+	<xacro:property name="wheel_offset_y" value="0.2045" />
+	<xacro:property name="wheel_offset_z" value="0.0" />
+
+	<xacro:property name="hq" value="true" />
+
+	<xacro:property name="roller_mu" value="1.5"/>
+	<xacro:property name="roller_mu2" value="0.0"/>
+
+	<xacro:arg name="prefix" default="summit_xl_"/>
+
+
+    <xacro:macro name="summit_xl" params="prefix publish_bf hq">
+		<!-- Summit XL base -->
+		<xacro:summit_xls_base prefix="$(arg prefix)" publish_bf="true" hq="${hq}" />
+
+		<xacro:omni_wheel prefix="$(arg prefix)front_right" parent="$(arg prefix)base_link_platform" reflect="false" hq="${hq}">
+			<origin xyz="${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:omni_wheel>
+
+		<xacro:omni_wheel prefix="$(arg prefix)front_left" parent="$(arg prefix)base_link_platform" reflect="true" hq="${hq}">
+			<origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:omni_wheel>
+
+		<xacro:omni_wheel prefix="$(arg prefix)rear_left" parent="$(arg prefix)base_link_platform" reflect="true" hq="${hq}">
+			<origin xyz="-${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:omni_wheel>
+
+		<xacro:omni_wheel prefix="$(arg prefix)rear_right" parent="$(arg prefix)base_link_platform" reflect="false" hq="${hq}">
+			<origin xyz="-${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+		</xacro:omni_wheel>
+
+		<!-- Front-Left: ↘️ -45° roller axis -->
+		<gazebo reference="$(arg prefix)front_left_wheel">
+		<collision>
+			<surface>
+			<friction>
+				<ode>
+				<mu>${roller_mu}</mu>
+				<mu2>${roller_mu2}</mu2>
+				<fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 -1.0 0.0</fdir1>
+				<kp>1000000.0</kp>
+        		<kd>1.0</kd>
+				</ode>
+			</friction>
+			</surface>
+		</collision>
+		</gazebo>
+
+		<!-- Rear-Left: ↗️ +45° roller axis -->
+		<gazebo reference="$(arg prefix)rear_left_wheel">
+		<collision>
+			<surface>
+			<friction>
+				<ode>
+				<mu>${roller_mu}</mu>
+				<mu2>${roller_mu2}</mu2>
+				<fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 1.0 0.0</fdir1>
+				<kp>1000000.0</kp>
+        		<kd>1.0</kd>
+				</ode>
+			</friction>
+			</surface>
+		</collision>
+		</gazebo>
+
+		<!-- Front-Right: ↗️ +45° roller axis -->
+		<gazebo reference="$(arg prefix)front_right_wheel">
+		<collision>
+			<surface>
+			<friction>
+				<ode>
+				<mu>${roller_mu}</mu>
+				<mu2>${roller_mu2}</mu2>
+				<fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 1.0 0.0</fdir1>
+				<kp>1000000.0</kp>
+        		<kd>1.0</kd>
+				</ode>
+			</friction>
+			</surface>
+		</collision>
+		</gazebo>
+
+		<!-- Rear-Right: ↘️ -45° roller axis -->
+		<gazebo reference="$(arg prefix)rear_right_wheel">
+		<collision>
+			<surface>
+			<friction>
+				<ode>
+				<mu>${roller_mu}</mu>
+				<mu2>${roller_mu2}</mu2>
+				<fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 -1.0 0.0</fdir1>
+				<kp>1000000.0</kp>
+        		<kd>1.0</kd>
+				</ode>
+			</friction>
+			</surface>
+		</collision>
+		</gazebo>
+
+		<gazebo reference="$(arg prefix)base_link_platform">
+			<mu1>0.000002</mu1>
+			<mu2>0.000002</mu2>
+		</gazebo>
+		
+   </xacro:macro>
+</robot>

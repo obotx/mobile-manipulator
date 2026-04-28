@@ -1,0 +1,71 @@
+joint_state_broadcaster:
+  ros__parameters:
+    type: joint_state_broadcaster/JointStateBroadcaster
+
+arm_controller:
+  ros__parameters:
+    type: joint_trajectory_controller/JointTrajectoryController
+    joints:
+      - joint_slider_left_slide
+      - joint_slider_left_hinge
+      - joint_telescopic_slide
+      - joint_hinge_telescopic_hand
+      - j_dg_1_1
+      - j_dg_1_2
+      - j_dg_1_3
+      - j_dg_1_4
+      - j_dg_2_1
+      - j_dg_2_2
+      - j_dg_2_3
+      - j_dg_2_4
+      - j_dg_3_1
+      - j_dg_3_2
+      - j_dg_3_3
+      - j_dg_3_4
+      - j_dg_4_1
+      - j_dg_4_2
+      - j_dg_4_3
+      - j_dg_4_4
+      - j_dg_1_inner
+      - j_dg_4_inner
+    gains:
+      j_dg_1_1: { p: 10.0 }
+      j_dg_1_2: { p: 10.0 }
+      j_dg_1_3: { p: 10.0 }
+      j_dg_1_4: { p: 10.0 }
+      j_dg_2_1: { p: 10.0 }
+      j_dg_2_2: { p: 10.0 }
+      j_dg_2_3: { p: 10.0 }
+      j_dg_2_4: { p: 10.0 }
+      j_dg_3_1: { p: 10.0 }
+      j_dg_3_2: { p: 10.0 }
+      j_dg_3_3: { p: 10.0 }
+      j_dg_3_4: { p: 10.0 }
+      j_dg_4_1: { p: 10.0 }
+      j_dg_4_2: { p: 10.0 }
+      j_dg_4_3: { p: 10.0 }
+      j_dg_4_4: { p: 10.0 }
+      j_dg_1_inner: { p: 10.0 }
+      j_dg_4_inner: { p: 10.0 }
+    command_interfaces: [position]
+    state_interfaces: [position, velocity]
+    allow_partial_joints_goal: true
+    constraints:
+      goal_time: 2.0
+      stopped_velocity_tolerance: 0.01
+
+right_side_controller:
+  ros__parameters:
+    type: forward_command_controller/ForwardCommandController
+    joints:
+      - joint_slider_right_slide
+    interface_name: position
+    
+gazebo_ros2_control:
+  ros__parameters:
+    pid_gains:
+      joint_slider_right_slide:
+        p: 50000.0
+        i: 0.0
+        d: 1000.0
+        i_clamp: 0.0

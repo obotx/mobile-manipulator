@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="arm_parts">
+  <group name="arm">
+    <joint name="arm_to_frame"/>
+    <joint name="joint_slider_left_slide"/>
+    <joint name="joint_slider_left_hinge"/>
+    <joint name="joint_slider_left_vis"/>
+    <joint name="joint_telescopic_slide"/>
+    <joint name="telescopic_hand"/>
+    <joint name="joint_hinge_telescopic_hand"/>
+  </group>
+
+  <passive_joint name="joint_slider_right_slide"/>
+  <passive_joint name="joint_slider_right_hinge"/>
+
+  <virtual_joint name="virtual_joint" type="fixed" parent_frame="world" child_link="arm"/>
+
+  <disable_collisions link1="slider_left" link2="slider_left_prismatic_frame" reason="Adjacent"/>
+  <disable_collisions link1="slider_left" link2="telescopic_arm" reason="Adjacent"/>
+  <disable_collisions link1="telescopic_arm" link2="telescopic_hand" reason="Adjacent"/>
+  <disable_collisions link1="telescopic_hand" link2="hinge_telescopic_hand" reason="Adjacent"/>
+  <disable_collisions link1="slider_right_mesh" link2="slider_right_hinge_frame" reason="Adjacent"/>
+
+  <group_state name="home" group="arm">
+    <joint name="joint_slider_left_slide" value="2.0"/>
+    <joint name="joint_slider_left_hinge" value="0.0"/>
+    <joint name="joint_telescopic_slide" value="0.5"/>
+    <joint name="joint_hinge_telescopic_hand" value="0.0"/>
+  </group_state>
+</robot>

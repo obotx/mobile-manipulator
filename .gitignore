@@ -1,0 +1,15 @@
+# VSCode
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# ROS2 build
+build/
+install/
+log/
+
+# OS files
+.DS_Store
+Thumbs.db
