@@ -1,0 +1,21 @@
+[project]
+name = "obotx_sim"
+version = "0.1.0"
+description = "Python package for simulating the obotx tripod manipulator in Mujoco."
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+    { name = "nvuong12", email = "nghiavq21@gmail.com" },
+]
+dependencies = [
+    "dm_control",
+    "mujoco>=3.6.0",
+    "numpy>=2.4.3",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+obotx-sim = "obotx_sim.main:main"
