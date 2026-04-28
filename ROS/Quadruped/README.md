@@ -1,6 +1,6 @@
 # ROS 2 Version: MORPH Series – Mobile Omni Robotic Platform with Hands
 
-![video_demo](./assets/obotx_2.mp4)
+https://github.com/user-attachments/assets/563591b3-1618-4647-abff-0013cb8a69b0
 
 The **MORPH** series implements two distinct parallel manipulator configurations mounted on an omnidirectional mobile base. Both variants utilize chained mechanisms but differ fundamentally in their kinematic architecture.
 
@@ -30,7 +30,8 @@ If you have not installed these yet, please refer to the official installation g
 ---
 
 ## Quick Start Guide
-![video_guide](./assets/obotx_1.mp4)
+
+https://github.com/user-attachments/assets/cead9334-a670-4825-82e9-ccdc08dcac1e
 
 ### 1. Build the Workspace
 
@@ -96,7 +97,7 @@ Open a new terminal.
         }
     ]
     ```
-
+    
 ## Joint Interface Reference
 
 | Left Arm Joints | Right Arm Joints | Type | Description |
