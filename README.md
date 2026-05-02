@@ -37,7 +37,7 @@ The project focuses on mobile manipulation systems integrating locomotion and ro
     - [ROS](./ROS/Quadruped) (🚀 **Click to explore more**)
       - **Morph - I** : Dual Independent Parallel Manipulators
 
-        https://github.com/user-attachments/assets/3f2eaa68-c19b-483a-8e48-4a6852301f11
+        https://github.com/user-attachments/assets/9d1917a3-4d70-42b7-870c-debb7992be44
 
 2. Tripod Mobile Manipulator
     - [MuJoco](./MUJOCO/Tripod) (🚀 **Click to explore more**)
