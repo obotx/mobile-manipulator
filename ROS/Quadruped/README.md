@@ -1,6 +1,6 @@
 # ROS 2 Version: MORPH Series – Mobile Omni Robotic Platform with Hands
 
-https://github.com/user-attachments/assets/563591b3-1618-4647-abff-0013cb8a69b0
+https://github.com/user-attachments/assets/9d1917a3-4d70-42b7-870c-debb7992be44
 
 The **MORPH** series implements two distinct parallel manipulator configurations mounted on an omnidirectional mobile base. Both variants utilize chained mechanisms but differ fundamentally in their kinematic architecture.
 
@@ -64,38 +64,36 @@ Open a new terminal.
 - Arm Control (Example)
     You can send joint trajectory goals directly via the command line to test arm movements. Below is an example sequence for the Left Arm.
     ```bash
-    ros2 action send_goal /left_arm_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {
-    joint_names: [
-        obotx_left_arm_mount_joint,
-        obotx_left_joint_slider_left_slide,
-        obotx_left_joint_slider_left_hinge,
-        obotx_left_joint_telescopic_slide,
-        obotx_left_joint_hinge_telescopic_hand,
-        obotx_left_j_dg_1_2,
-        obotx_left_j_dg_2_2,
-        obotx_left_j_dg_3_2,
-        obotx_left_j_dg_4_2,
-        obotx_left_j_dg_1_inner,
-        obotx_left_j_dg_4_inner
-    ],
-    points: [
-        {
-        positions: [0.0, 0.9, -0.2, 0.6, 0.8, 0, 0, 0, 0, 0, 0],
-        time_from_start: {sec: 3}
-        },
-        {
-        positions: [0.0, 0.3, 0.2, 0.0, 0.0, 1.5, 1.5, 1.5, 1.5, 0, 0],
-        time_from_start: {sec: 6}
-        },
-        {
-        positions: [0.0, 0.7, 0.0, 0.6, -0.7, 0, 0, 0, 0, 0, 0],
-        time_from_start: {sec: 9}
-        },
-        {
-        positions: [0.0, 0.2, 0.0, 0.0, 0.0, 1.5, 1.5, 1.5, 1.5, 0, 0],
-        time_from_start: {sec: 12}
-        }
-    ]
+        ros2 action send_goal /right_arm_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {
+          joint_names: [
+            obotx_right_arm_mount_joint,
+            obotx_right_joint_slider_left_slide,
+            obotx_right_joint_slider_left_hinge,
+            obotx_right_joint_telescopic_slide,
+            obotx_right_joint_hinge_telescopic_hand,
+            obotx_right_finger_1_joint_1,
+            obotx_right_finger_2_joint_1,
+            obotx_right_finger_middle_joint_1
+          ],
+          points: [
+            {
+              positions: [0.0, 0.9, -0.2, 0.6, 0.8, 1.2, 1.2, 1.2],
+              time_from_start: {sec: 3}
+            },
+            {
+              positions: [0.5, 0.3, 0.2, 0.0, 0.0, 0.05, 0.05, 0.05],
+              time_from_start: {sec: 6}
+            },
+            {
+              positions: [-0.5, 0.7, 0.0, 0.6, -0.7, 1.2, 1.2, 1.2],
+              time_from_start: {sec: 9}
+            },
+            {
+              positions: [0.0, 0.2, 0.0, 0.0, 0.0, 0.05, 0.05, 0.05],
+              time_from_start: {sec: 12}
+            }
+          ]
+        }}"
     ```
     
 ## Joint Interface Reference
