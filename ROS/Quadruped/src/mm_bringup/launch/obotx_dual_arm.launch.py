@@ -10,6 +10,7 @@ from launch.event_handlers import OnProcessExit
 from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution, FindExecutable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.actions import ExecuteProcess, RegisterEventHandler, TimerAction
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.parameter_descriptions import ParameterValue
 from ament_index_python.packages import get_package_share_directory
@@ -24,6 +25,7 @@ def generate_launch_description():
     xacro_file = PathJoinSubstitution([pkg_desc, 'urdf', 'obotx_dual_arm.urdf.xacro'])
     worlds_path = PathJoinSubstitution([pkg_desc, 'worlds', 'basic.sdf'])
     controller_config = PathJoinSubstitution([pkg_ctrl, 'config', 'obotx_dual_arm_controllers.yaml'])
+    bridge_config = PathJoinSubstitution([pkg_desc, 'config', 'ros_gz_bridge.yaml'])
 
     robot_description = ParameterValue(
         Command([
@@ -41,21 +43,29 @@ def generate_launch_description():
 
     # 1. Gazebo Harmonic
     gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(PathJoinSubstitution([ros_gz_sim, 'launch', 'gz_sim.launch.py'])),
-        launch_arguments=[
-            ('gz_args', f'-r -v 1 empty.sdf'),
-            ('use_sim_time', 'true')
-        ]
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([ros_gz_sim, 'launch', 'gz_sim.launch.py'])
+        ),
+        launch_arguments={
+            'gz_args': ['-r -v 1 ', worlds_path],
+            'use_sim_time': 'true'
+        }.items()
     )
 
-    # 2. Robot State Publisher
+    ros_gz_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='ros_gz_bridge',
+        parameters=[{'config_file': bridge_config}], 
+        output='screen',
+    )
+    
     rsp = Node(
         package='robot_state_publisher', executable='robot_state_publisher',
         name='robot_state_publisher', output='screen',
         parameters=[{'robot_description': robot_description, 'use_sim_time': use_sim_time}]
     )
 
-    # 3. Spawn Robot
     spawn_robot = Node(
         package='ros_gz_sim', executable='create',
         arguments=['-name', 'obotx_dual_arm', '-topic', '/robot_description',
@@ -63,13 +73,24 @@ def generate_launch_description():
         output='screen'
     )
 
-    # 4. Controller Spawner & RViz
     spawn_controllers = Node(
         package='controller_manager', executable='spawner',
-        arguments=['joint_state_broadcaster', 'mecanum_drive_controller', 
+        arguments=[
                    'left_arm_controller', 'right_arm_controller',
                    '-c', '/controller_manager', '--param-file', controller_config],
         output='screen', parameters=[{'use_sim_time': use_sim_time}]
+    )
+
+    start_mecanum_drive_controller_cmd = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+             'mecanum_drive_controller'],
+        output='screen'
+    )
+
+    start_joint_state_broadcaster_cmd = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+             'joint_state_broadcaster'],
+        output='screen'
     )
 
     rviz = Node(
@@ -77,31 +98,31 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time}]
     )
 
-    # 🔹 SEQUENCE: 
-    # Wait for 'create' to exit -> Delay 2.0s for Gazebo physics/init -> Start controllers + RViz
+    delayed_start = TimerAction(
+        period=20.0,
+        actions=[start_joint_state_broadcaster_cmd]
+    )
+
+    load_joint_state_broadcaster_cmd = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=start_joint_state_broadcaster_cmd,
+            on_exit=[start_mecanum_drive_controller_cmd]))
+
     start_controllers_after_spawn = RegisterEventHandler(
         OnProcessExit(
-            target_action=spawn_robot,
-            on_exit=[
-                TimerAction(
-                    period=2.0,  # Gazebo needs ~1-2s to parse URDF & register gz_ros2_control interfaces
-                    actions=[spawn_controllers, rviz]
-                )
-            ]
+            target_action=start_mecanum_drive_controller_cmd,
+            on_exit=[spawn_controllers, rviz]
         )
     )
 
     return LaunchDescription([
         DeclareLaunchArgument('prefix', default_value='obotx_'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
-        
-        # Clock bridge (can start immediately)
-        Node(package='ros_gz_bridge', executable='parameter_bridge',
-             arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
-             output='screen'),
-             
+        ros_gz_bridge,
         gazebo,
         rsp,
         spawn_robot,
-        start_controllers_after_spawn  # 👈 Triggers only AFTER spawn completes + delay
+        delayed_start,
+        load_joint_state_broadcaster_cmd,
+        start_controllers_after_spawn 
     ])

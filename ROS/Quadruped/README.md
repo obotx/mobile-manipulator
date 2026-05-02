@@ -62,8 +62,9 @@ Open a new terminal.
     ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
     ```
 - Arm Control (Example)
-    You can send joint trajectory goals directly via the command line to test arm movements. Below is an example sequence for the Left Arm.
+    You can send joint trajectory goals directly via the command line to test arm movements. Below is an example sequence for the Right Arm.
     ```bash
+<<<<<<< Updated upstream
         ros2 action send_goal /right_arm_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {
           joint_names: [
             obotx_right_arm_mount_joint,
@@ -94,6 +95,38 @@ Open a new terminal.
             }
           ]
         }}"
+=======
+    ros2 action send_goal /right_arm_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {
+    joint_names: [
+        obotx_right_arm_mount_joint,
+        obotx_right_joint_slider_left_slide,
+        obotx_right_joint_slider_left_hinge,
+        obotx_right_joint_telescopic_slide,
+        obotx_right_joint_hinge_telescopic_hand,
+        obotx_right_finger_1_joint_1,
+        obotx_right_finger_2_joint_1,
+        obotx_right_finger_middle_joint_1
+    ],
+    points: [
+        {
+        positions: [0.0, 0.9, -0.2, 0.6, 0.8, 0, 0, 0],
+        time_from_start: {sec: 3}
+        },
+        {
+        positions: [0.5, 0.3, 0.2, 0.0, 0.0, 1.5, 1.5, 1.5],
+        time_from_start: {sec: 6}
+        },
+        {
+        positions: [-0.5, 0.7, 0.0, 0.6, -0.7, 0, 0, 0],
+        time_from_start: {sec: 9}
+        },
+        {
+        positions: [0.0, 0.2, 0.0, 0.0, 0.0, 1.5, 1.5, 1.5],
+        time_from_start: {sec: 12}
+        }
+    ]
+    }}"
+>>>>>>> Stashed changes
     ```
     
 ## Joint Interface Reference

@@ -1,6 +1,6 @@
 <mujoco model="Market">
 
-    <compiler autolimits="true" angle="radian"/>
+    <compiler autolimits="true" angle="radian" inertiafromgeom="true"/>
     <option cone="elliptic" impratio="100" timestep="0.002" noslip_iterations="3" integrator="implicitfast"/>
 
     <size njmax='1000' nconmax='1000'/>

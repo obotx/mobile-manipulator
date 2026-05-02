@@ -31,7 +31,6 @@
         <geometry>
           <cylinder length="${height}" radius="${radius}" />
         </geometry>
-        <material name="dark-gray"/>
       </visual>
 
       <collision>

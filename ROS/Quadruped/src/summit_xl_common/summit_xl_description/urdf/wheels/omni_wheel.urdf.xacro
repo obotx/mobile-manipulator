@@ -21,8 +21,6 @@
       <child link="${prefix}_wheel"/>
       <xacro:insert_block name="origin" />
       <axis xyz="0 1 0" rpy="0 0 0" />
-      <limit effort="100000" velocity="100000"/>
-      <joint_properties damping="1.0" friction="1.0"/>
     </joint>
 
     <link name="${prefix}_wheel">
@@ -47,10 +45,6 @@
             <sphere radius="${omni_wheel_radius}" />
           </geometry>
         </xacro:unless>
-
-        <material name="darkgrey">
-           <color rgba="0.2 0.2 0.2 1"/>
-        </material>
       </visual>
 
       <collision>
@@ -58,18 +52,16 @@
         <geometry>
 
           <!--sphere radius="${omni_wheel_radius}" /-->
-
-<!--
-          <xacro:if value="${reflect}">
-              <mesh filename="file://$(find summit_xl_description)/meshes/wheels/omni_wheel_1.dae" />
-          </xacro:if>
-          <xacro:unless value="${reflect}">
-              <mesh filename="file://$(find summit_xl_description)/meshes/wheels/omni_wheel_2.dae" />
-					</xacro:unless>
--->
 					<cylinder length="${omni_wheel_height}" radius="${omni_wheel_radius}" />
 					<!-- sphere radius="${omni_wheel_radius}"/-->
         </geometry>
+        <surface>
+          <friction>
+            <torsional>
+              <coefficient>0.0</coefficient>
+            </torsional>
+          </friction>
+        </surface>
       </collision>
 
       <inertial>
@@ -77,6 +69,7 @@
         <origin xyz="0 0 0" />
         <xacro:cylinder_inertia  m="${omni_wheel_mass}" r="${omni_wheel_radius}" h="${omni_wheel_height}" />
       </inertial>
+
     </link>
 
     <!-- Transmission is important to link the joints and the controller (see summit_xl_control/config/summit_xl_control.yaml)-->

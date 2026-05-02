@@ -13,11 +13,10 @@
 
 	<xacro:property name="hq" value="true" />
 
-	<xacro:property name="roller_mu" value="1.5"/>
+	<xacro:property name="roller_mu" value="1.0"/>
 	<xacro:property name="roller_mu2" value="0.0"/>
 
 	<xacro:arg name="prefix" default="summit_xl_"/>
-
 
     <xacro:macro name="summit_xl" params="prefix publish_bf hq">
 		<!-- Summit XL base -->
@@ -39,78 +38,125 @@
 			<origin xyz="-${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
 		</xacro:omni_wheel>
 
-		<!-- Front-Left: ↘️ -45° roller axis -->
 		<gazebo reference="$(arg prefix)front_left_wheel">
 		<collision>
 			<surface>
 			<friction>
 				<ode>
-				<mu>${roller_mu}</mu>
-				<mu2>${roller_mu2}</mu2>
-				<fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 -1.0 0.0</fdir1>
-				<kp>1000000.0</kp>
-        		<kd>1.0</kd>
+					<mu>${roller_mu}</mu>
+					<mu2>${roller_mu2}</mu2>
+					<!-- <fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 -1.0 0.0</fdir1> -->
 				</ode>
+				<torsional>
+					<coefficient>0.0</coefficient>
+				</torsional>
 			</friction>
 			</surface>
 		</collision>
 		</gazebo>
 
-		<!-- Rear-Left: ↗️ +45° roller axis -->
 		<gazebo reference="$(arg prefix)rear_left_wheel">
 		<collision>
 			<surface>
 			<friction>
 				<ode>
-				<mu>${roller_mu}</mu>
-				<mu2>${roller_mu2}</mu2>
-				<fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 1.0 0.0</fdir1>
-				<kp>1000000.0</kp>
-        		<kd>1.0</kd>
+					<mu>${roller_mu}</mu>
+					<mu2>${roller_mu2}</mu2>
+					<!-- <fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 1.0 0.0</fdir1> -->
 				</ode>
+				<torsional>
+					<coefficient>0.0</coefficient>
+				</torsional>
 			</friction>
 			</surface>
 		</collision>
 		</gazebo>
 
-		<!-- Front-Right: ↗️ +45° roller axis -->
 		<gazebo reference="$(arg prefix)front_right_wheel">
 		<collision>
 			<surface>
 			<friction>
 				<ode>
-				<mu>${roller_mu}</mu>
-				<mu2>${roller_mu2}</mu2>
-				<fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 1.0 0.0</fdir1>
-				<kp>1000000.0</kp>
-        		<kd>1.0</kd>
+					<mu>${roller_mu}</mu>
+					<mu2>${roller_mu2}</mu2>
+					<!-- <fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 1.0 0.0</fdir1> -->
 				</ode>
+				<torsional>
+					<coefficient>0.0</coefficient>
+				</torsional>
 			</friction>
 			</surface>
 		</collision>
 		</gazebo>
 
-		<!-- Rear-Right: ↘️ -45° roller axis -->
 		<gazebo reference="$(arg prefix)rear_right_wheel">
 		<collision>
 			<surface>
 			<friction>
 				<ode>
-				<mu>${roller_mu}</mu>
-				<mu2>${roller_mu2}</mu2>
-				<fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 -1.0 0.0</fdir1>
-				<kp>1000000.0</kp>
-        		<kd>1.0</kd>
+					<mu>${roller_mu}</mu>
+					<mu2>${roller_mu2}</mu2>
+					<!-- <fdir1 gz:expressed_in="$(arg prefix)base_footprint_platform">1.0 -1.0 0.0</fdir1> -->
 				</ode>
+				<torsional>
+					<coefficient>0.0</coefficient>
+				</torsional>
 			</friction>
 			</surface>
 		</collision>
 		</gazebo>
 
-		<gazebo reference="$(arg prefix)base_link_platform">
+		<!-- <gazebo reference="$(arg prefix)base_link_platform">
 			<mu1>0.000002</mu1>
 			<mu2>0.000002</mu2>
-		</gazebo>
-		
+		</gazebo> -->
+
+		<ros2_control name="${prefix}SummitXlGazeboSystem" type="system">
+			<hardware>
+				<plugin>gz_ros2_control/GazeboSimSystem</plugin>
+			</hardware>
+			<joint name="$(arg prefix)front_left_wheel_joint">
+				<command_interface name="velocity">
+					<param name="min">-50.0</param>
+					<param name="max">50.0</param>
+				</command_interface>
+				<state_interface name="position"/>
+				<state_interface name="velocity"/>
+			</joint>
+			<joint name="$(arg prefix)front_right_wheel_joint">
+				<command_interface name="velocity">
+					<param name="min">-50.0</param>
+					<param name="max">50.0</param>
+				</command_interface>
+				<state_interface name="position"/>
+				<state_interface name="velocity"/>
+			</joint>
+			<joint name="$(arg prefix)rear_left_wheel_joint">
+				<command_interface name="velocity">
+					<param name="min">-50.0</param>
+					<param name="max">50.0</param>
+				</command_interface>
+				<state_interface name="position"/>
+				<state_interface name="velocity"/>
+			</joint>
+			<joint name="$(arg prefix)rear_right_wheel_joint">
+				<command_interface name="velocity">
+					<param name="min">-50.0</param>
+					<param name="max">50.0</param>
+				</command_interface>
+				<state_interface name="position"/>
+				<state_interface name="velocity"/>
+			</joint>
+		</ros2_control>
+
+        <gazebo>
+            <plugin
+                filename="gz-sim-velocity-control-system"
+                name="gz::sim::systems::VelocityControl">
+                <topic>mecanum_drive_controller/cmd_vel</topic>
+                <initial_linear>0 0 0</initial_linear>
+                <initial_angular>0 0 0</initial_angular>
+            </plugin>
+        </gazebo>
    </xacro:macro>
 </robot>

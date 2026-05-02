@@ -25,14 +25,11 @@ install(
   DIRECTORY
     urdf
     meshes
-    meshes/arm/telescopic_arm
-    meshes/arm/vertical_arm
     rviz
     worlds
     config
+    scripts
   DESTINATION share/${PROJECT_NAME}
-  FILES_MATCHING
-    PATTERN "*"
 )
 
 ament_package()
