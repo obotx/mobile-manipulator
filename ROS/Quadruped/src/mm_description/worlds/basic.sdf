@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
-
 <sdf version="1.6">
   <world name="empty">
-    <physics name="1ms" type="bullet">
-      <max_step_size>0.01</max_step_size>
+    <physics name="1ms" type="ode">
+      <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
-      <real_time_update_rate>250</real_time_update_rate>
-      <solver>
-          <type>quick</type>
-          <iters>10</iters>  <!-- 반복 횟수 감소 -->
-          <precon_iters>0</precon_iters>
-          <sor>1.0</sor>
-      </solver>
+      <real_time_update_rate>1000</real_time_update_rate>
     </physics>
     <plugin
       filename="gz-sim-physics-system"
       name="gz::sim::systems::Physics">
+      <engine>
+        <filename>libgz-physics-bullet-featherstone-plugin.so</filename>
+      </engine>
     </plugin>
     <plugin
       filename="gz-sim-user-commands-system"
@@ -30,15 +26,6 @@
       name="gz::sim::systems::Contact">
     </plugin>
 
-    <plugin
-      filename="gz-sim-sensors-system"
-      name="gz::sim::systems::Sensors">
-      <render_engine>ogre2</render_engine>
-    </plugin>
-    <plugin
-      filename="gz-sim-imu-system"
-      name="gz::sim::systems::Imu">
-    </plugin>
 
     <light type="directional" name="sun">
       <cast_shadows>true</cast_shadows>
@@ -54,24 +41,6 @@
       <direction>-0.5 0.1 -0.9</direction>
     </light>
 
-    <gravity>0 0 -9.8</gravity>
-    <magnetic_field>5.5644999999999998e-06 2.2875799999999999e-05 -4.2388400000000002e-05</magnetic_field>
-    <atmosphere type='adiabatic'/>
-    <scene>
-      <ambient>0.400000006 0.400000006 0.400000006 1</ambient>
-      <background>0.699999988 0.699999988 0.699999988 1</background>
-      <shadows>false</shadows>
-    </scene>
-    <visual>
-        <shadows>false</shadows>
-        <grid>false</grid>
-    </visual>
-    <collision_detector>ode</collision_detector>
-    <constraints>
-        <contact_max_correcting_vel>0.0</contact_max_correcting_vel>
-        <cfm>0.0</cfm>
-        <erp>0.0</erp>
-    </constraints>
     <model name="ground_plane">
       <static>true</static>
       <link name="link">
@@ -85,11 +54,13 @@
           <surface>
             <friction>
               <ode>
-                <mu>50</mu>
+                <mu>1.0</mu>
+                <mu2>0.0</mu2>
               </ode>
+              <torsional>
+                <coefficient>0.0</coefficient>
+              </torsional>
             </friction>
-            <bounce/>
-            <contact/>
           </surface>
         </collision>
         <visual name="visual">

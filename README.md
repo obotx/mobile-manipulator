@@ -16,6 +16,7 @@ https://github.com/user-attachments/assets/ace3e387-373c-48c0-a6cd-64db6422f6d3
       - MuJoCo
       - ROS
 - [Acknowledgements](#acknowledgements)
+- [Contact](#contact)
 
 ## Introduction
 This repository contains the implementation of the ObotX Universal Mobile Manipulator, featuring two distinct simulation environments:
@@ -53,3 +54,8 @@ The project focuses on mobile manipulation systems integrating locomotion and ro
 - **Mecanum wheel mobile base implementation** from [Mecanum Drive in MuJoCo by JunHeonYoon](https://github.com/JunHeonYoon/mujoco_mecanum)
 - **Reference for base platform Summit XL ROS package** from [summit_xl_common by RobotnikAutomation](https://github.com/RobotnikAutomation/summit_xl_common)
 - **Gripper for 4 fingers** from [DELTO_M_ROS2 by tesollodelto](https://github.com/tesollodelto/delto_m_ros2/tree/jazzy-dev)
+- **Robotiq 3F Urdf Reference** from [Robotiq](https://github.com/ros-industrial-attic/robotiq)
+
+## Contact
+
+Project Homepage: [obotx.com](https://obotx.com/)
