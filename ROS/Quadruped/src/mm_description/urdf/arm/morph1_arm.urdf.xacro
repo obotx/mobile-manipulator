@@ -7,14 +7,14 @@
     <xacro:property name="vertical_mesh_prefix" value="file://$(find mm_description)/meshes/arm/vertical_arm/morph_1"/>
     <xacro:property name="telescopic_mesh_prefix" value="file://$(find mm_description)/meshes/arm/telescopic_arm/morph_1"/>
     
-    <xacro:include filename="$(find mm_description)/urdf/gripper/robotiq_3f.urdf.xacro" />
+    <xacro:include filename="$(find mm_description)/urdf/gripper/robotiq_3f/robotiq_3f.urdf.xacro" />
     <xacro:robotiq_3f prefix="${prefix}" use_gazebo="${use_gazebo}"/>
 
-    <xacro:property name="slide_limit_min" value="-1"/>
-    <xacro:property name="slide_limit_max" value="1.112"/>
+    <xacro:property name="slide_limit_min" value="0"/>
+    <xacro:property name="slide_limit_max" value="1.312"/>
     <xacro:property name="hinge_limit_min" value="-3.14159"/>
     <xacro:property name="hinge_limit_max" value="3.14159"/>
-    <xacro:property name="telescopic_limit_min" value="-1"/>
+    <xacro:property name="telescopic_limit_min" value="0"/>
     <xacro:property name="telescopic_limit_max" value="0.5"/>
     <xacro:property name="telescopic_hinge_limit_min" value="-1.1345"/>
     <xacro:property name="telescopic_hinge_limit_max" value="1.1345"/>
@@ -119,8 +119,8 @@
     <joint name="${prefix}palm_wrist_roll_joint" type="revolute">
       <parent link="${prefix}hinge_telescopic_hand"/>
       <child link="${prefix}palm_wrist_roll"/>
-      <origin xyz="-0.107377 0 0" rpy="0 0 0"/>
-      <axis xyz="1 0 0"/>
+      <origin xyz="-0.08 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
       <limit lower="${gripper_roll_limit_min}" upper="${gripper_roll_limit_max}" 
             effort="${default_effort}" velocity="${default_velocity}"/>
       <dynamics damping="0.01" friction="0.01"/>
@@ -142,7 +142,7 @@
       <parent link="${prefix}palm_wrist_pitch"/>
       <child link="${prefix}base_link_palm"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
-      <axis xyz="0 0 1"/>
+      <axis xyz="1 0 0"/>
       <limit lower="${gripper_yaw_limit_min}" upper="${gripper_yaw_limit_max}" 
             effort="${default_effort}" velocity="${default_velocity}"/>
       <dynamics damping="0.01" friction="0.01"/>

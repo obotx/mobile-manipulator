@@ -14,8 +14,8 @@
     <xacro:arg name="left_arm_mount_p" default="0.0"/>
     <xacro:arg name="left_arm_mount_yaw" default="3.14159"/>
 
-    <xacro:arg name="arm_base_yaw_limit_lower" default="-3.14"/>
-    <xacro:arg name="arm_base_yaw_limit_upper" default="3.14"/>
+    <xacro:arg name="arm_base_yaw_limit_lower" default="-3.14159"/>
+    <xacro:arg name="arm_base_yaw_limit_upper" default="3.14159"/>
     <xacro:arg name="arm_base_yaw_effort" default="50"/>
     <xacro:arg name="arm_base_yaw_velocity" default="50.0"/>
   
@@ -28,11 +28,11 @@
     <xacro:arg name="right_arm_mount_yaw" default="3.14159"/>
 
     <!-- ================= IMPORTS ================= -->
-    <xacro:include filename="$(find summit_xl_description)/robots/summit_xls.urdf.xacro"/>
+    <xacro:include filename="$(find mm_description)/urdf/platform/summit_xl/summit_xls.urdf.xacro"/>
     <xacro:include filename="$(find mm_description)/urdf/arm/morph1_arm.urdf.xacro"/>
 
     <!-- ================= MOBILE BASE ================= -->
-    <xacro:summit_xl prefix="$(arg prefix)" publish_bf="true" hq="$(arg hq)"/>
+    <xacro:summit_xl prefix="$(arg prefix)"/>
 
     <!-- ================= 2. LEFT ARM ================= -->
     <joint name="$(arg prefix)left_arm_mount_joint" type="revolute">
@@ -70,7 +70,7 @@
         <!-- Gazebo plugin -->
         <gazebo>
             <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-                <parameters>$(find mm_control)/config/obotx_dual_arm_controllers.yaml</parameters>
+                <parameters>$(find mm_control)/config/controller_manager/obotx_dual_arm_controllers.yaml</parameters>
                 <ros>
                     <!-- <remapping>/mecanum_drive_controller/cmd_vel:=/cmd_vel</remapping> -->
                     <remapping>/controller_manager/robot_description:=/robot_description</remapping>

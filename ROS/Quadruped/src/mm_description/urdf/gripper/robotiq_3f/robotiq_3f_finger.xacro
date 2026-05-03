@@ -1,0 +1,142 @@
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:macro name="robotiq_3f_finger" params="prefix scale_factor">
+		
+		<!-- Mesh path property -->
+		<xacro:property name="gripper_mesh_prefix" value="file://$(find mm_description)/meshes/gripper/robotiq_3f"/>
+		<xacro:property name="scale_factor" value="0.7"/>
+        <xacro:property name="gripper_mesh_prefix" value="file://$(find mm_description)/meshes/gripper/robotiq_3f"/>
+
+		<!-- link list -->
+		<link name="${prefix}link_0">
+			<visual>
+				<origin xyz="${0.020 * scale_factor} 0 0" rpy="0 0 0"/>
+				<geometry>
+                    <mesh filename="${gripper_mesh_prefix}/visual/link_0.dae" scale="${scale_factor} ${scale_factor} ${scale_factor}" />
+				</geometry>
+			</visual>
+			<collision>	
+				<origin xyz="${0.020 * scale_factor} 0 0" rpy="0 0 0"/>
+				<geometry>
+                    <mesh filename="${gripper_mesh_prefix}/collision/link_0.STL" scale="${scale_factor} ${scale_factor} ${scale_factor}" />
+				</geometry>
+			</collision>
+			<inertial>
+				<origin xyz="${0.005522 * scale_factor} ${0.007375 * scale_factor} 0" rpy="0 0 0"/>
+				<mass value="0.050000"/>
+				<inertia ixx="1.411729e-05" ixy="0" ixz="0" iyy="1.116610e-05" iyz="0" izz="1.009413e-05" />
+			</inertial>   
+		</link>
+		<link name="${prefix}link_1">
+			<visual>
+				<origin xyz="${0.050 * scale_factor} ${-0.028 * scale_factor} 0" rpy="0 0 -0.52"/>
+				<geometry>
+                    <mesh filename="${gripper_mesh_prefix}/visual/link_1.dae" scale="${scale_factor} ${scale_factor} ${scale_factor}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="${0.050 * scale_factor} ${-0.028 * scale_factor} 0" rpy="0 0 -0.52"/>
+				<geometry>
+                    <mesh filename="${gripper_mesh_prefix}/collision/link_1.STL" scale="${scale_factor} ${scale_factor} ${scale_factor}" />
+				</geometry>
+			</collision>
+			<inertial>
+				<origin xyz="${0.018441 * scale_factor} ${-0.021998 * scale_factor} 0" rpy="0.000000 0.000000 -0.520000"/>
+				<mass value="0.150000"/>
+				<inertia ixx="1.126808e-04" ixy="0" ixz="0" iyy="1.038228e-04" iyz="0" izz="2.618484e-05" />
+			</inertial>
+		</link>
+		<link name="${prefix}link_2">
+			<visual>
+				<origin xyz="${0.039 * scale_factor} 0 ${0.0075 * scale_factor}" rpy="0 0 0"/>
+				<geometry>
+                    <mesh filename="${gripper_mesh_prefix}/visual/link_2.dae" scale="${scale_factor} ${scale_factor} ${scale_factor}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="${0.039 * scale_factor} 0 ${0.0075 * scale_factor}" rpy="0 0 0"/>
+				<geometry>
+                    <mesh filename="${gripper_mesh_prefix}/collision/link_2.STL" scale="${scale_factor} ${scale_factor} ${scale_factor}" />
+				</geometry>
+			</collision>
+				<inertial>
+					<origin xyz="${0.014752 * scale_factor} ${-0.008233 * scale_factor} ${-0.000547 * scale_factor}" rpy="0.000000 0.000000 0.000000"/>
+					<mass value="0.150000"/>
+					<inertia ixx="5.545545e-05" ixy="0" ixz="0" iyy="5.445153e-05" iyz="0" izz="1.919043e-05" />
+				</inertial>
+		</link>
+		<link name="${prefix}link_3">
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0.52"/>
+				<geometry>
+                    <mesh filename="${gripper_mesh_prefix}/visual/link_3.dae" scale="${scale_factor} ${scale_factor} ${scale_factor}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 0" rpy="0 0 0.52"/>
+				<geometry>
+                    <mesh filename="${gripper_mesh_prefix}/collision/link_3.STL" scale="${scale_factor} ${scale_factor} ${scale_factor}" />
+				</geometry>
+			</collision>
+			<inertial>
+				<origin xyz="${0.008660 * scale_factor} ${0.002394 * scale_factor} 0" rpy="0.000000 0.000000 0.520000"/>
+				<mass value="0.050000"/>
+				<inertia ixx="1.207084e-05" ixy="0" ixz="0" iyy="1.032560e-05" iyz="0" izz="4.436253e-06" />
+			</inertial>
+		</link>
+
+		<!-- end of link list -->
+		<!-- joint list -->
+		<joint name="${prefix}joint_1" type="revolute">
+			<parent link="${prefix}link_0"/>
+			<child link="${prefix}link_1"/>
+			<axis xyz="0 0 1"/>
+			<origin xyz="${0.020 * scale_factor} 0 0" rpy="0 0 0"/>
+			<limit lower="0.0495" upper="1.2218" effort="50" velocity="50"/>
+		</joint>
+		<joint name="${prefix}joint_2" type="revolute">
+			<parent link="${prefix}link_1"/>
+			<child link="${prefix}link_2"/>
+			<axis xyz="0 0 1"/>
+			<origin xyz="${0.050 * scale_factor} ${-0.028 * scale_factor} 0" rpy="0 0 -0.52"/>
+			<limit lower="0.0" upper="1.5708" effort="100" velocity="100"/>
+		</joint>
+		<joint name="${prefix}joint_3" type="revolute">
+			<parent link="${prefix}link_2"/>
+			<child link="${prefix}link_3"/>
+			<axis xyz="0 0 1"/>
+			<origin xyz="${0.039 * scale_factor} 0 0" rpy="0 0 0"/>
+			<limit lower="-1.2217" upper="-0.0523" effort="100" velocity="100"/>
+		</joint>
+		<!-- end of joint list -->
+
+        <ros2_control name="${prefix}GripperFingerGazeboSystem" type="system">
+            <hardware>
+                <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+            </hardware>
+
+            <joint name="${prefix}joint_1">
+                <command_interface name="position">
+                    <limits enable="false"/>
+                </command_interface>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="effort"/>
+            </joint>
+
+            <joint name="${prefix}joint_2">
+                <command_interface name="position"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="effort"/>
+            </joint>
+
+            <joint name="${prefix}joint_3">
+                <command_interface name="position"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="effort"/>
+            </joint>
+        </ros2_control>
+
+	</xacro:macro>
+</robot>
