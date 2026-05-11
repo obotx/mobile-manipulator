@@ -1,0 +1,180 @@
+/**:
+  controller_manager:
+    ros__parameters:
+      update_rate: 100  # Hz
+
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+
+      mecanum_drive_controller:
+        type: mecanum_drive_controller/MecanumDriveController
+      left_arm_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+      left_gripper_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+      right_arm_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+      right_gripper_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+
+  mecanum_drive_controller:
+    ros__parameters:
+      front_left_joint_name:  obotx_front_left_wheel_joint
+      front_right_joint_name: obotx_front_right_wheel_joint
+      back_left_joint_name:   obotx_rear_right_wheel_joint
+      back_right_joint_name:  obotx_rear_left_wheel_joint
+      
+      wheel_base: 0.445
+      wheel_separation: 0.409
+      wheel_radius: 0.127
+      wheel_separation_multiplier: 1.0
+      front_left_wheel_radius_multiplier: 1.0
+      front_right_wheel_radius_multiplier: 1.0
+      back_left_wheel_radius_multiplier: 1.0
+      back_right_wheel_radius_multiplier: 1.0
+    
+      tf_frame_prefix_enable: false
+      tf_frame_prefix: ""
+      odom_frame_id: odom
+      base_frame_id: obotx_base_footprint_platform
+    
+      pose_covariance_diagonal: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      twist_covariance_diagonal: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      position_feedback: true
+      open_loop: true
+      enable_odom_tf: true
+    
+      cmd_vel_timeout: 0.5
+      publish_limited_velocity: false
+      velocity_rolling_window_size: 10
+      publish_rate: 50.0
+    
+      linear.x.has_velocity_limits: false
+      linear.x.has_acceleration_limits: false
+      linear.x.has_jerk_limits: false
+      linear.x.max_velocity: 0.0
+      linear.x.min_velocity: 0.0
+      linear.x.max_acceleration: 0.0
+      linear.x.max_jerk: 0.0
+      linear.x.min_jerk: 0.0
+      linear.y.has_velocity_limits: false
+      linear.y.has_acceleration_limits: false
+      linear.y.has_jerk_limits: false
+      linear.y.max_velocity: 0.0
+      linear.y.min_velocity: 0.0
+      linear.y.max_acceleration: 0.0
+      linear.y.max_jerk: 0.0
+      linear.y.min_jerk: 0.0
+      angular.z.has_velocity_limits: false
+      angular.z.has_acceleration_limits: false
+      angular.z.has_jerk_limits: false
+      angular.z.max_velocity: 0.0
+      angular.z.min_velocity: 0.0
+      angular.z.max_acceleration: 0.0
+      angular.z.min_acceleration: 0.0
+      angular.z.max_jerk: 0.0
+      angular.z.min_jerk: 0.0
+
+
+  # ===== LEFT ARM CONTROLLER =====
+  left_arm_controller:
+    ros__parameters:
+      joints:
+        - obotx_left_arm_mount_joint          # Base rotation
+        - obotx_left_joint_slider_left_slide  # Vertical slide
+        - obotx_left_joint_slider_left_hinge  # Vertical hinge
+        - obotx_left_joint_telescopic_slide   # Telescopic extension
+        - obotx_left_joint_hinge_telescopic_hand  # Wrist hinge
+
+      command_interfaces: [position]
+      state_interfaces: [position, velocity]
+      allow_partial_joints_goal: true
+      state_publish_rate: 100.0
+      open_loop_control: false
+      allow_integration_in_goal_trajectories: true
+      allow_nonzero_velocity_at_trajectory_end: true
+
+
+  # ===== LEFT GRIPPER CONTROLLER =====
+  left_gripper_controller:
+    ros__parameters:
+      joints:
+        # Wrist orientation
+        - obotx_left_palm_wrist_roll_joint
+        - obotx_left_palm_wrist_pitch_joint
+        - obotx_left_palm_wrist_yaw_joint
+        # Palm fingers
+        - obotx_left_palm_finger_1_joint
+        - obotx_left_palm_finger_2_joint
+        # Finger 1 segments
+        - obotx_left_finger_1_joint_1
+        - obotx_left_finger_1_joint_2
+        - obotx_left_finger_1_joint_3
+        # Finger 2 segments
+        - obotx_left_finger_2_joint_1
+        - obotx_left_finger_2_joint_2
+        - obotx_left_finger_2_joint_3
+        # Middle finger segments
+        - obotx_left_finger_middle_joint_1
+        - obotx_left_finger_middle_joint_2
+        - obotx_left_finger_middle_joint_3
+
+      command_interfaces: [position]
+      state_interfaces: [position, velocity]
+      allow_partial_joints_goal: true
+      state_publish_rate: 100.0
+      open_loop_control: false
+      allow_integration_in_goal_trajectories: true
+      allow_nonzero_velocity_at_trajectory_end: true
+
+
+  # ===== RIGHT ARM CONTROLLER =====
+  right_arm_controller:
+    ros__parameters:
+      joints:
+        - obotx_right_arm_mount_joint
+        - obotx_right_joint_slider_left_slide
+        - obotx_right_joint_slider_left_hinge
+        - obotx_right_joint_telescopic_slide
+        - obotx_right_joint_hinge_telescopic_hand
+
+      command_interfaces: [position]
+      state_interfaces: [position, velocity]
+      allow_partial_joints_goal: true
+      state_publish_rate: 100.0
+      open_loop_control: false
+      allow_integration_in_goal_trajectories: true
+      allow_nonzero_velocity_at_trajectory_end: true
+
+
+  # ===== RIGHT GRIPPER CONTROLLER =====
+  right_gripper_controller:
+    ros__parameters:
+      joints:
+        # Wrist orientation
+        - obotx_right_palm_wrist_roll_joint
+        - obotx_right_palm_wrist_pitch_joint
+        - obotx_right_palm_wrist_yaw_joint
+        # Palm fingers
+        - obotx_right_palm_finger_1_joint
+        - obotx_right_palm_finger_2_joint
+        # Finger 1 segments
+        - obotx_right_finger_1_joint_1
+        - obotx_right_finger_1_joint_2
+        - obotx_right_finger_1_joint_3
+        # Finger 2 segments
+        - obotx_right_finger_2_joint_1
+        - obotx_right_finger_2_joint_2
+        - obotx_right_finger_2_joint_3
+        # Middle finger segments
+        - obotx_right_finger_middle_joint_1
+        - obotx_right_finger_middle_joint_2
+        - obotx_right_finger_middle_joint_3
+
+      command_interfaces: [position]
+      state_interfaces: [position, velocity]
+      allow_partial_joints_goal: true
+      state_publish_rate: 100.0
+      open_loop_control: false
+      allow_integration_in_goal_trajectories: true
+      allow_nonzero_velocity_at_trajectory_end: true

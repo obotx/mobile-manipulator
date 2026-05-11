@@ -1,0 +1,88 @@
+# MoveIt uses this configuration for controller management
+
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - base_controller
+    - left_arm_controller
+    - right_arm_controller
+    - gripper_left_controller
+    - gripper_right_controller
+
+  base_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - position/x
+      - position/y
+      - position/theta 
+
+  left_arm_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true                      
+    joints:
+      - obotx_left_arm_mount_joint
+      - obotx_left_joint_slider_left_slide
+      - obotx_left_joint_slider_left_hinge
+      - obotx_left_joint_telescopic_slide
+      - obotx_left_joint_hinge_telescopic_hand
+      - obotx_left_palm_wrist_roll_joint
+      - obotx_left_palm_wrist_pitch_joint
+      - obotx_left_palm_wrist_yaw_joint
+
+  right_arm_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory  
+    default: true                      
+    joints:
+      - obotx_right_arm_mount_joint
+      - obotx_right_joint_slider_left_slide
+      - obotx_right_joint_slider_left_hinge
+      - obotx_right_joint_telescopic_slide
+      - obotx_right_joint_hinge_telescopic_hand
+      - obotx_right_palm_wrist_roll_joint
+      - obotx_right_palm_wrist_pitch_joint
+      - obotx_right_palm_wrist_yaw_joint
+
+  gripper_left_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - obotx_left_palm_finger_1_joint
+      - obotx_left_palm_finger_2_joint
+      - obotx_left_finger_1_joint_1
+      - obotx_left_finger_1_joint_2
+      - obotx_left_finger_1_joint_3
+      - obotx_left_finger_2_joint_1
+      - obotx_left_finger_2_joint_2
+      - obotx_left_finger_2_joint_3
+      - obotx_left_finger_middle_joint_1
+      - obotx_left_finger_middle_joint_2
+      - obotx_left_finger_middle_joint_3
+
+  gripper_right_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - obotx_right_palm_finger_1_joint
+      - obotx_right_palm_finger_2_joint
+      - obotx_right_finger_1_joint_1
+      - obotx_right_finger_1_joint_2
+      - obotx_right_finger_1_joint_3
+      - obotx_right_finger_2_joint_1
+      - obotx_right_finger_2_joint_2
+      - obotx_right_finger_2_joint_3
+      - obotx_right_finger_middle_joint_1
+      - obotx_right_finger_middle_joint_2
+      - obotx_right_finger_middle_joint_3
+
+trajectory_execution:
+  control_multi_dof_joint_variables: true 
+  execution_duration_monitoring: true
+  allowed_goal_duration_margin: 0.5
+    

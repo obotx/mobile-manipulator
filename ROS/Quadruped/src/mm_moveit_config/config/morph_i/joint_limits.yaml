@@ -1,0 +1,432 @@
+# ================= GLOBAL SCALING =================
+default_velocity_scaling_factor: 1.0
+default_acceleration_scaling_factor: 1.0
+
+# ================= JOINT LIMITS =================
+joint_limits:
+    # ===== LEFT ARM =====
+    obotx_left_arm_mount_joint:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 20.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_left_joint_hinge_telescopic_hand:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 20.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_left_joint_slider_left_hinge:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 10.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_left_joint_slider_left_slide:
+        has_velocity_limits: true
+        max_velocity: 2.0
+        has_acceleration_limits: true
+        max_acceleration: 6.0
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_left_joint_telescopic_slide:
+        has_velocity_limits: true
+        max_velocity: 2.0
+        has_acceleration_limits: true
+        max_acceleration: 6.0
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_left_palm_wrist_pitch_joint:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_left_palm_wrist_roll_joint:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_left_palm_wrist_yaw_joint:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    # ===== RIGHT ARM =====
+    obotx_right_arm_mount_joint:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 20.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_right_joint_hinge_telescopic_hand:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 20.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_right_joint_slider_left_hinge:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 10.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_right_joint_slider_left_slide:
+        has_velocity_limits: true
+        max_velocity: 2.0
+        has_acceleration_limits: true
+        max_acceleration: 6.0
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_right_joint_telescopic_slide:
+        has_velocity_limits: true
+        max_velocity: 2.0
+        has_acceleration_limits: true
+        max_acceleration: 6.0
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_right_palm_wrist_pitch_joint:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_right_palm_wrist_roll_joint:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    obotx_right_palm_wrist_yaw_joint:
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 6.28
+        has_jerk_limits: true
+        max_jerk: 25.0
+        has_effort_limits: true
+        max_effort: 1000.0
+
+    # ===== MOBILE BASE =====
+    position/x:
+        has_velocity_limits: true
+        max_velocity: 0.1
+        has_acceleration_limits: true
+        max_acceleration: 0.8
+
+    position/y:
+        has_velocity_limits: true
+        max_velocity: 0.1
+        has_acceleration_limits: true
+        max_acceleration: 0.8
+
+    position/theta:
+        has_position_limits: false
+        has_velocity_limits: true
+        max_velocity: 0.261799        
+        has_acceleration_limits: true
+        max_acceleration: 0.8
+
+    # ========== LEFT GRIPPER ==========
+    
+    obotx_left_palm_finger_1_joint:
+        has_position_limits: true
+        min_position: -0.1784
+        max_position: 0.192
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_palm_finger_2_joint:
+        has_position_limits: true
+        min_position: -0.192
+        max_position: 0.1784
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_finger_1_joint_1:
+        has_position_limits: true
+        min_position: 0.0495
+        max_position: 1.2218
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_finger_1_joint_2:
+        has_position_limits: true
+        min_position: 0.0
+        max_position: 1.5708
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_finger_1_joint_3:
+        has_position_limits: true
+        min_position: -1.2217
+        max_position: -0.0523
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_finger_2_joint_1:
+        has_position_limits: true
+        min_position: 0.0495
+        max_position: 1.2218
+        has_velocity_limits: true
+        max_velocity: 50.0
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_finger_2_joint_2:
+        has_position_limits: true
+        min_position: 0.0
+        max_position: 1.5708
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_finger_2_joint_3:
+        has_position_limits: true
+        min_position: -1.2217
+        max_position: -0.0523
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_finger_middle_joint_1:
+        has_position_limits: true
+        min_position: 0.0495
+        max_position: 1.2218
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_finger_middle_joint_2:
+        has_position_limits: true
+        min_position: 0.0
+        max_position: 1.5708
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_left_finger_middle_joint_3:
+        has_position_limits: true
+        min_position: -1.2217
+        max_position: -0.0523
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    # ========== RIGHT GRIPPER ==========
+    obotx_right_palm_finger_1_joint:
+        has_position_limits: true
+        min_position: -0.1784
+        max_position: 0.192
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_acceleration_limits: true
+        max_acceleration: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0  
+
+    obotx_right_palm_finger_2_joint:
+        has_position_limits: true
+        min_position: -0.192
+        max_position: 0.1784
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_right_finger_1_joint_1:
+        has_position_limits: true
+        min_position: 0.0495
+        max_position: 1.2218
+        has_velocity_limits: true
+        max_velocity: 50.0
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_right_finger_1_joint_2:
+        has_position_limits: true
+        min_position: 0.0
+        max_position: 1.5708
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_right_finger_1_joint_3:
+        has_position_limits: true
+        min_position: -1.2217
+        max_position: -0.0523
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_right_finger_2_joint_1:
+        has_position_limits: true
+        min_position: 0.0495
+        max_position: 1.2218
+        has_velocity_limits: true
+        max_velocity: 50.0
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_right_finger_2_joint_2:
+        has_position_limits: true
+        min_position: 0.0
+        max_position: 1.5708
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_right_finger_2_joint_3:
+        has_position_limits: true
+        min_position: -1.2217
+        max_position: -0.0523
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_right_finger_middle_joint_1:
+        has_position_limits: true
+        min_position: 0.0495
+        max_position: 1.2218
+        has_velocity_limits: true
+        max_velocity: 50.0
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_right_finger_middle_joint_2:
+        has_position_limits: true
+        min_position: 0.0
+        max_position: 1.5708
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  
+
+    obotx_right_finger_middle_joint_3:
+        has_position_limits: true
+        min_position: -1.2217
+        max_position: -0.0523
+        has_velocity_limits: true
+        max_velocity: 3.1457
+        has_effort_limits: true
+        max_effort: 50.0
+        has_acceleration_limits: true
+        max_acceleration: 3.1457  

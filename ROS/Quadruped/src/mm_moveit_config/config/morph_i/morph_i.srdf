@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="morph_i">
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+    <group name="base_position">
+        <joint name="position" />
+    </group>
+
+    <group name="left_arm">
+        <joint name="obotx_left_arm_mount_joint"/>
+        <chain base_link="obotx_left_arm_root_link" tip_link="obotx_left_tool0"/>
+    </group>
+
+    <group name="right_arm">
+        <joint name="obotx_right_arm_mount_joint"/>
+        <chain base_link="obotx_right_arm_root_link" tip_link="obotx_right_tool0"/>
+    </group>
+
+    <group name="left_finger_1">
+        <chain base_link="obotx_left_palm" tip_link="obotx_left_finger_1_link_3"/>
+        <joint name="obotx_left_palm_finger_1_joint"/>
+        <joint name="obotx_left_finger_1_joint_1"/>
+        <joint name="obotx_left_finger_1_joint_2"/>
+        <joint name="obotx_left_finger_1_joint_3"/>
+    </group>
+
+    <group name="left_finger_2">
+        <chain base_link="obotx_left_palm" tip_link="obotx_left_finger_2_link_3"/>
+        <joint name="obotx_left_palm_finger_2_joint"/>
+        <joint name="obotx_left_finger_2_joint_1"/>
+        <joint name="obotx_left_finger_2_joint_2"/>
+        <joint name="obotx_left_finger_2_joint_3"/>
+    </group>
+
+    <group name="left_finger_middle">
+        <chain base_link="obotx_left_palm" tip_link="obotx_left_finger_middle_link_3"/>
+        <joint name="obotx_left_finger_middle_joint_1"/>
+        <joint name="obotx_left_finger_middle_joint_2"/>
+        <joint name="obotx_left_finger_middle_joint_3"/>
+    </group>
+
+    <group name="gripper_left">
+        <group name="left_finger_1"/>
+        <group name="left_finger_2"/>
+        <group name="left_finger_middle"/>
+    </group>
+
+    <group name="right_finger_1">
+        <chain base_link="obotx_right_palm" tip_link="obotx_right_finger_1_link_3"/>
+        <joint name="obotx_right_palm_finger_1_joint"/>
+        <joint name="obotx_right_finger_1_joint_1"/>
+        <joint name="obotx_right_finger_1_joint_2"/>
+        <joint name="obotx_right_finger_1_joint_3"/>
+    </group>
+
+    <group name="right_finger_2">
+        <chain base_link="obotx_right_palm" tip_link="obotx_right_finger_2_link_3"/>
+        <joint name="obotx_right_palm_finger_2_joint"/>
+        <joint name="obotx_right_finger_2_joint_1"/>
+        <joint name="obotx_right_finger_2_joint_2"/>
+        <joint name="obotx_right_finger_2_joint_3"/>
+    </group>
+
+    <group name="right_finger_middle">
+        <chain base_link="obotx_right_palm" tip_link="obotx_right_finger_middle_link_3"/>
+        <joint name="obotx_right_finger_middle_joint_1"/>
+        <joint name="obotx_right_finger_middle_joint_2"/>
+        <joint name="obotx_right_finger_middle_joint_3"/>
+    </group>
+
+    <group name="gripper_right">
+        <group name="right_finger_1"/>
+        <group name="right_finger_2"/>
+        <group name="right_finger_middle"/>
+    </group>
+
+    <group name="dual_arms">
+        <group name="left_arm"/>
+        <group name="right_arm"/>
+    </group>
+
+    <group name="whole_body">
+        <group name="base_position"/>
+        <group name="dual_arms"/>
+        <group name="gripper_left"/>
+        <group name="gripper_right"/>
+    </group>
+
+    <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
+    <group_state name="home_whole" group="whole_body">
+        <joint name="position" value="0 0 0"/>
+        <joint name="obotx_left_arm_mount_joint" value="0"/>
+        <joint name="obotx_left_joint_hinge_telescopic_hand" value="0"/>
+        <joint name="obotx_left_joint_slider_left_hinge" value="0"/>
+        <joint name="obotx_left_joint_slider_left_slide" value="0"/>
+        <joint name="obotx_left_joint_telescopic_slide" value="0"/>
+        <joint name="obotx_left_palm_wrist_pitch_joint" value="0"/>
+        <joint name="obotx_left_palm_wrist_roll_joint" value="0"/>
+        <joint name="obotx_left_palm_wrist_yaw_joint" value="0"/>
+        <joint name="obotx_right_arm_mount_joint" value="0"/>
+        <joint name="obotx_right_joint_hinge_telescopic_hand" value="0"/>
+        <joint name="obotx_right_joint_slider_left_hinge" value="0"/>
+        <joint name="obotx_right_joint_slider_left_slide" value="0"/>
+        <joint name="obotx_right_joint_telescopic_slide" value="0"/>
+        <joint name="obotx_right_palm_wrist_pitch_joint" value="0"/>
+        <joint name="obotx_right_palm_wrist_roll_joint" value="0"/>
+        <joint name="obotx_right_palm_wrist_yaw_joint" value="0"/>
+    </group_state>
+    <group_state name="home_left_arm" group="left_arm">
+        <joint name="obotx_left_arm_mount_joint" value="0"/>
+        <joint name="obotx_left_joint_hinge_telescopic_hand" value="0"/>
+        <joint name="obotx_left_joint_slider_left_hinge" value="0"/>
+        <joint name="obotx_left_joint_slider_left_slide" value="0"/>
+        <joint name="obotx_left_joint_telescopic_slide" value="0"/>
+        <joint name="obotx_left_palm_wrist_pitch_joint" value="0"/>
+        <joint name="obotx_left_palm_wrist_roll_joint" value="0"/>
+        <joint name="obotx_left_palm_wrist_yaw_joint" value="0"/>
+    </group_state>
+    <group_state name="home_right_arm" group="right_arm">
+        <joint name="obotx_right_arm_mount_joint" value="0"/>
+        <joint name="obotx_right_joint_hinge_telescopic_hand" value="0"/>
+        <joint name="obotx_right_joint_slider_left_hinge" value="0"/>
+        <joint name="obotx_right_joint_slider_left_slide" value="0"/>
+        <joint name="obotx_right_joint_telescopic_slide" value="0"/>
+        <joint name="obotx_right_palm_wrist_pitch_joint" value="0"/>
+        <joint name="obotx_right_palm_wrist_roll_joint" value="0"/>
+        <joint name="obotx_right_palm_wrist_yaw_joint" value="0"/>
+    </group_state>
+
+    <!-- Gripper Open/Close -->
+    <group_state name="close" group="gripper_left">
+        <joint name="obotx_left_palm_finger_1_joint"    value="-0.12"/>
+        <joint name="obotx_left_palm_finger_2_joint"    value="0.12"/>
+        <joint name="obotx_left_finger_1_joint_1"       value="0.7"/>
+        <joint name="obotx_left_finger_1_joint_2"       value="0.001"/>
+        <joint name="obotx_left_finger_1_joint_3"       value="-0.65"/>
+        <joint name="obotx_left_finger_2_joint_1"       value="0.7"/>
+        <joint name="obotx_left_finger_2_joint_2"       value="0.001"/>
+        <joint name="obotx_left_finger_2_joint_3"       value="-0.65"/>
+        <joint name="obotx_left_finger_middle_joint_1"  value="0.7"/>
+        <joint name="obotx_left_finger_middle_joint_2"  value="0.001"/>
+        <joint name="obotx_left_finger_middle_joint_3"  value="-0.65"/>
+    </group_state>
+
+    <group_state name="close" group="gripper_right">
+        <joint name="obotx_right_palm_finger_1_joint"   value="-0.120000"/>
+        <joint name="obotx_right_palm_finger_2_joint"   value="0.120000"/>
+        <joint name="obotx_right_finger_1_joint_1"      value="0.7"/>
+        <joint name="obotx_right_finger_1_joint_2"      value="0.001"/>
+        <joint name="obotx_right_finger_1_joint_3"      value="-0.65"/>
+        <joint name="obotx_right_finger_2_joint_1"      value="0.7"/>
+        <joint name="obotx_right_finger_2_joint_2"      value="0.001"/>
+        <joint name="obotx_right_finger_2_joint_3"      value="-0.65"/>
+        <joint name="obotx_right_finger_middle_joint_1" value="0.7"/>
+        <joint name="obotx_right_finger_middle_joint_2" value="0.001"/>
+        <joint name="obotx_right_finger_middle_joint_3" value="-0.65"/>
+    </group_state>
+
+    <group_state name="open" group="gripper_left">
+        <joint name="obotx_left_palm_finger_1_joint"    value="-0.120000"/>
+        <joint name="obotx_left_palm_finger_2_joint"    value="0.120000"/>
+        <joint name="obotx_left_finger_1_joint_1"       value="0.049500"/>
+        <joint name="obotx_left_finger_1_joint_2"       value="0.000033"/>
+        <joint name="obotx_left_finger_1_joint_3"       value="-0.650000"/>
+        <joint name="obotx_left_finger_2_joint_1"       value="0.049500"/>
+        <joint name="obotx_left_finger_2_joint_2"       value="0.000033"/>
+        <joint name="obotx_left_finger_2_joint_3"       value="-0.650000"/>
+        <joint name="obotx_left_finger_middle_joint_1"  value="0.049500"/>
+        <joint name="obotx_left_finger_middle_joint_2"  value="0.000033"/>
+        <joint name="obotx_left_finger_middle_joint_3"  value="-0.650000"/>
+    </group_state>
+
+    <group_state name="open" group="gripper_right">
+        <joint name="obotx_right_palm_finger_1_joint"   value="-0.120000"/>
+        <joint name="obotx_right_palm_finger_2_joint"   value="0.120000"/>
+        <joint name="obotx_right_finger_1_joint_1"      value="0.049500"/>
+        <joint name="obotx_right_finger_1_joint_2"      value="0.000033"/>
+        <joint name="obotx_right_finger_1_joint_3"      value="-0.650000"/>
+        <joint name="obotx_right_finger_2_joint_1"      value="0.049500"/>
+        <joint name="obotx_right_finger_2_joint_2"      value="0.000033"/>
+        <joint name="obotx_right_finger_2_joint_3"      value="-0.650000"/>
+        <joint name="obotx_right_finger_middle_joint_1" value="0.049500"/>
+        <joint name="obotx_right_finger_middle_joint_2" value="0.000033"/>
+        <joint name="obotx_right_finger_middle_joint_3" value="-0.650000"/>
+    </group_state>
+
+    <!-- Whole Body Gripper Open/Close -->
+    <group_state name="gripper_open_left" group="whole_body">
+        <joint name="obotx_left_palm_finger_1_joint"    value="-0.12"/>
+        <joint name="obotx_left_palm_finger_2_joint"    value="0.12"/>
+        <joint name="obotx_left_finger_1_joint_1"       value="0.7"/>
+        <joint name="obotx_left_finger_1_joint_2"       value="0.001"/>
+        <joint name="obotx_left_finger_1_joint_3"       value="-0.65"/>
+        <joint name="obotx_left_finger_2_joint_1"       value="0.7"/>
+        <joint name="obotx_left_finger_2_joint_2"       value="0.001"/>
+        <joint name="obotx_left_finger_2_joint_3"       value="-0.65"/>
+        <joint name="obotx_left_finger_middle_joint_1"  value="0.7"/>
+        <joint name="obotx_left_finger_middle_joint_2"  value="0.001"/>
+        <joint name="obotx_left_finger_middle_joint_3"  value="-0.65"/>
+    </group_state>
+
+    <group_state name="gripper_close_right" group="whole_body">
+        <joint name="obotx_right_palm_finger_1_joint"   value="-0.120000"/>
+        <joint name="obotx_right_palm_finger_2_joint"   value="0.120000"/>
+        <joint name="obotx_right_finger_1_joint_1"      value="0.7"/>
+        <joint name="obotx_right_finger_1_joint_2"      value="0.001"/>
+        <joint name="obotx_right_finger_1_joint_3"      value="-0.65"/>
+        <joint name="obotx_right_finger_2_joint_1"      value="0.7"/>
+        <joint name="obotx_right_finger_2_joint_2"      value="0.001"/>
+        <joint name="obotx_right_finger_2_joint_3"      value="-0.65"/>
+        <joint name="obotx_right_finger_middle_joint_1" value="0.7"/>
+        <joint name="obotx_right_finger_middle_joint_2" value="0.001"/>
+        <joint name="obotx_right_finger_middle_joint_3" value="-0.65"/>
+    </group_state>
+
+    <group_state name="gripper_open_left" group="whole_body">
+        <joint name="obotx_left_palm_finger_1_joint"    value="-0.120000"/>
+        <joint name="obotx_left_palm_finger_2_joint"    value="0.120000"/>
+        <joint name="obotx_left_finger_1_joint_1"       value="0.049500"/>
+        <joint name="obotx_left_finger_1_joint_2"       value="0.000033"/>
+        <joint name="obotx_left_finger_1_joint_3"       value="-0.650000"/>
+        <joint name="obotx_left_finger_2_joint_1"       value="0.049500"/>
+        <joint name="obotx_left_finger_2_joint_2"       value="0.000033"/>
+        <joint name="obotx_left_finger_2_joint_3"       value="-0.650000"/>
+        <joint name="obotx_left_finger_middle_joint_1"  value="0.049500"/>
+        <joint name="obotx_left_finger_middle_joint_2"  value="0.000033"/>
+        <joint name="obotx_left_finger_middle_joint_3"  value="-0.650000"/>
+    </group_state>
+
+    <group_state name="gripper_open_right" group="whole_body">
+        <joint name="obotx_right_palm_finger_1_joint"   value="-0.120000"/>
+        <joint name="obotx_right_palm_finger_2_joint"   value="0.120000"/>
+        <joint name="obotx_right_finger_1_joint_1"      value="0.049500"/>
+        <joint name="obotx_right_finger_1_joint_2"      value="0.000033"/>
+        <joint name="obotx_right_finger_1_joint_3"      value="-0.650000"/>
+        <joint name="obotx_right_finger_2_joint_1"      value="0.049500"/>
+        <joint name="obotx_right_finger_2_joint_2"      value="0.000033"/>
+        <joint name="obotx_right_finger_2_joint_3"      value="-0.650000"/>
+        <joint name="obotx_right_finger_middle_joint_1" value="0.049500"/>
+        <joint name="obotx_right_finger_middle_joint_2" value="0.000033"/>
+        <joint name="obotx_right_finger_middle_joint_3" value="-0.650000"/>
+    </group_state>
+
+    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
+    <end_effector name="left_gripper" parent_link="obotx_left_tool0" group="left_arm"/>
+    <end_effector name="right_gripper" parent_link="obotx_right_tool0" group="right_arm"/>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="position" type="planar" parent_frame="world" child_link="obotx_base_footprint_platform"/>
+    <joint_property joint_name="position" property_name="motion_model" value="holonomic" />
+    <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="obotx_base_link_platform" link2="obotx_front_left_wheel" reason="Adjacent"/>
+    <disable_collisions link1="obotx_base_link_platform" link2="obotx_front_right_wheel" reason="Adjacent"/>
+    <disable_collisions link1="obotx_base_link_platform" link2="obotx_left_arm_root_link" reason="Adjacent"/>
+    <disable_collisions link1="obotx_base_link_platform" link2="obotx_rear_left_wheel" reason="Adjacent"/>
+    <disable_collisions link1="obotx_base_link_platform" link2="obotx_rear_right_wheel" reason="Adjacent"/>
+    <disable_collisions link1="obotx_base_link_platform" link2="obotx_right_arm_root_link" reason="Adjacent"/>
+    <disable_collisions link1="obotx_front_left_wheel" link2="obotx_front_right_wheel" reason="Never"/>
+    <disable_collisions link1="obotx_front_left_wheel" link2="obotx_left_arm_root_link" reason="Never"/>
+    <disable_collisions link1="obotx_front_left_wheel" link2="obotx_rear_left_wheel" reason="Never"/>
+    <disable_collisions link1="obotx_front_left_wheel" link2="obotx_rear_right_wheel" reason="Never"/>
+    <disable_collisions link1="obotx_front_left_wheel" link2="obotx_right_arm_root_link" reason="Never"/>
+    <disable_collisions link1="obotx_front_right_wheel" link2="obotx_left_arm_root_link" reason="Never"/>
+    <disable_collisions link1="obotx_front_right_wheel" link2="obotx_rear_left_wheel" reason="Never"/>
+    <disable_collisions link1="obotx_front_right_wheel" link2="obotx_rear_right_wheel" reason="Never"/>
+    <disable_collisions link1="obotx_front_right_wheel" link2="obotx_right_arm_root_link" reason="Never"/>
+    <disable_collisions link1="obotx_left_arm_root_link" link2="obotx_left_telescopic_arm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_arm_root_link" link2="obotx_rear_left_wheel" reason="Never"/>
+    <disable_collisions link1="obotx_left_arm_root_link" link2="obotx_rear_right_wheel" reason="Never"/>
+    <disable_collisions link1="obotx_left_arm_root_link" link2="obotx_right_arm_root_link" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_1_link_1" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_1_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_1_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_middle_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_left_palm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_1_link_0" link2="obotx_right_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_finger_1_link_2" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_finger_1_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_finger_middle_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_1" link2="obotx_left_palm" reason="Default"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_left_finger_1_link_3" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_left_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_left_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_left_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_left_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_left_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_left_palm" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_right_finger_1_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_right_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_right_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_right_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_right_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_2" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_3" link2="obotx_left_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_3" link2="obotx_left_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_3" link2="obotx_left_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_3" link2="obotx_left_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_3" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_3" link2="obotx_right_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_3" link2="obotx_right_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_3" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_1_link_3" link2="obotx_right_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_left_finger_2_link_1" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_left_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_left_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_left_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_left_finger_middle_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_left_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_left_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_left_palm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_2_link_0" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_1" link2="obotx_left_finger_2_link_2" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_2_link_1" link2="obotx_left_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_1" link2="obotx_left_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_1" link2="obotx_left_finger_middle_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_1" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_1" link2="obotx_left_palm" reason="Default"/>
+    <disable_collisions link1="obotx_left_finger_2_link_1" link2="obotx_right_finger_1_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_2" link2="obotx_left_finger_2_link_3" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_2_link_2" link2="obotx_left_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_2" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_2" link2="obotx_left_palm" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_2" link2="obotx_right_finger_1_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_2" link2="obotx_right_finger_1_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_2" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_2" link2="obotx_right_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_2" link2="obotx_right_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_3" link2="obotx_left_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_3" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_3" link2="obotx_right_finger_1_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_3" link2="obotx_right_finger_1_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_3" link2="obotx_right_finger_1_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_3" link2="obotx_right_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_3" link2="obotx_right_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_2_link_3" link2="obotx_right_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_0" link2="obotx_left_finger_middle_link_1" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_0" link2="obotx_left_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_0" link2="obotx_left_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_0" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_0" link2="obotx_left_palm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_0" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_1" link2="obotx_left_finger_middle_link_2" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_1" link2="obotx_left_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_1" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_1" link2="obotx_left_palm" reason="Default"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_2" link2="obotx_left_finger_middle_link_3" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_2" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_2" link2="obotx_left_palm" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_2" link2="obotx_right_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_2" link2="obotx_right_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_2" link2="obotx_right_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_3" link2="obotx_left_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_3" link2="obotx_right_finger_1_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_3" link2="obotx_right_finger_1_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_3" link2="obotx_right_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_left_finger_middle_link_3" link2="obotx_right_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_left_hinge_telescopic_hand" link2="obotx_left_palm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_hinge_telescopic_hand" link2="obotx_left_telescopic_arm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_left_hinge_telescopic_hand" link2="obotx_right_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_left_hinge_telescopic_hand" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_rear_left_wheel" link2="obotx_rear_right_wheel" reason="Never"/>
+    <disable_collisions link1="obotx_rear_left_wheel" link2="obotx_right_arm_root_link" reason="Never"/>
+    <disable_collisions link1="obotx_rear_left_wheel" link2="obotx_right_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_rear_left_wheel" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_rear_right_wheel" link2="obotx_right_arm_root_link" reason="Never"/>
+    <disable_collisions link1="obotx_right_arm_root_link" link2="obotx_right_telescopic_arm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_1_link_1" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_1_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_1_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_middle_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_0" link2="obotx_right_palm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_finger_1_link_2" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_finger_1_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_finger_middle_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_1" link2="obotx_right_palm" reason="Default"/>
+    <disable_collisions link1="obotx_right_finger_1_link_2" link2="obotx_right_finger_1_link_3" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_1_link_2" link2="obotx_right_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_2" link2="obotx_right_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_2" link2="obotx_right_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_2" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_2" link2="obotx_right_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_2" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_2" link2="obotx_right_palm" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_3" link2="obotx_right_finger_2_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_3" link2="obotx_right_finger_2_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_3" link2="obotx_right_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_3" link2="obotx_right_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_1_link_3" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_0" link2="obotx_right_finger_2_link_1" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_2_link_0" link2="obotx_right_finger_2_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_0" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_0" link2="obotx_right_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_0" link2="obotx_right_finger_middle_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_0" link2="obotx_right_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_0" link2="obotx_right_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_0" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_0" link2="obotx_right_palm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_2_link_1" link2="obotx_right_finger_2_link_2" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_2_link_1" link2="obotx_right_finger_2_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_1" link2="obotx_right_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_1" link2="obotx_right_finger_middle_link_1" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_1" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_1" link2="obotx_right_palm" reason="Default"/>
+    <disable_collisions link1="obotx_right_finger_2_link_2" link2="obotx_right_finger_2_link_3" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_2_link_2" link2="obotx_right_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_2" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_2" link2="obotx_right_palm" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_3" link2="obotx_right_finger_middle_link_0" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_2_link_3" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_0" link2="obotx_right_finger_middle_link_1" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_0" link2="obotx_right_finger_middle_link_2" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_0" link2="obotx_right_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_0" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_0" link2="obotx_right_palm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_1" link2="obotx_right_finger_middle_link_2" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_1" link2="obotx_right_finger_middle_link_3" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_1" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_1" link2="obotx_right_palm" reason="Default"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_2" link2="obotx_right_finger_middle_link_3" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_2" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_2" link2="obotx_right_palm" reason="Never"/>
+    <disable_collisions link1="obotx_right_finger_middle_link_3" link2="obotx_right_hinge_telescopic_hand" reason="Never"/>
+    <disable_collisions link1="obotx_right_hinge_telescopic_hand" link2="obotx_right_palm" reason="Adjacent"/>
+    <disable_collisions link1="obotx_right_hinge_telescopic_hand" link2="obotx_right_telescopic_arm" reason="Adjacent"/>
+</robot>

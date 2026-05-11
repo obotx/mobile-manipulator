@@ -18,14 +18,8 @@ if(BUILD_TESTING)
 endif()
 
 install(
-  DIRECTORY launch
+  DIRECTORY launch scripts
   DESTINATION share/${PROJECT_NAME}
-)
-
-install(PROGRAMS
-  mm_bringup/nl_mimic_parser.py
-  RENAME nl_mimic_parser
-  DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_package()
