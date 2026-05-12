@@ -26,9 +26,7 @@ install(
     urdf
     meshes
     rviz
-    worlds
-    config
-    scripts
+    launch
   DESTINATION share/${PROJECT_NAME}
 )
 

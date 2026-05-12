@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: mm_description
+    relative_path: urdf/robot/morph_i.urdf.xacro
+  srdf:
+    relative_path: config/morph_i.srdf
+  package_settings:
+    author_name: ziczac
+    author_email: ziczac@gmail.com
+    generated_timestamp: 1777996759
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity

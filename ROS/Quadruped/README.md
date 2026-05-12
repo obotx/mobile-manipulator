@@ -23,6 +23,7 @@ Before proceeding, ensure you have the following installed:
 1. **ROS 2 Jazzy Jalisco**
 2. **Gazebo Harmonic**
 3. Non-linear mimic gazebo plugin 
+4. MoveIt
 
 If you have not installed these yet, please refer to the official installation guides:
 - [Install ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Installation.html)
@@ -31,8 +32,39 @@ If you have not installed these yet, please refer to the official installation g
 
 ---
 
+## Main Package Structure
+```bash
+├── mecanum_drive_controller    
+│   ├── include                   # headers for controller, odom, limiter
+│   ├── src                       # main code for params, controller, odom, vel/acc limiter
+│   └── test                      # for testing
+├── mm_bringup                    
+│   └── scripts                   # scripts for run simulation
+├── mm_description                
+│   ├── launch                    # robot state publisher
+│   ├── meshes                    # all robot mashes 
+│   ├── rviz                      # rviz config
+│   └── urdf                      # robot urdf/xacro
+├── mm_gazebo                     
+│   ├── config                    # include rqt config and ros bridge
+│   ├── launch                    # morph gazebo spawn
+│   └── worlds                    # world file
+├── mm_moveit_config                      
+│   ├── config                    # moveit config file (ompl, kinematics, joint limit, etc)
+│   ├── launch                    # ros controller and move group motion planning launch 
+│   └── scripts                   # trajectory to gazebo and mdof moveit node
+├── mm_moveit_demos               
+│   ├── include                   # pick and place code header
+│   ├── launch                    # pick and place launch
+│   ├── rviz                      # motion planning task rviz config
+│   └── src                       # MoveIt Task Constructor main code
+└── stretch_moveit_plugins        
+    └── stretch_kinematics_plugin # Stretch kinematics solver (handle planar joint + arm)
+```
+
+
 ## Quick Start Guide
-### 1. Build the Workspace
+### Build the Workspace
 
 Navigate to the root of the ROS Quadruped package directory and build the packages
 
@@ -45,14 +77,17 @@ colcon build --symlink-install
 
 # Source the environment
 source install/setup.bash
+```
 
-# Launch the main bringup file to start Gazebo and spawn the robot
-ros2 launch mm_bringup obotx_dual_arm.launch.py
+### Start Gazebo and spawn the robot
+
+```bash
+ros2 launch mm_gazebo morph_i.gazebo.launch.py use_rviz:=true use_sim_time:=true
 ```
 
 The visualization looks like this :
 ![launch_visualization](./assets/obotx_launch.png)
-### 2. Control the Robot
+### Control the Robot
 Open a new terminal.
 
 - Mobile Base Control
@@ -61,7 +96,7 @@ Open a new terminal.
     ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true -r /cmd_vel:=/mecanum_drive_controller/cmd_vel
     ```
 - Arm Control (Example)
-    You can send joint trajectory goals directly via the command line to test arm movements. Below is an example sequence for the Right Arm.
+    You can send joint trajectory goals directly via the command line to test arm movements. Below is an example sequence for the Right Arm. List of joints that can send command can find [here](#joint-interface-reference) 
     ```bash
     ros2 action send_goal /right_arm_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {
       joint_names: [
@@ -94,8 +129,42 @@ Open a new terminal.
       ]
     }}"
     ```
-    
-## Joint Interface Reference
+
+### MoveIt Motion Planning 
+
+```bash
+# From workspace root: /mobile-manipulator/ROS/Quadruped
+
+# Make script executable
+chmod +x src/mm_bringup/scripts/morph_i_gz_moveit.sh
+
+# Launch MoveIt + Gazebo simulation
+./src/mm_bringup/scripts/morph_i_gz_moveit.sh
+```
+
+Visualization result:
+
+https://github.com/user-attachments/assets/06b96eab-91f4-4531-ab77-8572dfe3c3a9
+
+
+### MoveIt Pick and Place 
+
+```bash
+# From workspace root: /mobile-manipulator/ROS/Quadruped
+
+# Make script executable
+chmod +x src/mm_bringup/scripts/morph_i_pick_place.sh
+
+# Run pick-and-place demo pipeline
+./src/mm_bringup/scripts/morph_i_pick_place.sh
+```
+
+Demo result:
+
+https://github.com/user-attachments/assets/e6f80654-5056-4998-a8c1-618290b149bd
+
+
+### Joint Interface Reference
 
 | Left Arm Joints | Right Arm Joints | Type | Description |
 | :--- | :--- | :--- | :--- |

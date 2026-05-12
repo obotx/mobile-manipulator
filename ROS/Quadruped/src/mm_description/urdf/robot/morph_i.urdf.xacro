@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<robot name="morph_i" xmlns:xacro="http://wiki.ros.org/xacro" xmlns:gz="http://gazebosim.org/schema">
+
+    <!-- ================= ARGUMENTS ================= -->
+    <xacro:arg name="prefix" default="obotx_"/>
+    <xacro:arg name="use_gazebo" default="true"/>
+    <xacro:arg name="use_moveit" default="true"/>
+  
+    <!-- Left Arm Mount -->
+    <xacro:arg name="left_arm_mount_x" default="0.15"/>
+    <xacro:arg name="left_arm_mount_y" default="0.15"/>
+    <xacro:arg name="left_arm_mount_z" default="0.158566"/>
+    <xacro:arg name="left_arm_mount_r" default="0.0"/>
+    <xacro:arg name="left_arm_mount_p" default="0.0"/>
+    <xacro:arg name="left_arm_mount_yaw" default="3.14159"/>
+
+    <xacro:arg name="arm_base_yaw_limit_lower" default="-3.14159"/>
+    <xacro:arg name="arm_base_yaw_limit_upper" default="3.14159"/>
+    <xacro:arg name="arm_base_yaw_effort" default="50"/>
+    <xacro:arg name="arm_base_yaw_velocity" default="50.0"/>
+  
+    <!-- Right Arm Mount -->
+    <xacro:arg name="right_arm_mount_x" default="0.15"/>
+    <xacro:arg name="right_arm_mount_y" default="-0.15"/>
+    <xacro:arg name="right_arm_mount_z" default="0.158566"/>
+    <xacro:arg name="right_arm_mount_r" default="0.0"/>
+    <xacro:arg name="right_arm_mount_p" default="0.0"/>
+    <xacro:arg name="right_arm_mount_yaw" default="3.14159"/>
+
+    <!-- ================= IMPORTS ================= -->
+    <xacro:include filename="$(find mm_description)/urdf/platform/summit_xl/summit_xls.urdf.xacro"/>
+    <xacro:include filename="$(find mm_description)/urdf/arm/morph_i_arm.urdf.xacro"/>
+
+    <!-- ================= MOBILE BASE ================= -->
+    <xacro:summit_xl prefix="$(arg prefix)" use_gazebo="$(arg use_gazebo)"/>
+
+    <!-- ================= 2. LEFT ARM ================= -->
+    <joint name="$(arg prefix)left_arm_mount_joint" type="revolute">
+        <parent link="$(arg prefix)base_link_platform"/>
+        <child link="$(arg prefix)left_arm_root_link"/>
+        <origin xyz="$(arg left_arm_mount_x) $(arg left_arm_mount_y) $(arg left_arm_mount_z)" 
+                rpy="$(arg left_arm_mount_r) $(arg left_arm_mount_p) $(arg left_arm_mount_yaw)"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="$(arg arm_base_yaw_limit_lower)" 
+            upper="$(arg arm_base_yaw_limit_upper)" 
+            effort="$(arg arm_base_yaw_effort)" 
+            velocity="$(arg arm_base_yaw_velocity)"/>
+        <dynamics damping="0.1" friction="0.1"/>
+    </joint>
+    <xacro:morph_i_arm prefix="$(arg prefix)left_" use_gazebo="$(arg use_gazebo)" use_moveit="$(arg use_moveit)"/>
+
+    <!-- ================= RIGHT ARM ================= -->
+    <joint name="$(arg prefix)right_arm_mount_joint" type="revolute">
+        <parent link="$(arg prefix)base_link_platform"/>
+        <child link="$(arg prefix)right_arm_root_link"/>
+        <origin xyz="$(arg right_arm_mount_x) $(arg right_arm_mount_y) $(arg right_arm_mount_z)" 
+                rpy="$(arg right_arm_mount_r) $(arg right_arm_mount_p) $(arg right_arm_mount_yaw)"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="$(arg arm_base_yaw_limit_lower)" 
+            upper="$(arg arm_base_yaw_limit_upper)" 
+            effort="$(arg arm_base_yaw_effort)" 
+            velocity="$(arg arm_base_yaw_velocity)"/>
+        <dynamics damping="0.1" friction="0.1"/>
+    </joint>
+    <xacro:morph_i_arm prefix="$(arg prefix)right_" use_gazebo="$(arg use_gazebo)" use_moveit="$(arg use_moveit)"/>
+
+    <!-- ================= ROS2_CONTROL ================= -->
+    <xacro:if value="$(arg use_gazebo)">
+        <!-- Gazebo plugin -->
+        <gazebo>
+            <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+                <parameters>$(find mm_moveit_config)/config/morph_i/ros2_controllers.yaml</parameters>
+                <ros>
+                    <!-- <remapping>/mecanum_drive_controller/cmd_vel:=/cmd_vel</remapping> -->
+                    <remapping>/controller_manager/robot_description:=/robot_description</remapping>
+                </ros>
+            </plugin>
+            <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
+                <publish_link_pose>false</publish_link_pose>
+                <publish_model_pose>true</publish_model_pose>
+                <publish_nested_model_pose>true</publish_nested_model_pose>
+                <use_pose_vector_msg>false</use_pose_vector_msg>
+                <static_update_rate>100</static_update_rate>
+            </plugin>
+        </gazebo>
+
+        <!-- Hardware definition -->
+        <ros2_control name="ObotxMORPHGazeboSystem" type="system">
+            <hardware>
+                <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+            </hardware>
+            <!-- ===== LEFT ARM JOINTS ===== -->
+             <joint name="$(arg prefix)left_arm_mount_joint">
+                <command_interface name="position"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="effort"/>
+            </joint>
+
+            <!-- ===== RIGHT ARM JOINTS ===== -->
+            <joint name="$(arg prefix)right_arm_mount_joint">
+                <command_interface name="position"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="effort"/>
+            </joint>
+        </ros2_control>
+
+        <!-- <ros2_control name="MockSystem" type="system">
+            <hardware>
+                <plugin>mock_components/GenericSystem</plugin>
+            </hardware>
+            <joint name="position"> 
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="effort"/>
+            </joint>
+        </ros2_control> -->
+  </xacro:if>
+
+</robot>

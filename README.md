@@ -12,6 +12,8 @@ https://github.com/user-attachments/assets/ace3e387-373c-48c0-a6cd-64db6422f6d3
         - Morph - II : Single Closed-Chain Parallel Manipulator
       - ROS
         - Morph - I : Dual Independent Parallel Manipulators
+        - Morph - I : MoveIt Motion Planning
+        - Morph - I : MoveIt Pick and Place
   2. Tripod Mobile Manipulator
       - MuJoCo
       - ROS
@@ -37,8 +39,16 @@ The project focuses on mobile manipulation systems integrating locomotion and ro
 
     - [ROS](./ROS/Quadruped) (🚀 **Click to explore more**)
       - **Morph - I** : Dual Independent Parallel Manipulators
-
+        
         https://github.com/user-attachments/assets/9d1917a3-4d70-42b7-870c-debb7992be44
+        
+      - **Morph - I** : MoveIt Motion Planning
+        
+        https://github.com/user-attachments/assets/06b96eab-91f4-4531-ab77-8572dfe3c3a9
+
+      - **Morph - I** : MoveIt Pick and Place
+        
+        https://github.com/user-attachments/assets/e6f80654-5056-4998-a8c1-618290b149bd
 
 2. Tripod Mobile Manipulator
     - [MuJoco](./MUJOCO/Tripod) (🚀 **Click to explore more**)

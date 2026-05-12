@@ -7,7 +7,6 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(mm_description REQUIRED)
-find_package(mm_control REQUIRED)
 find_package(robot_state_publisher REQUIRED)
 
 if(BUILD_TESTING)
@@ -18,14 +17,8 @@ if(BUILD_TESTING)
 endif()
 
 install(
-  DIRECTORY launch
+  DIRECTORY scripts
   DESTINATION share/${PROJECT_NAME}
-)
-
-install(PROGRAMS
-  mm_bringup/nl_mimic_parser.py
-  RENAME nl_mimic_parser
-  DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_package()

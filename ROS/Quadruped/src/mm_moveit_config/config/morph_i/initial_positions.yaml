@@ -1,0 +1,20 @@
+# Default initial positions for morph_i's ros2_control fake system
+
+initial_positions:
+  obotx_left_arm_mount_joint: 0
+  obotx_left_joint_hinge_telescopic_hand: 0
+  obotx_left_joint_slider_left_hinge: 0
+  obotx_left_joint_slider_left_slide: 0
+  obotx_left_joint_telescopic_slide: 0
+  obotx_left_palm_wrist_pitch_joint: 0
+  obotx_left_palm_wrist_roll_joint: 0
+  obotx_left_palm_wrist_yaw_joint: 0
+  obotx_right_arm_mount_joint: 0
+  obotx_right_joint_hinge_telescopic_hand: 0
+  obotx_right_joint_slider_left_hinge: 0
+  obotx_right_joint_slider_left_slide: 0
+  obotx_right_joint_telescopic_slide: 0
+  obotx_right_palm_wrist_pitch_joint: 0
+  obotx_right_palm_wrist_roll_joint: 0
+  obotx_right_palm_wrist_yaw_joint: 0
+  virtual_base_joint: 0
