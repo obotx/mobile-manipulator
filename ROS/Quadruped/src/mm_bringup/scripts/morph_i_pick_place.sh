@@ -23,14 +23,14 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-echo "[INFO] Launching Gazebo simulation..."
-ros2 launch mm_gazebo morph_i.gazebo.launch.py use_rviz:=false &
-PIDS+=($!)
-sleep 10
 
-echo "[INFO] Launching MoveIt..."
-ros2 launch mm_moveit_config move_group.launch.py &
+echo "Launching Gazebo simulation..."
+ros2 launch mm_gazebo morph_i.gazebo.launch.py use_rviz:=false  &
 PIDS+=($!)
+sleep 10.0
 
+echo "Launching MoveIt..."
+ros2 launch mm_moveit_demos pick_place_demo.launch.py run_pick_place:=true &
+PIDS+=($!)
 
 wait

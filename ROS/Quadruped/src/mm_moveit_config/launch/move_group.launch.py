@@ -146,13 +146,14 @@ def generate_launch_description():
             name='base_cmd_vel_bridge',
             output='screen',
             parameters=[{
-                'use_sim_time': use_sim_time,
+                'duration_scaling': 1,
+                'sync_with_arms': False,
                 'cmd_vel_topic': '/mecanum_drive_controller/cmd_vel',
                 'odom_topic': '/mecanum_drive_controller/odom',
                 'frame_id': 'obotx_base_footprint_platform',
-                'max_linear_vel': 1.0,
+                'max_linear_vel': 0.5,
                 'max_angular_vel': 0.8,
-                'verbose': False,
+                'verbose': True,
             }]
         )
 
@@ -216,7 +217,7 @@ def generate_launch_description():
             start_rviz_cmd, 
             base_bridge_node,  
             odom_republisher_node, 
-            rviz_exit_handler
+            rviz_exit_handler,
         ]
 
     ld = LaunchDescription()

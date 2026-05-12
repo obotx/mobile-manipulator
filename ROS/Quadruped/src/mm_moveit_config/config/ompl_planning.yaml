@@ -1,7 +1,6 @@
 planning_plugins:
   - ompl_interface/OMPLPlanner
-# To optionally use Ruckig for jerk-limited smoothing, add this line to the request adapters below
-# default_planner_request_adapters/AddRuckigTrajectorySmoothing
+
 request_adapters:
   - default_planning_request_adapters/ResolveConstraintFrames
   - default_planning_request_adapters/CheckStartStateCollision
@@ -9,9 +8,9 @@ request_adapters:
   # - default_planning_request_adapters/CheckStartStateBounds
 response_adapters:
   - default_planning_response_adapters/AddTimeOptimalParameterization
-  - default_planning_response_adapters/AddRuckigTrajectorySmoothing
+  # - default_planning_response_adapters/AddRuckigTrajectorySmoothing
   - default_planning_response_adapters/ValidateSolution
-  # - default_planning_response_adapters/DisplayMotionPath
+  - default_planning_response_adapters/DisplayMotionPath
 
 planner_configs:
   AnytimePathShortening:
@@ -142,6 +141,68 @@ planner_configs:
     sparse_delta_fraction: 0.25  # delta fraction for connection distance. This value represents the visibility range of sparse samples. default: 0.25
     dense_delta_fraction: 0.001  # delta fraction for interface detection. default: 0.001
     max_failures: 5000  # maximum consecutive failure limit. default: 5000
+
+left_arm_with_base:
+  default_planner_config: RRTConnect
+  planner_configs:
+    - AnytimePathShortening
+    - SBL
+    - EST
+    - LBKPIECE
+    - BKPIECE
+    - KPIECE
+    - RRT
+    - RRTConnect
+    - RRTstar
+    - TRRT
+    - PRM
+    - PRMstar
+    - FMT
+    - BFMT
+    - PDST
+    - STRIDE
+    - BiTRRT
+    - LBTRRT
+    - BiEST
+    - ProjEST
+    - LazyPRM
+    - LazyPRMstar
+    - SPARS
+    - SPARStwo
+  cartesian_path:
+    jump_threshold: 2.0      
+    max_step: 0.01 
+
+right_arm_with_base:
+  default_planner_config: RRTConnect
+  planner_configs:
+    - AnytimePathShortening
+    - SBL
+    - EST
+    - LBKPIECE
+    - BKPIECE
+    - KPIECE
+    - RRT
+    - RRTConnect
+    - RRTstar
+    - TRRT
+    - PRM
+    - PRMstar
+    - FMT
+    - BFMT
+    - PDST
+    - STRIDE
+    - BiTRRT
+    - LBTRRT
+    - BiEST
+    - ProjEST
+    - LazyPRM
+    - LazyPRMstar
+    - SPARS
+    - SPARStwo
+  cartesian_path:
+    jump_threshold: 2.0      
+    max_step: 0.01 
 
 base_controller:
   default_planner_config: RRTConnect
@@ -340,7 +401,6 @@ left_finger_2:
     - SPARS
     - SPARStwo
 
-
 left_finger_middle:
   default_planner_config: RRTConnect
   planner_configs:
@@ -367,6 +427,7 @@ left_finger_middle:
     - LazyPRM
     - LazyPRMstar
     - SPARS
+    - SPARStwo
     - SPARStwo
 
 
@@ -398,7 +459,6 @@ right_finger_1:
     - SPARS
     - SPARStwo
 
-
 right_finger_2:
   default_planner_config: RRTConnect
   planner_configs:
@@ -426,7 +486,6 @@ right_finger_2:
     - LazyPRMstar
     - SPARS
     - SPARStwo
-
 
 right_finger_middle:
   default_planner_config: RRTConnect

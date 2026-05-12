@@ -4,6 +4,7 @@
     <!-- ================= ARGUMENTS ================= -->
     <xacro:arg name="prefix" default="obotx_"/>
     <xacro:arg name="use_gazebo" default="true"/>
+    <xacro:arg name="use_moveit" default="true"/>
   
     <!-- Left Arm Mount -->
     <xacro:arg name="left_arm_mount_x" default="0.15"/>
@@ -46,7 +47,7 @@
             velocity="$(arg arm_base_yaw_velocity)"/>
         <dynamics damping="0.1" friction="0.1"/>
     </joint>
-    <xacro:morph_i_arm prefix="$(arg prefix)left_" use_gazebo="$(arg use_gazebo)"/>
+    <xacro:morph_i_arm prefix="$(arg prefix)left_" use_gazebo="$(arg use_gazebo)" use_moveit="$(arg use_moveit)"/>
 
     <!-- ================= RIGHT ARM ================= -->
     <joint name="$(arg prefix)right_arm_mount_joint" type="revolute">
@@ -61,7 +62,7 @@
             velocity="$(arg arm_base_yaw_velocity)"/>
         <dynamics damping="0.1" friction="0.1"/>
     </joint>
-    <xacro:morph_i_arm prefix="$(arg prefix)right_" use_gazebo="$(arg use_gazebo)"/>
+    <xacro:morph_i_arm prefix="$(arg prefix)right_" use_gazebo="$(arg use_gazebo)" use_moveit="$(arg use_moveit)"/>
 
     <!-- ================= ROS2_CONTROL ================= -->
     <xacro:if value="$(arg use_gazebo)">

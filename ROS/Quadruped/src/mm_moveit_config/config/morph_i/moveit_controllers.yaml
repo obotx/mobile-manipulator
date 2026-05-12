@@ -84,5 +84,4 @@ moveit_simple_controller_manager:
 trajectory_execution:
   control_multi_dof_joint_variables: true 
   execution_duration_monitoring: true
-  allowed_goal_duration_margin: 0.5
     

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" xmlns:nl="http://ros.org/nonlinear_mimic">
 
-  <xacro:macro name="morph_i_arm" params="prefix use_gazebo">
+  <xacro:macro name="morph_i_arm" params="prefix use_gazebo use_moveit">
 
     <!-- ================= XACRO PROPERTIES ================= -->
     <xacro:property name="vertical_mesh_prefix" value="file://$(find mm_description)/meshes/arm/vertical_arm/morph_1"/>
@@ -26,7 +26,7 @@
     <xacro:property name="gripper_yaw_limit_max" value="3.14159"/>
     
     <xacro:property name="default_effort" value="1000"/>
-    <xacro:property name="default_velocity" value="50"/>
+    <xacro:property name="default_velocity" value="100"/>
     <xacro:property name="slide_damping" value="1"/>
 
     <!-- ================= ARM ROOT LINK ================= -->
@@ -149,62 +149,67 @@
     </joint>
 
     <!-- ================= RIGHT SLIDER ================= -->
-    <link name="${prefix}slider_right_slide_frame">
-      <inertial><mass value="0.5"/><inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/><origin xyz="0 0 0" rpy="0 0 0"/></inertial>
-      <visual><geometry><mesh filename="${vertical_mesh_prefix}/right_slider.obj"/></geometry></visual>
-    </link>
-    <joint name="${prefix}joint_slider_right_slide" type="prismatic">
-      <parent link="${prefix}arm_root_link"/>
-      <child link="${prefix}slider_right_slide_frame"/>
-      <origin xyz="0.05 0.0325 0.069379" rpy="0 0 0"/>
-      <axis xyz="0 0 1"/>
-      <limit lower="${slide_limit_min}" upper="${slide_limit_max}" effort="${default_effort}" velocity="${default_velocity}"/>
-      <dynamics damping="0.01" friction="0.01"/>
-    </joint>
 
-    <link name="${prefix}slider_right_hinge_frame">
-      <inertial><mass value="0.3"/><inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/><origin xyz="0 0 0" rpy="0 0 0"/></inertial>
-    </link>
-    <joint name="${prefix}joint_slider_right_hinge" type="revolute">
-      <parent link="${prefix}slider_right_slide_frame"/>
-      <child link="${prefix}slider_right_hinge_frame"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <axis xyz="0 1 0"/>
-      <limit lower="${hinge_limit_min}" upper="${hinge_limit_max}" effort="${default_effort}" velocity="${default_velocity}"/>
-      <mimic joint="${prefix}joint_slider_left_hinge" multiplier="1.0" offset="0.0"/>
-      <dynamics damping="0.01" friction="0.01"/>
-    </joint>
+    <xacro:unless value="${use_moveit}">
+      <link name="${prefix}slider_right_slide_frame">
+        <inertial><mass value="0.5"/><inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/><origin xyz="0 0 0" rpy="0 0 0"/></inertial>
+        <visual><geometry><mesh filename="${vertical_mesh_prefix}/right_slider.obj"/></geometry></visual>
+      </link>
+      <joint name="${prefix}joint_slider_right_slide" type="prismatic">
+        <parent link="${prefix}arm_root_link"/>
+        <child link="${prefix}slider_right_slide_frame"/>
+        <origin xyz="0.05 0.0325 0.069379" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="${slide_limit_min}" upper="${slide_limit_max}" effort="${default_effort}" velocity="${default_velocity}"/>
+        <dynamics damping="0.01" friction="0.01"/>
+      </joint>
 
-    <link name="${prefix}slider_right_mesh">
-      <inertial><mass value="0.2"/><inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/><origin xyz="0 0 0" rpy="0 0 0"/></inertial>
-      <visual><geometry><mesh filename="${telescopic_mesh_prefix}/right_rotation.obj"/></geometry></visual>
-    </link>
-    <joint name="${prefix}joint_slider_right_vis_offset" type="fixed">
-      <parent link="${prefix}slider_right_hinge_frame"/>
-      <child link="${prefix}slider_right_mesh"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-    </joint>
+      <link name="${prefix}slider_right_hinge_frame">
+        <inertial><mass value="0.3"/><inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/><origin xyz="0 0 0" rpy="0 0 0"/></inertial>
+      </link>
+      <joint name="${prefix}joint_slider_right_hinge" type="revolute">
+        <parent link="${prefix}slider_right_slide_frame"/>
+        <child link="${prefix}slider_right_hinge_frame"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="${hinge_limit_min}" upper="${hinge_limit_max}" effort="${default_effort}" velocity="${default_velocity}"/>
+        <mimic joint="${prefix}joint_slider_left_hinge" multiplier="1.0" offset="0.0"/>
+        <dynamics damping="0.01" friction="0.01"/>
+      </joint>
 
-    <xacro:if value="${use_gazebo}">
-      <gazebo>
-        <plugin filename="libNonLinearMimic.so" name="NonLinearMimic">
-            <joint>${prefix}joint_slider_right_slide</joint>
-            <n_mimic>2</n_mimic>
-            <mimicJoint1>${prefix}joint_slider_left_slide</mimicJoint1>
-            <mimicJoint2>${prefix}joint_slider_left_hinge</mimicJoint2>
-            <eq>{mimicJoint1}-0.165966*tan({mimicJoint2})</eq>
-            <kp>200</kp>
-            <kd>50</kd>
-            <ki>3</ki>
-            <max_torque>1000</max_torque>
-            <debug>false</debug>
-        </plugin>
-      </gazebo>
+      <link name="${prefix}slider_right_mesh">
+        <inertial><mass value="0.2"/><inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/><origin xyz="0 0 0" rpy="0 0 0"/></inertial>
+        <visual><geometry><mesh filename="${telescopic_mesh_prefix}/right_rotation.obj"/></geometry></visual>
+      </link>
+      <joint name="${prefix}joint_slider_right_vis_offset" type="fixed">
+        <parent link="${prefix}slider_right_hinge_frame"/>
+        <child link="${prefix}slider_right_mesh"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </joint>
+
+      <xacro:if value="${use_gazebo}">
+        <gazebo>
+          <plugin filename="libNonLinearMimic.so" name="NonLinearMimic">
+              <joint>${prefix}joint_slider_right_slide</joint>
+              <n_mimic>2</n_mimic>
+              <mimicJoint1>${prefix}joint_slider_left_slide</mimicJoint1>
+              <mimicJoint2>${prefix}joint_slider_left_hinge</mimicJoint2>
+              <eq>{mimicJoint1}-0.165966*tan({mimicJoint2})</eq>
+              <kp>200</kp>
+              <kd>50</kd>
+              <ki>3</ki>
+              <max_torque>1000</max_torque>
+              <debug>false</debug>
+          </plugin>
+        </gazebo>
+      </xacro:if>
+    </xacro:unless>
       
+    <xacro:if value="${use_gazebo}">
       <ros2_control name="${prefix}ArmGazeboSystem" type="system">
-        <hardware>
+          <hardware>
             <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-        </hardware>
+          </hardware>
 
         <joint name="${prefix}joint_slider_left_slide">
             <command_interface name="position">
@@ -262,25 +267,27 @@
             <state_interface name="effort"/>
         </joint>
 
-        <joint name="${prefix}joint_slider_right_slide">
-            <state_interface name="position">
-                <param name="min">${slide_limit_min}</param>
-                <param name="max">${slide_limit_max}</param>
-                <param name="initial_value">0.0</param>
-            </state_interface>
-            <state_interface name="velocity"/>
-            <state_interface name="effort"/>
-        </joint>
+        <xacro:unless value="${use_moveit}">
+          <joint name="${prefix}joint_slider_right_slide">
+              <state_interface name="position">
+                  <param name="min">${slide_limit_min}</param>
+                  <param name="max">${slide_limit_max}</param>
+                  <param name="initial_value">0.0</param>
+              </state_interface>
+              <state_interface name="velocity"/>
+              <state_interface name="effort"/>
+          </joint>
         
-        <joint name="${prefix}joint_slider_right_hinge" mimic="true">
-            <state_interface name="position">
-                <param name="min">${hinge_limit_min}</param>
-                <param name="max">${hinge_limit_max}</param>
-                <param name="initial_value">0.0</param>
-            </state_interface>
-            <state_interface name="velocity"/>
-            <state_interface name="effort"/>
-        </joint>
+          <joint name="${prefix}joint_slider_right_hinge" mimic="true">
+              <state_interface name="position">
+                  <param name="min">${hinge_limit_min}</param>
+                  <param name="max">${hinge_limit_max}</param>
+                  <param name="initial_value">0.0</param>
+              </state_interface>
+              <state_interface name="velocity"/>
+              <state_interface name="effort"/>
+          </joint>
+        </xacro:unless>
 
         <joint name="${prefix}palm_wrist_roll_joint">
             <command_interface name="position">
