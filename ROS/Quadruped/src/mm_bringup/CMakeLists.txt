@@ -7,7 +7,6 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(mm_description REQUIRED)
-find_package(mm_control REQUIRED)
 find_package(robot_state_publisher REQUIRED)
 
 if(BUILD_TESTING)
@@ -18,7 +17,7 @@ if(BUILD_TESTING)
 endif()
 
 install(
-  DIRECTORY launch scripts
+  DIRECTORY scripts
   DESTINATION share/${PROJECT_NAME}
 )
 
