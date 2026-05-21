@@ -16,9 +16,12 @@ import time
 import rclpy
 from rclpy.node import Node as RclPyNode
 from controller_manager_msgs.srv import ListControllers
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 PKG_MOVEIT_CONFIG = 'mm_moveit_config'
 PKG_MM_DESC = 'mm_description'
+PKG_MM_MAPPING = 'mm_mapping'
 
 REQUIRED_CONTROLLERS = [
     "gripper_right_controller",
@@ -40,42 +43,37 @@ def wait_for_active_controllers(context):
     node.get_logger().debug(
         "Waiting for controller_manager service..."
     )
-
     if not client.wait_for_service(timeout_sec=60.0):
         raise RuntimeError(
             "/controller_manager/list_controllers not available"
         )
-    
     logged_active = set()
-    
     while rclpy.ok():
         future = client.call_async(ListControllers.Request())
         rclpy.spin_until_future_complete(node, future)
         active_set = {c.name for c in future.result().controller if c.state == "active"}
         newly_active = active_set - logged_active
-
         if newly_active:
             node.get_logger().debug(f"Newly active: {newly_active}")
             logged_active.update(active_set)
-
         if all(ctrl in active_set for ctrl in REQUIRED_CONTROLLERS):
             node.get_logger().debug("All required controllers are active. Proceeding to MoveGroup...")
             break
-
         time.sleep(1.0)
-
     node.destroy_node()
     rclpy.shutdown()
     return []
 
 def load_yaml(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
+    package_path = FindPackageShare(package_name).find(package_name)
     absolute_file_path = os.path.join(package_path, file_path)
     try:
         with open(absolute_file_path, 'r') as file:
             return yaml.safe_load(file)
-    except EnvironmentError:
+    except EnvironmentError as e:
+        print("YAML LOAD ERROR:", e)
         return None
+
 
 def generate_launch_description():
     declare_robot_name_cmd = DeclareLaunchArgument(
@@ -95,68 +93,82 @@ def generate_launch_description():
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
         name='rviz_config_file',
-        default_value='moveit.rviz',
+        default_value='moveit_octo.rviz',
         description='RViz configuration file name')
 
     def launch_setup(context):
         robot_name = LaunchConfiguration('robot_name').perform(context)
+        use_rviz = LaunchConfiguration('use_rviz')
         use_sim_time = LaunchConfiguration('use_sim_time').perform(context) == 'true'
+        rviz_config_file = LaunchConfiguration('rviz_config_file').perform(context)
 
         pkg_moveit_share = FindPackageShare(PKG_MOVEIT_CONFIG).find(PKG_MOVEIT_CONFIG)
-        config_dir = os.path.join(pkg_moveit_share, 'config', robot_name)
-        rviz_config_file = LaunchConfiguration('rviz_config_file').perform(context)
-        rviz_config_path = PathJoinSubstitution([
-            pkg_moveit_share, 'rviz', rviz_config_file
-        ])
+        moveit_config_dir = os.path.join(pkg_moveit_share, 'config', robot_name)
 
         pkg_mm_share = FindPackageShare(PKG_MM_DESC).find(PKG_MM_DESC)
         urdf_path = os.path.join(pkg_mm_share, 'urdf', 'robot', f'{robot_name}.urdf.xacro')
+
+        pkg_mm_mapping_share = FindPackageShare(PKG_MM_MAPPING).find(PKG_MM_MAPPING)
+        octomap_updater_config = load_yaml(PKG_MOVEIT_CONFIG, 'config/sensors_3d.yaml')
         
         moveit_config = (
             MoveItConfigsBuilder(robot_name, package_name=PKG_MOVEIT_CONFIG)
             .robot_description(file_path=urdf_path) 
-            .robot_description_semantic(file_path=os.path.join(config_dir, f'{robot_name}.srdf'))
-            .joint_limits(file_path=os.path.join(config_dir, 'joint_limits.yaml'))
-            .robot_description_kinematics(file_path=os.path.join(config_dir, 'kinematics.yaml'))
-            .trajectory_execution(file_path=os.path.join(config_dir, 'moveit_controllers.yaml'))
+            .robot_description_semantic(file_path=os.path.join(moveit_config_dir, f'{robot_name}.srdf'))
+            .joint_limits(file_path=os.path.join(moveit_config_dir, 'joint_limits.yaml'))
+            .robot_description_kinematics(file_path=os.path.join(moveit_config_dir, 'kinematics.yaml'))
+            .trajectory_execution(file_path=os.path.join(moveit_config_dir, 'moveit_controllers.yaml'))
             .planning_pipelines(
                 pipelines=["ompl"],
                 default_planning_pipeline="ompl"
             )
             .planning_scene_monitor(
-                publish_robot_description=False,
+                publish_robot_description=True,
                 publish_robot_description_semantic=True,
                 publish_planning_scene=True,
             )
             .to_moveit_configs()
         )
 
+        config_dict = moveit_config.to_dict()
+        # config_dict.update(octomap_updater_config)
+        config_dict.update({
+            'use_sim_time': use_sim_time,
+        })
+
         wait_for_active_controllers(context)
         
-        world_to_odom_tf = Node(
+        # world_to_odom_tf = Node(
+        #     package='tf2_ros',
+        #     executable='static_transform_publisher',
+        #     name='static_world_to_odom',
+        #     arguments=[
+        #         '0', '0', '0',
+        #         '0', '0', '0',
+        #         'world',
+        #         'odom'
+        #     ],
+        #     output='screen'
+        # )
+
+        static_map_to_odom = Node(
             package='tf2_ros',
             executable='static_transform_publisher',
-            name='world_to_odom',
-            arguments=['0', '0', '0', '0', '0', '0', 'world', 'odom'],
-            output='screen'
+            name='static_map_to_odom',
+            arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom']
         )
 
-        base_bridge_node = Node(
-            package='mm_moveit_config',
-            executable='base_cmd_vel_bridge.py',
-            name='base_cmd_vel_bridge',
-            output='screen',
-            arguments=['--ros-args', '--log-level', 'stretch_kinematics_plugin:=debug'],
-            parameters=[{
-                'duration_scaling': 1,
-                'sync_with_arms': False,
-                'cmd_vel_topic': '/mecanum_drive_controller/cmd_vel',
-                'odom_topic': '/mecanum_drive_controller/odom',
-                'frame_id': 'obotx_base_footprint_platform',
-                'max_linear_vel': 0.5,
-                'max_angular_vel': 0.8,
-                'verbose': True,
-            }]
+        load_octomap_launch = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(
+                    pkg_mm_mapping_share,
+                    'launch',
+                    'load_octomap.launch.py'
+                )
+            ),
+            launch_arguments={
+                'use_sim_time': str(use_sim_time).lower()
+            }.items()
         )
 
         odom_republisher_node = Node(
@@ -176,12 +188,12 @@ def generate_launch_description():
             package='moveit_ros_move_group',
             executable='move_group',
             output='screen',
-            parameters=[
-                moveit_config.to_dict(),
-                {'use_sim_time': use_sim_time},
-                {'initial_positions_file_path': os.path.join(config_dir, 'initial_positions.yaml')},
-            ],
+            parameters=[config_dict],
         )
+
+        rviz_config_path = PathJoinSubstitution([
+            pkg_moveit_share, 'rviz', rviz_config_file
+        ])
 
         start_rviz_cmd = Node(
             package='rviz2',
@@ -196,11 +208,11 @@ def generate_launch_description():
                 moveit_config.joint_limits,
                 {'use_sim_time': use_sim_time},
             ],
-            condition=IfCondition(LaunchConfiguration('use_rviz')),
+            condition=IfCondition(use_rviz),
         )
 
         rviz_exit_handler = RegisterEventHandler(
-            condition=IfCondition(LaunchConfiguration('use_rviz')),
+            condition=IfCondition(use_rviz),
             event_handler=OnProcessExit(
                 target_action=start_rviz_cmd,
                 on_exit=EmitEvent(event=Shutdown(reason='RViz exited')),
@@ -208,10 +220,10 @@ def generate_launch_description():
         )
 
         return [
-            world_to_odom_tf,
+            static_map_to_odom,
+            load_octomap_launch,
             start_move_group_cmd, 
             start_rviz_cmd, 
-            base_bridge_node,  
             odom_republisher_node, 
             rviz_exit_handler,
         ]

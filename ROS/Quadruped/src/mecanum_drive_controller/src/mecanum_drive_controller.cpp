@@ -21,12 +21,12 @@
  * ωz = angular z velocity (rad/s)
  *
  * Subscription Topics:
- *     ~/cmd_vel (geometry_msgs/msg/TwistStamped): Velocity commands for the robot
+ *     ~/cmd_vel (geometry_msgs/msg/Twist): Velocity commands for the robot
  *
  * Publishing Topics:
  *     ~/odom (nav_msgs/msg/Odometry): Odometry information from wheel encoders
  *     /tf (tf2_msgs/msg/TFMessage): Transform between odom and base_link frames
- *     ~/cmd_vel_out (geometry_msgs/msg/TwistStamped): Limited velocity commands (if enabled)
+ *     ~/cmd_vel_out (geometry_msgs/msg/Twist): Limited velocity commands (if enabled)
  *
  * @author Addison Sears-Collins
  * @date May 15, 2025
@@ -47,9 +47,9 @@
 
 namespace
 {
-constexpr auto DEFAULT_COMMAND_TOPIC = "~/cmd_vel";
-constexpr auto DEFAULT_COMMAND_OUT_TOPIC = "~/cmd_vel_out";
-constexpr auto DEFAULT_ODOMETRY_TOPIC = "~/odom";
+constexpr auto DEFAULT_COMMAND_TOPIC = "/cmd_vel";
+constexpr auto DEFAULT_COMMAND_OUT_TOPIC = "/cmd_vel_out";
+constexpr auto DEFAULT_ODOMETRY_TOPIC = "/odom";
 constexpr auto DEFAULT_TRANSFORM_TOPIC = "/tf";
 }  // namespace
 
@@ -143,21 +143,21 @@ controller_interface::return_type MecanumDriveController::update(
     return controller_interface::return_type::ERROR;
   }
 
-  const auto age_of_last_command = time - last_command_msg->header.stamp;
+  time_since_last_command_ += period;
   // Brake if cmd_vel has timeout, override the stored command
-  if (age_of_last_command > cmd_vel_timeout_)
+  if (time_since_last_command_ > cmd_vel_timeout_)
   {
-    last_command_msg->twist.linear.x = 0.0;
-    last_command_msg->twist.linear.y = 0.0;
-    last_command_msg->twist.angular.z = 0.0;
+    last_command_msg->linear.x = 0.0;
+    last_command_msg->linear.y = 0.0;
+    last_command_msg->angular.z = 0.0;
   }
 
   // Command may be limited further by SpeedLimit,
   // without affecting the stored twist command
   Twist command = *last_command_msg;
-  double & linear_command_x = command.twist.linear.x;
-  double & linear_command_y = command.twist.linear.y;
-  double & angular_command = command.twist.angular.z;
+  double & linear_command_x = command.linear.x;
+  double & linear_command_y = command.linear.y;
+  double & angular_command = command.angular.z;
 
   previous_update_timestamp_ = time;
 
@@ -273,8 +273,8 @@ controller_interface::return_type MecanumDriveController::update(
   }
 
   // Apply speed limiters
-  auto & last_command = previous_commands_.back().twist;
-  auto & second_to_last_command = previous_commands_.front().twist;
+  auto & last_command = previous_commands_.back();
+  auto & second_to_last_command = previous_commands_.front();
 
   limiter_linear_x_.limit(
     linear_command_x, last_command.linear.x, second_to_last_command.linear.x, period.seconds());
@@ -290,8 +290,7 @@ controller_interface::return_type MecanumDriveController::update(
   if (publish_limited_velocity_ && realtime_limited_velocity_publisher_->trylock())
   {
     auto & limited_velocity_command = realtime_limited_velocity_publisher_->msg_;
-    limited_velocity_command.header.stamp = time;
-    limited_velocity_command.twist = command.twist;
+    limited_velocity_command = command;
     realtime_limited_velocity_publisher_->unlockAndPublish();
   }
 
@@ -434,26 +433,25 @@ controller_interface::CallbackReturn MecanumDriveController::on_configure(
 
   // Initialize command subscriber
   velocity_command_subscriber_ = get_node()->create_subscription<Twist>(
-    DEFAULT_COMMAND_TOPIC, rclcpp::SystemDefaultsQoS(),
-    [this](const std::shared_ptr<Twist> msg) -> void {
+    DEFAULT_COMMAND_TOPIC,
+    rclcpp::SystemDefaultsQoS(),
+    [this](const std::shared_ptr<Twist> msg) -> void
+    {
       if (!subscriber_is_active_)
       {
-        RCLCPP_WARN(get_node()->get_logger(), "Can't accept new commands. subscriber is inactive");
+        RCLCPP_WARN(
+          get_node()->get_logger(),
+          "Can't accept new commands. subscriber is inactive");
         return;
       }
-      if ((msg->header.stamp.sec == 0) && (msg->header.stamp.nanosec == 0))
-      {
-        RCLCPP_WARN_ONCE(
-          get_node()->get_logger(),
-          "Received TwistStamped with zero timestamp, setting it to current "
-          "time, this message will only be shown once");
-        msg->header.stamp = get_node()->get_clock()->now();
-      }
-      received_velocity_msg_ptr_.set(
-        [&](std::shared_ptr<Twist> & stored_msg) {
-        stored_msg = std::move(msg);
-        });
 
+      time_since_last_command_ = rclcpp::Duration(0, 0);
+
+      received_velocity_msg_ptr_.set(
+        [&](std::shared_ptr<Twist> & stored_msg)
+        {
+          stored_msg = std::move(msg);
+        });
     });
 
   // Initialize odometry publisher and message

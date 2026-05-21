@@ -15,6 +15,7 @@ from ament_index_python.packages import get_package_share_directory
 import time
 import rclpy
 from rclpy.node import Node as RclPyNode
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from controller_manager_msgs.srv import ListControllers
 
 PKG_MOVEIT_CONFIG = 'mm_moveit_config'
@@ -77,7 +78,9 @@ def load_yaml(package_name, file_path):
     except EnvironmentError:
         return None
 
+
 def generate_launch_description():
+
     declare_robot_name_cmd = DeclareLaunchArgument(
         name='robot_name',
         default_value='morph_i',
@@ -98,27 +101,58 @@ def generate_launch_description():
         default_value='moveit.rviz',
         description='RViz configuration file name')
 
+    # =========================
+    # Target pose arguments
+    # =========================
+    declare_target_x_cmd = DeclareLaunchArgument(
+        name='target_x',
+        default_value='1.0',
+        description='Target pose X')
+
+    declare_target_y_cmd = DeclareLaunchArgument(
+        name='target_y',
+        default_value='1.6',
+        description='Target pose Y')
+
+    declare_target_z_cmd = DeclareLaunchArgument(
+        name='target_z',
+        default_value='0.8',
+        description='Target pose Z')
+
     def launch_setup(context):
+
         robot_name = LaunchConfiguration('robot_name').perform(context)
         use_sim_time = LaunchConfiguration('use_sim_time').perform(context) == 'true'
+        use_rviz = LaunchConfiguration('use_rviz').perform(context) == 'true'
+        rviz_config_file = LaunchConfiguration('rviz_config_file').perform(context)
 
         pkg_moveit_share = FindPackageShare(PKG_MOVEIT_CONFIG).find(PKG_MOVEIT_CONFIG)
         config_dir = os.path.join(pkg_moveit_share, 'config', robot_name)
-        rviz_config_file = LaunchConfiguration('rviz_config_file').perform(context)
-        rviz_config_path = PathJoinSubstitution([
-            pkg_moveit_share, 'rviz', rviz_config_file
-        ])
 
         pkg_mm_share = FindPackageShare(PKG_MM_DESC).find(PKG_MM_DESC)
-        urdf_path = os.path.join(pkg_mm_share, 'urdf', 'robot', f'{robot_name}.urdf.xacro')
-        
+
+        urdf_path = os.path.join(
+            pkg_mm_share,
+            'urdf',
+            'robot',
+            f'{robot_name}.urdf.xacro'
+        )
+
         moveit_config = (
             MoveItConfigsBuilder(robot_name, package_name=PKG_MOVEIT_CONFIG)
-            .robot_description(file_path=urdf_path) 
-            .robot_description_semantic(file_path=os.path.join(config_dir, f'{robot_name}.srdf'))
-            .joint_limits(file_path=os.path.join(config_dir, 'joint_limits.yaml'))
-            .robot_description_kinematics(file_path=os.path.join(config_dir, 'kinematics.yaml'))
-            .trajectory_execution(file_path=os.path.join(config_dir, 'moveit_controllers.yaml'))
+            .robot_description(file_path=urdf_path)
+            .robot_description_semantic(
+                file_path=os.path.join(config_dir, f'{robot_name}.srdf')
+            )
+            .joint_limits(
+                file_path=os.path.join(config_dir, 'joint_limits.yaml')
+            )
+            .robot_description_kinematics(
+                file_path=os.path.join(config_dir, 'kinematics.yaml')
+            )
+            .trajectory_execution(
+                file_path=os.path.join(config_dir, 'moveit_controllers.yaml')
+            )
             .planning_pipelines(
                 pipelines=["ompl"],
                 default_planning_pipeline="ompl"
@@ -131,96 +165,43 @@ def generate_launch_description():
             .to_moveit_configs()
         )
 
-        wait_for_active_controllers(context)
-        
-        world_to_odom_tf = Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            name='world_to_odom',
-            arguments=['0', '0', '0', '0', '0', '0', 'world', 'odom'],
-            output='screen'
-        )
-
-        base_bridge_node = Node(
-            package='mm_moveit_config',
-            executable='base_cmd_vel_bridge.py',
-            name='base_cmd_vel_bridge',
-            output='screen',
-            arguments=['--ros-args', '--log-level', 'stretch_kinematics_plugin:=debug'],
-            parameters=[{
-                'duration_scaling': 1,
-                'sync_with_arms': False,
-                'cmd_vel_topic': '/mecanum_drive_controller/cmd_vel',
-                'odom_topic': '/mecanum_drive_controller/odom',
-                'frame_id': 'obotx_base_footprint_platform',
-                'max_linear_vel': 0.5,
-                'max_angular_vel': 0.8,
-                'verbose': True,
-            }]
-        )
-
-        odom_republisher_node = Node(
-            package='mm_moveit_config',
-            executable='repub_odometry_mdof_joint_states.py',
-            name='base_state_republisher',
-            output='screen',
-            parameters=[{
-                'use_sim_time': use_sim_time,
-                'odom_topic': '/mecanum_drive_controller/odom',
-                'mdof_topic': '/multi_dof_joint_states',
-                'joint_name': 'position'
-            }]
-        )
-
-        start_move_group_cmd = Node(
-            package='moveit_ros_move_group',
-            executable='move_group',
-            output='screen',
-            parameters=[
-                moveit_config.to_dict(),
-                {'use_sim_time': use_sim_time},
-                {'initial_positions_file_path': os.path.join(config_dir, 'initial_positions.yaml')},
-            ],
-        )
-
-        start_rviz_cmd = Node(
-            package='rviz2',
-            executable='rviz2',
-            output='screen',
-            arguments=['-d', rviz_config_path],
+        moveit_node = Node(
+            package="mm_moveit_demos",
+            executable="simple_pose_target",
+            output="screen",
             parameters=[
                 moveit_config.robot_description,
                 moveit_config.robot_description_semantic,
-                moveit_config.planning_pipelines,
                 moveit_config.robot_description_kinematics,
-                moveit_config.joint_limits,
-                {'use_sim_time': use_sim_time},
-            ],
-            condition=IfCondition(LaunchConfiguration('use_rviz')),
-        )
 
-        rviz_exit_handler = RegisterEventHandler(
-            condition=IfCondition(LaunchConfiguration('use_rviz')),
-            event_handler=OnProcessExit(
-                target_action=start_rviz_cmd,
-                on_exit=EmitEvent(event=Shutdown(reason='RViz exited')),
-            ),
+                # =========================
+                # Pose parameters
+                # =========================
+                {
+                    "target_x": PythonExpression(["float(", LaunchConfiguration("target_x"), ")"]),
+                    "target_y": PythonExpression(["float(", LaunchConfiguration("target_y"), ")"]),
+                    "target_z": PythonExpression(["float(", LaunchConfiguration("target_z"), ")"]),
+                    "use_sim_time": use_sim_time,
+                }
+            ],
         )
 
         return [
-            world_to_odom_tf,
-            start_move_group_cmd, 
-            start_rviz_cmd, 
-            base_bridge_node,  
-            odom_republisher_node, 
-            rviz_exit_handler,
+            moveit_node
         ]
 
     ld = LaunchDescription()
+
     ld.add_action(declare_robot_name_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_use_rviz_cmd)
     ld.add_action(declare_rviz_config_file_cmd)
+
+    # Add pose args
+    ld.add_action(declare_target_x_cmd)
+    ld.add_action(declare_target_y_cmd)
+    ld.add_action(declare_target_z_cmd)
+
     ld.add_action(OpaqueFunction(function=launch_setup))
 
     return ld

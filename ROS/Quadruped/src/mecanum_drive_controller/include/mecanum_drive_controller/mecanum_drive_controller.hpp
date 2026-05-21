@@ -62,7 +62,9 @@ enum WheelIndex : size_t
  */
 class MecanumDriveController : public controller_interface::ControllerInterface
 {
-  using Twist = geometry_msgs::msg::TwistStamped;
+  using Twist = geometry_msgs::msg::Twist;
+  rclcpp::Time last_command_time_;
+  rclcpp::Duration time_since_last_command_{0, 0};
 
 public:
   /**

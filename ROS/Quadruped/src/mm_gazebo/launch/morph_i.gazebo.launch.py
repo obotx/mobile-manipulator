@@ -21,7 +21,6 @@ def generate_launch_description():
 
     pkg_desc        = get_package_share_directory('mm_description')
     pkg_ros_gz_sim  = get_package_share_directory('ros_gz_sim')
-    pkg_ctrl        = get_package_share_directory('mm_control')
     pkg_moveit      = get_package_share_directory('mm_moveit_config')
     pkg_gazebo      = get_package_share_directory('mm_gazebo')
 

@@ -16,26 +16,31 @@ find_package(moveit_ros_planning REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(moveit_core REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED) 
 find_package(shape_msgs REQUIRED)
+find_package(moveit_msgs REQUIRED)
+find_package(graph_msgs REQUIRED)
+find_package(moveit_visual_tools REQUIRED)
 find_package(geometric_shapes REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(rviz_visual_tools REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED src/pick_place_task.cpp)
 target_include_directories(${PROJECT_NAME}
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
          $<INSTALL_INTERFACE:include>)
 ament_target_dependencies(${PROJECT_NAME}
-  Eigen3 geometry_msgs moveit_task_constructor_core rclcpp moveit_core
+  Eigen3 geometry_msgs moveit_task_constructor_core rclcpp moveit_core sensor_msgs
 )
 
 add_executable(pick_place_demo src/pick_place_demo.cpp)
 target_link_libraries(pick_place_demo ${PROJECT_NAME})
 ament_target_dependencies(pick_place_demo
   rclcpp moveit_ros_planning_interface moveit_task_constructor_core
-  geometry_msgs shape_msgs geometric_shapes tf2_eigen tf2_geometry_msgs moveit_core
+  geometry_msgs shape_msgs geometric_shapes tf2_eigen tf2_geometry_msgs moveit_core sensor_msgs
 )
 
 add_executable(simple_pose_target src/simple_pose_target.cpp)
@@ -43,7 +48,12 @@ ament_target_dependencies(simple_pose_target
   rclcpp
   moveit_ros_planning_interface
   geometry_msgs
+  sensor_msgs 
+  graph_msgs
   tf2_geometry_msgs
+  tf2
+  moveit_visual_tools         
+  rviz_visual_tools 
 )
 
 install(TARGETS ${PROJECT_NAME} pick_place_demo simple_pose_target
@@ -59,8 +69,8 @@ install(DIRECTORY launch rviz DESTINATION share/${PROJECT_NAME})
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 ament_export_dependencies(
-  Eigen3 geometry_msgs moveit_task_constructor_core rclcpp moveit_core
-  moveit_ros_planning_interface
+  eigen3_cmake_module Eigen3 geometry_msgs moveit_task_constructor_core rclcpp moveit_core
+  moveit_ros_planning_interface sensor_msgs
 )
 
 ament_package()
