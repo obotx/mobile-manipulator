@@ -4,20 +4,20 @@ moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControll
 
 moveit_simple_controller_manager:
   controller_names:
-    - base_controller
+    # - base_controller
     - left_arm_controller
     - right_arm_controller
     - gripper_left_controller
     - gripper_right_controller
 
-  base_controller:
-    type: FollowJointTrajectory
-    action_ns: follow_joint_trajectory
-    default: true
-    joints:
-      - position/x
-      - position/y
-      - position/theta 
+  # base_controller:
+  #   type: FollowJointTrajectory
+  #   action_ns: follow_joint_trajectory
+  #   default: true
+  #   joints:
+  #     - position/x
+  #     - position/y
+  #     - position/theta 
 
   left_arm_controller:
     type: FollowJointTrajectory

@@ -20,6 +20,13 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(PROGRAMS src/move_to_obj.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(PROGRAMS src/move_to_target.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   set(ament_cmake_copyright_FOUND TRUE)

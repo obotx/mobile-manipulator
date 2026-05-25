@@ -126,14 +126,19 @@ def generate_launch_description():
                 publish_robot_description=True,
                 publish_robot_description_semantic=True,
                 publish_planning_scene=True,
+                publish_transforms_updates=True,
+                publish_geometry_updates=True,
+                publish_state_updates=True,
             )
             .to_moveit_configs()
         )
 
         config_dict = moveit_config.to_dict()
-        # config_dict.update(octomap_updater_config)
+        config_dict.update(octomap_updater_config) 
         config_dict.update({
             'use_sim_time': use_sim_time,
+            'planning_frame': 'odom_gt',
+            'robot_description_planning.shape_transform_cache_lookup_wait_time': 0.5
         })
 
         wait_for_active_controllers(context)
@@ -155,7 +160,16 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             name='static_map_to_odom',
-            arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom']
+            arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom'],
+            parameters=[{'use_sim_time': use_sim_time}]
+        )
+
+        static_map_to_odom_gt = Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='static_map_to_odom_gt',
+            arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom_gt'],
+            parameters=[{'use_sim_time': use_sim_time}]
         )
 
         load_octomap_launch = IncludeLaunchDescription(
@@ -178,8 +192,8 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'use_sim_time': use_sim_time,
-                'odom_topic': '/mecanum_drive_controller/odom',
-                'mdof_topic': '/multi_dof_joint_states',
+                'odom_topic': '/odom',
+                'mdof_topic': 'multi_dof_joint_states',
                 'joint_name': 'position'
             }]
         )
@@ -204,6 +218,7 @@ def generate_launch_description():
                 moveit_config.robot_description,
                 moveit_config.robot_description_semantic,
                 moveit_config.planning_pipelines,
+                moveit_config.planning_scene_monitor,
                 moveit_config.robot_description_kinematics,
                 moveit_config.joint_limits,
                 {'use_sim_time': use_sim_time},
@@ -221,6 +236,7 @@ def generate_launch_description():
 
         return [
             static_map_to_odom,
+            static_map_to_odom_gt,
             load_octomap_launch,
             start_move_group_cmd, 
             start_rviz_cmd, 

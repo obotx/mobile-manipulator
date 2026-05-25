@@ -43,20 +43,38 @@ ament_target_dependencies(pick_place_demo
   geometry_msgs shape_msgs geometric_shapes tf2_eigen tf2_geometry_msgs moveit_core sensor_msgs
 )
 
-add_executable(simple_pose_target src/simple_pose_target.cpp)
-ament_target_dependencies(simple_pose_target
-  rclcpp
-  moveit_ros_planning_interface
-  geometry_msgs
-  sensor_msgs 
-  graph_msgs
-  tf2_geometry_msgs
-  tf2
-  moveit_visual_tools         
-  rviz_visual_tools 
+add_executable(move_arm_pose src/move_arm_pose.cpp)
+ament_target_dependencies(move_arm_pose
+rclcpp
+moveit_ros_planning_interface
+geometry_msgs
+sensor_msgs 
+graph_msgs
+tf2_geometry_msgs
+tf2
+moveit_visual_tools         
+rviz_visual_tools 
 )
 
-install(TARGETS ${PROJECT_NAME} pick_place_demo simple_pose_target
+add_executable(move_group_state src/move_group_state.cpp)
+ament_target_dependencies(move_group_state
+rclcpp
+moveit_ros_planning_interface
+geometry_msgs
+sensor_msgs 
+graph_msgs
+tf2_geometry_msgs
+tf2
+moveit_visual_tools         
+rviz_visual_tools 
+)
+
+install(PROGRAMS
+  src/pick_place.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS ${PROJECT_NAME} pick_place_demo move_arm_pose move_group_state
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

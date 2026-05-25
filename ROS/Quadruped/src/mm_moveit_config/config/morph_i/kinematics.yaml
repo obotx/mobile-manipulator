@@ -42,6 +42,12 @@ right_finger_middle:
   kinematics_solver_search_resolution: 0.005
   kinematics_solver_timeout: 0.05
 
-left_arm_with_base:
-  kinematics_solver: stretch_kinematics_plugin/StretchKinematicsPlugin
-  kinematics_solver_timeout: 0.1
+# left_arm_with_base:
+#   kinematics_solver: stretch_kinematics_plugin/StretchKinematicsPlugin
+#   kinematics_solver_timeout: 0.1
+
+planning_scene_monitor:
+  publish_planning_scene_frequency: 25.0
+  publish_geometry_updates: true
+  publish_state_updates: true
+  publish_transforms_updates: true

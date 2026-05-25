@@ -2,7 +2,9 @@
 
 import os
 import yaml
+import rclpy
 from launch import LaunchDescription
+from geometry_msgs.msg import Pose
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
@@ -13,6 +15,26 @@ from ament_index_python.packages import get_package_share_directory
 
 PKG_MOVEIT_CONFIG = 'mm_moveit_config'
 PKG_MM_DESC = 'mm_description'
+
+
+def wait_pose(topic):
+    rclpy.init()
+    node = rclpy.create_node(
+        'wait_pose_node'
+    )
+    msg = None
+    def cb(data):
+        nonlocal msg
+        msg = data
+    sub = node.create_subscription(Pose, topic, cb, 10)
+    while rclpy.ok() and msg is None:
+        rclpy.spin_once(
+            node,
+            timeout_sec=0.1
+        )
+    node.destroy_node()
+    rclpy.shutdown()
+    return msg
 
 
 def load_yaml(package_name, file_path):

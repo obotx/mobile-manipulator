@@ -1,3 +1,5 @@
+start_state_max_bounds_error: 0.1
+
 planning_plugins:
   - ompl_interface/OMPLPlanner
 
@@ -8,7 +10,7 @@ request_adapters:
   # - default_planning_request_adapters/CheckStartStateBounds
 response_adapters:
   - default_planning_response_adapters/AddTimeOptimalParameterization
-  # - default_planning_response_adapters/AddRuckigTrajectorySmoothing
+  - default_planning_response_adapters/AddRuckigTrajectorySmoothing
   - default_planning_response_adapters/ValidateSolution
   - default_planning_response_adapters/DisplayMotionPath
 
@@ -141,70 +143,108 @@ planner_configs:
     sparse_delta_fraction: 0.25  # delta fraction for connection distance. This value represents the visibility range of sparse samples. default: 0.25
     dense_delta_fraction: 0.001  # delta fraction for interface detection. default: 0.001
     max_failures: 5000  # maximum consecutive failure limit. default: 5000
+  BITstar:
+    type: geometric::BITstar
+    longest_valid_segment_fraction: 0.005
+    range: 0.0
+    simplify_solutions: true
+  ABITstar:
+    type: geometric::ABITstar
+    longest_valid_segment_fraction: 0.005
+    range: 0.0
+    simplify_solutions: true
+    
+# left_arm_with_base:
+#   default_planner_config: RRTConnect
+#   planner_configs:
+#     - AnytimePathShortening
+#     - SBL
+#     - EST
+#     - LBKPIECE
+#     - BKPIECE
+#     - KPIECE
+#     - RRT
+#     - RRTConnect
+#     - RRTstar
+#     - TRRT
+#     - PRM
+#     - PRMstar
+#     - FMT
+#     - BFMT
+#     - PDST
+#     - STRIDE
+#     - BiTRRT
+#     - LBTRRT
+#     - BiEST
+#     - ProjEST
+#     - LazyPRM
+#     - LazyPRMstar
+#     - SPARS
+#     - SPARStwo
+#   cartesian_path:
+#     jump_threshold: 2.0      
+#     max_step: 0.01 
 
-left_arm_with_base:
-  default_planner_config: RRTConnect
-  planner_configs:
-    - AnytimePathShortening
-    - SBL
-    - EST
-    - LBKPIECE
-    - BKPIECE
-    - KPIECE
-    - RRT
-    - RRTConnect
-    - RRTstar
-    - TRRT
-    - PRM
-    - PRMstar
-    - FMT
-    - BFMT
-    - PDST
-    - STRIDE
-    - BiTRRT
-    - LBTRRT
-    - BiEST
-    - ProjEST
-    - LazyPRM
-    - LazyPRMstar
-    - SPARS
-    - SPARStwo
-  cartesian_path:
-    jump_threshold: 2.0      
-    max_step: 0.01 
+# right_arm_with_base:
+#   default_planner_config: RRTConnect
+#   planner_configs:
+#     - AnytimePathShortening
+#     - SBL
+#     - EST
+#     - LBKPIECE
+#     - BKPIECE
+#     - KPIECE
+#     - RRT
+#     - RRTConnect
+#     - RRTstar
+#     - TRRT
+#     - PRM
+#     - PRMstar
+#     - FMT
+#     - BFMT
+#     - PDST
+#     - STRIDE
+#     - BiTRRT
+#     - LBTRRT
+#     - BiEST
+#     - ProjEST
+#     - LazyPRM
+#     - LazyPRMstar
+#     - SPARS
+#     - SPARStwo
+#   cartesian_path:
+#     jump_threshold: 2.0      
+#     max_step: 0.01 
 
-right_arm_with_base:
-  default_planner_config: RRTConnect
-  planner_configs:
-    - AnytimePathShortening
-    - SBL
-    - EST
-    - LBKPIECE
-    - BKPIECE
-    - KPIECE
-    - RRT
-    - RRTConnect
-    - RRTstar
-    - TRRT
-    - PRM
-    - PRMstar
-    - FMT
-    - BFMT
-    - PDST
-    - STRIDE
-    - BiTRRT
-    - LBTRRT
-    - BiEST
-    - ProjEST
-    - LazyPRM
-    - LazyPRMstar
-    - SPARS
-    - SPARStwo
-  cartesian_path:
-    jump_threshold: 2.0      
-    max_step: 0.01 
+# base_controller:
+#   default_planner_config: RRTConnect
+#   planner_configs:
+#     - AnytimePathShortening
+#     - SBL
+#     - EST
+#     - LBKPIECE
+#     - BKPIECE
+#     - KPIECE
+#     - RRT
+#     - RRTConnect
+#     - RRTstar
+#     - TRRT
+#     - PRM
+#     - PRMstar
+#     - FMT
+#     - BFMT
+#     - PDST
+#     - STRIDE
+#     - BiTRRT
+#     - LBTRRT
+#     - BiEST
+#     - ProjEST
+#     - LazyPRM
+#     - LazyPRMstar
+#     - SPARS
+#     - SPARStwo
 
-base_controller:
+dual_arms:
   default_planner_config: RRTConnect
   planner_configs:
     - AnytimePathShortening

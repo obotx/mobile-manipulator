@@ -150,8 +150,8 @@ def generate_launch_description():
             parameters=[{
                 'duration_scaling': 1,
                 'sync_with_arms': False,
-                'cmd_vel_topic': '/mecanum_drive_controller/cmd_vel',
-                'odom_topic': '/mecanum_drive_controller/odom',
+                'cmd_vel_topic': '/cmd_vel',
+                'odom_topic': '/odom',
                 'frame_id': 'obotx_base_footprint_platform',
                 'max_linear_vel': 0.5,
                 'max_angular_vel': 0.8,
@@ -166,7 +166,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'use_sim_time': use_sim_time,
-                'odom_topic': '/mecanum_drive_controller/odom',
+                'odom_topic': '/odom',
                 'mdof_topic': '/multi_dof_joint_states',
                 'joint_name': 'position'
             }]

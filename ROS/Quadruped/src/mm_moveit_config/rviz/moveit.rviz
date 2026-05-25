@@ -359,7 +359,7 @@ Visualization Manager:
         Goal State Color: 250; 128; 0
         Interactive Marker Size: 0
         Joint Violation Color: 255; 0; 255
-        Planning Group: left_arm_with_base
+        Planning Group: dual_arms
         Query Goal State: true
         Query Start State: false
         Show Workspace: false
@@ -686,7 +686,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: world
+    Fixed Frame: odom_gt
     Frame Rate: 30
   Name: root
   Tools:
@@ -701,7 +701,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 12.030996322631836
+      Distance: 3.0437514781951904
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -716,10 +716,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5450004935264587
+      Pitch: 0.5150007605552673
       Target Frame: world
       Value: Orbit (rviz_default_plugins)
-      Yaw: 0.6870099902153015
+      Yaw: 1.0120097398757935
     Saved: ~
 Window Geometry:
   Displays:
@@ -739,5 +739,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1438
-  X: -3
-  Y: -32
+  X: 8
+  Y: -33

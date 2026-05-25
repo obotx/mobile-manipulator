@@ -5,9 +5,12 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /MotionPlanning1/Planning Request1
+        - /MotionPlanning1/Scene Geometry1
+        - /MotionPlanning1/Scene Robot1
+        - /MotionPlanning1/Planned Path1
+        - /Nav2LocalPath1/Topic1
       Splitter Ratio: 0.5
-    Tree Height: 443
+    Tree Height: 140
   - Class: rviz_common/Help
     Name: Help
   - Class: rviz_common/Views
@@ -46,10 +49,10 @@ Visualization Manager:
       Move Group Namespace: ""
       MoveIt_Allow_Approximate_IK: false
       MoveIt_Allow_External_Program: false
-      MoveIt_Allow_Replanning: false
+      MoveIt_Allow_Replanning: true
       MoveIt_Allow_Sensor_Positioning: false
-      MoveIt_Planning_Attempts: 10
-      MoveIt_Planning_Time: 5
+      MoveIt_Planning_Attempts: 22
+      MoveIt_Planning_Time: 16
       MoveIt_Use_Cartesian_Path: false
       MoveIt_Use_Constraint_Aware_IK: true
       MoveIt_Workspace:
@@ -71,7 +74,275 @@ Visualization Manager:
           Expand Link Details: false
           Expand Tree: false
           Link Tree Style: Links in Alphabetic Order
-        Loop Animation: true
+          obotx_base_chapa:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_base_docking_contact:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_base_footprint_platform:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_base_link_platform:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_base_logo_front:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_base_logo_rear:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_front_left_wheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_front_right_wheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_arm_root_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_base_link_palm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_left_finger_1_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_1_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_1_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_1_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_2_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_2_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_2_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_2_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_middle_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_middle_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_middle_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_middle_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_hinge_telescopic_hand:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_palm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_palm_wrist_pitch:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_left_palm_wrist_roll:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_left_slider_left:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_slider_left_hinge_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_slider_left_prismatic_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_left_telescopic_arm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_tool0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_rear_left_wheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_rear_right_wheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_arm_root_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_base_link_palm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_right_finger_1_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_1_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_1_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_1_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_2_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_2_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_2_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_2_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_middle_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_middle_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_middle_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_middle_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_hinge_telescopic_hand:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_palm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_palm_wrist_pitch:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_right_palm_wrist_roll:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_right_slider_left:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_slider_left_hinge_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_slider_left_prismatic_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_right_telescopic_arm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_tool0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+        Loop Animation: false
         Robot Alpha: 0.5
         Robot Color: 97; 97; 97
         Show Robot Collision: false
@@ -95,7 +366,7 @@ Visualization Manager:
         Interactive Marker Size: 0
         Joint Violation Color: 255; 0; 255
         Planning Group: dual_arms
-        Query Goal State: true
+        Query Goal State: false
         Query Start State: false
         Show Workspace: false
         Start State Alpha: 1
@@ -117,9 +388,277 @@ Visualization Manager:
           Expand Link Details: false
           Expand Tree: false
           Link Tree Style: Links in Alphabetic Order
+          obotx_base_chapa:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_base_docking_contact:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_base_footprint_platform:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_base_link_platform:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_base_logo_front:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_base_logo_rear:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_front_left_wheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_front_right_wheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_arm_root_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_base_link_palm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_left_finger_1_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_1_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_1_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_1_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_2_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_2_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_2_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_2_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_middle_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_middle_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_middle_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_finger_middle_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_hinge_telescopic_hand:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_palm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_palm_wrist_pitch:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_left_palm_wrist_roll:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_left_slider_left:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_slider_left_hinge_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_slider_left_prismatic_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_left_telescopic_arm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_left_tool0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_rear_left_wheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_rear_right_wheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_arm_root_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_base_link_palm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_right_finger_1_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_1_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_1_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_1_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_2_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_2_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_2_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_2_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_middle_link_0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_middle_link_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_middle_link_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_finger_middle_link_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_hinge_telescopic_hand:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_palm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_palm_wrist_pitch:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_right_palm_wrist_roll:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_right_slider_left:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_slider_left_hinge_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_slider_left_prismatic_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          obotx_right_telescopic_arm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          obotx_right_tool0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
         Robot Alpha: 0.5
         Show Robot Collision: false
-        Show Robot Visual: true
+        Show Robot Visual: false
       Value: true
       Velocity_Scaling_Factor: 0.1
     - Class: rviz_default_plugins/TF
@@ -180,7 +719,7 @@ Visualization Manager:
       Color Scheme: costmap
       Draw Behind: false
       Enabled: true
-      Name: Costmap
+      Name: GlobalCostmap
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -196,33 +735,28 @@ Visualization Manager:
         Value: /global_costmap/costmap_updates
       Use Timestamp: false
       Value: true
-    - Alpha: 2
-      Buffer Length: 1
-      Class: rviz_default_plugins/Path
-      Color: 255; 0; 0
+    - Alpha: 0.699999988079071
+      Binary representation: false
+      Binary threshold: 100
+      Class: rviz_default_plugins/Map
+      Color Scheme: map
+      Draw Behind: false
       Enabled: true
-      Head Diameter: 0.019999999552965164
-      Head Length: 0.019999999552965164
-      Length: 0.10000000149011612
-      Line Style: Lines
-      Line Width: 0.029999999329447746
-      Name: Nav2GlobalPath
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: Arrows
-      Radius: 0.009999999776482582
-      Shaft Diameter: 0.004999999888241291
-      Shaft Length: 0.019999999552965164
+      Name: LocalCostmap
       Topic:
         Depth: 5
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /plan
+        Value: /local_costmap/costmap
+      Update Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /local_costmap/costmap_updates
+      Use Timestamp: true
       Value: true
     - Alpha: 1
       Class: rviz_default_plugins/Polygon
@@ -237,7 +771,7 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /global_costmap/published_footprint
       Value: true
-    - Alpha: 2
+    - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
       Color: 0; 12; 255
@@ -245,7 +779,7 @@ Visualization Manager:
       Head Diameter: 0.019999999552965164
       Head Length: 0.019999999552965164
       Length: 0.10000000149011612
-      Line Style: Lines
+      Line Style: Billboards
       Line Width: 0.029999999329447746
       Name: Nav2LocalPath
       Offset:
@@ -253,22 +787,344 @@ Visualization Manager:
         Y: 0
         Z: 0
       Pose Color: 255; 85; 255
-      Pose Style: None
+      Pose Style: Arrows
       Radius: 0.009999999776482582
       Shaft Diameter: 0.004999999888241291
-      Shaft Length: 0.019999999552965164
+      Shaft Length: 0.10000000149011612
       Topic:
         Depth: 5
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /local_plan
+        Value: /optimal_trajectory
       Value: true
+    - Alpha: 2
+      Buffer Length: 1
+      Class: rviz_default_plugins/Path
+      Color: 255; 0; 0
+      Enabled: true
+      Head Diameter: 0.019999999552965164
+      Head Length: 0.019999999552965164
+      Length: 0.10000000149011612
+      Line Style: Billboards
+      Line Width: 0.029999999329447746
+      Name: Nav2GlobalPath
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 0; 0
+      Pose Style: None
+      Radius: 0.009999999776482582
+      Shaft Diameter: 0.004999999888241291
+      Shaft Length: 0.05000000074505806
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /plan
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_description
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        obotx_base_chapa:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_base_docking_contact:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_base_footprint_platform:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_base_link_platform:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_base_logo_front:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_base_logo_rear:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_front_left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_front_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_arm_root_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_base_link_palm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_left_finger_1_link_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_1_link_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_1_link_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_1_link_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_2_link_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_2_link_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_2_link_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_2_link_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_middle_link_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_middle_link_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_middle_link_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_finger_middle_link_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_hinge_telescopic_hand:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_palm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_palm_wrist_pitch:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_left_palm_wrist_roll:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_left_slider_left:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_slider_left_hinge_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_slider_left_prismatic_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_left_telescopic_arm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_left_tool0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_rear_left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_rear_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_arm_root_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_base_link_palm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_right_finger_1_link_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_1_link_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_1_link_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_1_link_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_2_link_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_2_link_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_2_link_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_2_link_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_middle_link_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_middle_link_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_middle_link_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_finger_middle_link_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_hinge_telescopic_hand:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_palm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_palm_wrist_pitch:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_right_palm_wrist_roll:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_right_slider_left:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_slider_left_hinge_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_slider_left_prismatic_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        obotx_right_telescopic_arm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        obotx_right_tool0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: RobotModel
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
-    Fixed Frame: map
+    Fixed Frame: odom_gt
     Frame Rate: 30
   Name: root
   Tools:
@@ -276,13 +1132,6 @@ Visualization Manager:
       Hide Inactive Objects: true
     - Class: rviz_default_plugins/MoveCamera
     - Class: rviz_default_plugins/Select
-    - Class: rviz_default_plugins/SetGoal
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: goal_pose
     - Class: rviz_default_plugins/SetInitialPose
       Covariance x: 0.25
       Covariance y: 0.25
@@ -293,6 +1142,13 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: initialpose
+    - Class: rviz_default_plugins/SetGoal
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: goal_pose
   Transformation:
     Current:
       Class: rviz_default_plugins/TF
@@ -300,45 +1156,45 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 14.5726318359375
+      Distance: 2.9392213821411133
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.1450740098953247
-        Y: -0.5576222538948059
-        Z: -0.3072872757911682
+        X: 1.746338963508606
+        Y: 1.3604995012283325
+        Z: -0.20885787904262543
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7699993848800659
+      Pitch: 0.46476179361343384
       Target Frame: world
       Value: Orbit (rviz_default_plugins)
-      Yaw: 5.663365364074707
+      Yaw: 5.04478120803833
     Saved: ~
 Window Geometry:
   Displays:
-    collapsed: true
-  Height: 911
+    collapsed: false
+  Height: 842
   Help:
     collapsed: false
-  Hide Left Dock: true
-  Hide Right Dock: false
+  Hide Left Dock: false
+  Hide Right Dock: true
   MotionPlanning:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
   Navigation 2:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000001c900000339fc0200000007fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c0069006400650072000000003b0000003f0000003f00fffffffb000000100044006900730070006c006100790073000000003b00000339000000c700fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670000000188000002380000016900fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a005600690065007700730000000314000000a0000000a000fffffffb00000024005200760069007a00560069007300750061006c0054006f006f006c00730047007500690000000321000000930000003f00fffffffb00000018004e0061007600690067006100740069006f006e00200032000000026700000159000001c700ffffff000004710000033900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000200000000000001c9000002affc0200000005fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c0069006400650072000000003b0000003f0000003f00fffffffb000000100044006900730070006c0061007900730100000080000000c7000000c700fffffffc0000014d000001e2000001d10100001afa000000000100000002fb00000018004e0061007600690067006100740069006f006e002000320100000000ffffffff0000012800fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670100000000000001c9000001c900fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a0056006900650077007300000001dc000000a0000000a000ffffff00000002000003840000003ffc0100000001fb00000024005200760069007a00560069007300750061006c0054006f006f006c00730047007500690100000000000003840000016400ffffff000001b5000002af00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RvizVisualToolsGui:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1137
-  X: 413
-  Y: 8
+  Width: 900
+  X: 925
+  Y: -26

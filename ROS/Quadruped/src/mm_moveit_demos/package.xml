@@ -24,6 +24,8 @@
 
   <build_depend>moveit_msgs</build_depend>
   <exec_depend>moveit_msgs</exec_depend>
+  <exec_depend>nav2_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
 
   <exec_depend>mm_moveit_config</exec_depend>
   <exec_depend>mm_description</exec_depend>

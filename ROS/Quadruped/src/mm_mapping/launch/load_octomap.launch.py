@@ -63,8 +63,8 @@ def generate_launch_description():
         executable='map_padder.py',
         name='map_padder',
         parameters=[
-            {'padding_x': 2.0},
-            {'padding_y': 2.0},
+            {'padding_x': 3.0},
+            {'padding_y': 3.0},
             {'use_sim_time': use_sim_time},
         ]
     )
@@ -79,7 +79,7 @@ def generate_launch_description():
             'use_sim_time': use_sim_time,
         }]
     )
-
+    
     return LaunchDescription([
         octomap_file_arg,
         use_sim_time_arg,

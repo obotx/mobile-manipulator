@@ -112,7 +112,7 @@ def generate_launch_description():
     start_gazebo_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
-        launch_arguments=[('gz_args', [' -r -v 1 ', world_path])])
+        launch_arguments=[('gz_args', [' -r ', world_path])])
 
     start_gazebo_ros_bridge_cmd = Node(
         package='ros_gz_bridge',
@@ -138,6 +138,18 @@ def generate_launch_description():
             '-P', '0.0',
             '-Y', '0.0'
         ])
+    
+    start_tf_pose = Node(
+        package='mm_gazebo',
+        executable='tf_pose.py',
+        output='screen',
+        parameters=[{
+            'pose_topic': '/MORPH_I/pose',
+            'parent_frame': 'odom_gt',
+            'child_frame': 'obotx_base_footprint_platform',
+            'use_sim_time': True
+        }]
+    )
 
     ld = LaunchDescription()
 
@@ -156,5 +168,6 @@ def generate_launch_description():
     ld.add_action(start_gazebo_cmd)
     ld.add_action(start_gazebo_ros_bridge_cmd)
     ld.add_action(start_gazebo_ros_spawner_cmd)
+    ld.add_action(start_tf_pose)
 
     return ld
