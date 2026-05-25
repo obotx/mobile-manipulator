@@ -159,7 +159,6 @@ https://github.com/user-attachments/assets/e6f80654-5056-4998-a8c1-618290b149bd
 
 ```bash
 # From workspace root: /mobile-manipulator/ROS/Quadruped
-
 # Run pick-and-place with MoveIt with Nav2 intergration
 
 # Terminal 1
@@ -171,8 +170,7 @@ ros2 run mm_moveit_demos pick_place.py
 
 Demo result:
 
-
-
+https://github.com/user-attachments/assets/6b105c1f-9fc4-44df-bd5a-b8b21064ed55
 
 ### Joint Interface Reference
 
