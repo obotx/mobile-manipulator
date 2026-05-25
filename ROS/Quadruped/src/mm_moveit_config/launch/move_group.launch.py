@@ -77,7 +77,6 @@ def load_yaml(package_name, file_path):
     except EnvironmentError:
         return None
 
-
 def generate_launch_description():
     declare_robot_name_cmd = DeclareLaunchArgument(
         name='robot_name',
@@ -102,11 +101,13 @@ def generate_launch_description():
     def launch_setup(context):
         robot_name = LaunchConfiguration('robot_name').perform(context)
         use_sim_time = LaunchConfiguration('use_sim_time').perform(context) == 'true'
-        use_rviz = LaunchConfiguration('use_rviz').perform(context) == 'true'
-        rviz_config_file = LaunchConfiguration('rviz_config_file').perform(context)
 
         pkg_moveit_share = FindPackageShare(PKG_MOVEIT_CONFIG).find(PKG_MOVEIT_CONFIG)
         config_dir = os.path.join(pkg_moveit_share, 'config', robot_name)
+        rviz_config_file = LaunchConfiguration('rviz_config_file').perform(context)
+        rviz_config_path = PathJoinSubstitution([
+            pkg_moveit_share, 'rviz', rviz_config_file
+        ])
 
         pkg_mm_share = FindPackageShare(PKG_MM_DESC).find(PKG_MM_DESC)
         urdf_path = os.path.join(pkg_mm_share, 'urdf', 'robot', f'{robot_name}.urdf.xacro')
@@ -145,11 +146,12 @@ def generate_launch_description():
             executable='base_cmd_vel_bridge.py',
             name='base_cmd_vel_bridge',
             output='screen',
+            arguments=['--ros-args', '--log-level', 'stretch_kinematics_plugin:=debug'],
             parameters=[{
                 'duration_scaling': 1,
                 'sync_with_arms': False,
-                'cmd_vel_topic': '/mecanum_drive_controller/cmd_vel',
-                'odom_topic': '/mecanum_drive_controller/odom',
+                'cmd_vel_topic': '/cmd_vel',
+                'odom_topic': '/odom',
                 'frame_id': 'obotx_base_footprint_platform',
                 'max_linear_vel': 0.5,
                 'max_angular_vel': 0.8,
@@ -164,13 +166,12 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'use_sim_time': use_sim_time,
-                'odom_topic': '/mecanum_drive_controller/odom',
+                'odom_topic': '/odom',
                 'mdof_topic': '/multi_dof_joint_states',
                 'joint_name': 'position'
             }]
         )
 
-        move_group_capabilities = {"capabilities": "move_group/ExecuteTaskSolutionCapability"}
         start_move_group_cmd = Node(
             package='moveit_ros_move_group',
             executable='move_group',
@@ -179,13 +180,8 @@ def generate_launch_description():
                 moveit_config.to_dict(),
                 {'use_sim_time': use_sim_time},
                 {'initial_positions_file_path': os.path.join(config_dir, 'initial_positions.yaml')},
-                # move_group_capabilities,
             ],
         )
-
-        rviz_config_path = PathJoinSubstitution([
-            pkg_moveit_share, 'config', robot_name, rviz_config_file
-        ])
 
         start_rviz_cmd = Node(
             package='rviz2',

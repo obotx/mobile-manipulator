@@ -71,7 +71,8 @@
             <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
                 <parameters>$(find mm_moveit_config)/config/morph_i/ros2_controllers.yaml</parameters>
                 <ros>
-                    <!-- <remapping>/mecanum_drive_controller/cmd_vel:=/cmd_vel</remapping> -->
+                    <remapping>/mecanum_drive_controller/reference:=/cmd_vel</remapping>
+                    <remapping>/mecanum_drive_controller/odometry:=/odom</remapping>
                     <remapping>/controller_manager/robot_description:=/robot_description</remapping>
                 </ros>
             </plugin>

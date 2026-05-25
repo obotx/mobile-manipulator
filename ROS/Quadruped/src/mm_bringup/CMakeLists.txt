@@ -21,4 +21,10 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
+file(GLOB SH_SCRIPTS "scripts/*.sh")
+install(PROGRAMS
+  ${SH_SCRIPTS}
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 ament_package()

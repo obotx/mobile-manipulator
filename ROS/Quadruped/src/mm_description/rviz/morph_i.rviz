@@ -180,7 +180,7 @@ Visualization Manager:
           Value: true
         obotx_right_tool0:
           Value: true
-        odom:
+        odom_gt:
           Value: true
       Marker Scale: 0.5
       Name: TF
@@ -188,7 +188,7 @@ Visualization Manager:
       Show Axes: false
       Show Names: false
       Tree:
-        odom:
+        odom_gt:
           obotx_base_footprint_platform:
             obotx_base_link_platform:
               obotx_base_chapa:
@@ -596,7 +596,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: odom
+    Fixed Frame: odom_gt
     Frame Rate: 30
   Name: root
   Tools:
@@ -675,5 +675,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1097
-  X: 727
-  Y: 29
+  X: 70
+  Y: -17

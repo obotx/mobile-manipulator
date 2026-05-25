@@ -167,23 +167,23 @@ joint_limits:
     max_effort: 1000.0
 
   # ===== MOBILE BASE =====
-  position/x:
-    has_velocity_limits: true
-    max_velocity: 1.0
-    has_acceleration_limits: true
-    max_acceleration: 0.8
+  # position/x:
+  #   has_velocity_limits: true
+  #   max_velocity: 1.0
+  #   has_acceleration_limits: true
+  #   max_acceleration: 0.8
 
-  position/y:
-    has_velocity_limits: true
-    max_velocity: 1.0
-    has_acceleration_limits: true
-    max_acceleration: 0.8
+  # position/y:
+  #   has_velocity_limits: true
+  #   max_velocity: 1.0
+  #   has_acceleration_limits: true
+  #   max_acceleration: 0.8
 
-  position/theta:
-    has_velocity_limits: true
-    max_velocity: 0.261799
-    has_acceleration_limits: true
-    max_acceleration: 0.8
+  # position/theta:
+  #   has_velocity_limits: true
+  #   max_velocity: 0.261799
+  #   has_acceleration_limits: true
+  #   max_acceleration: 0.8
 
   # ========== LEFT GRIPPER ==========
   obotx_left_palm_finger_1_joint:
