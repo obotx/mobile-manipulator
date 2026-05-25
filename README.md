@@ -46,9 +46,13 @@ The project focuses on mobile manipulation systems integrating locomotion and ro
         
         https://github.com/user-attachments/assets/06b96eab-91f4-4531-ab77-8572dfe3c3a9
 
-      - **Morph - I** : MoveIt Pick and Place
+      - **Morph - I** : MoveIt Pick and Place (MoveIt Task Constructor)
         
         https://github.com/user-attachments/assets/e6f80654-5056-4998-a8c1-618290b149bd
+
+      - **Morph - I** : MoveIt with Nav2 Pick and Place
+
+        https://github.com/user-attachments/assets/6b105c1f-9fc4-44df-bd5a-b8b21064ed55
 
 2. Tripod Mobile Manipulator
     - [MuJoco](./MUJOCO/Tripod) (🚀 **Click to explore more**)
