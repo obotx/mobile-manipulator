@@ -5,8 +5,11 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-      Splitter Ratio: 0.5
-    Tree Height: 256
+        - /TF1
+        - /TF1/Status1
+        - /MarkerArray1
+      Splitter Ratio: 0.3434704840183258
+    Tree Height: 677
   - Class: rviz_common/Help
     Name: Help
   - Class: rviz_common/Views
@@ -656,32 +659,257 @@ Visualization Manager:
       Value: true
       Velocity_Scaling_Factor: 0.1
     - Class: rviz_default_plugins/TF
-      Enabled: false
+      Enabled: true
       Filter (blacklist): ""
       Filter (whitelist): ""
       Frame Timeout: 15
       Frames:
         All Enabled: true
-      Marker Scale: 0.10000000149011612
+        landmark:
+          Value: true
+        left_hand:
+          Value: true
+        obotx_base_chapa:
+          Value: true
+        obotx_base_docking_contact:
+          Value: true
+        obotx_base_footprint_platform:
+          Value: true
+        obotx_base_link_platform:
+          Value: true
+        obotx_base_logo_front:
+          Value: true
+        obotx_base_logo_rear:
+          Value: true
+        obotx_front_left_wheel:
+          Value: true
+        obotx_front_right_wheel:
+          Value: true
+        obotx_left_arm_root_link:
+          Value: true
+        obotx_left_base_link_palm:
+          Value: true
+        obotx_left_finger_1_link_0:
+          Value: true
+        obotx_left_finger_1_link_1:
+          Value: true
+        obotx_left_finger_1_link_2:
+          Value: true
+        obotx_left_finger_1_link_3:
+          Value: true
+        obotx_left_finger_2_link_0:
+          Value: true
+        obotx_left_finger_2_link_1:
+          Value: true
+        obotx_left_finger_2_link_2:
+          Value: true
+        obotx_left_finger_2_link_3:
+          Value: true
+        obotx_left_finger_middle_link_0:
+          Value: true
+        obotx_left_finger_middle_link_1:
+          Value: true
+        obotx_left_finger_middle_link_2:
+          Value: true
+        obotx_left_finger_middle_link_3:
+          Value: true
+        obotx_left_hinge_telescopic_hand:
+          Value: true
+        obotx_left_palm:
+          Value: true
+        obotx_left_palm_wrist_pitch:
+          Value: true
+        obotx_left_palm_wrist_roll:
+          Value: true
+        obotx_left_slider_left:
+          Value: true
+        obotx_left_slider_left_hinge_frame:
+          Value: true
+        obotx_left_slider_left_prismatic_frame:
+          Value: true
+        obotx_left_slider_right_hinge_frame:
+          Value: true
+        obotx_left_slider_right_mesh:
+          Value: true
+        obotx_left_slider_right_slide_frame:
+          Value: true
+        obotx_left_telescopic_arm:
+          Value: true
+        obotx_left_tool0:
+          Value: true
+        obotx_rear_left_wheel:
+          Value: true
+        obotx_rear_right_wheel:
+          Value: true
+        obotx_right_arm_root_link:
+          Value: true
+        obotx_right_base_link_palm:
+          Value: true
+        obotx_right_finger_1_link_0:
+          Value: true
+        obotx_right_finger_1_link_1:
+          Value: true
+        obotx_right_finger_1_link_2:
+          Value: true
+        obotx_right_finger_1_link_3:
+          Value: true
+        obotx_right_finger_2_link_0:
+          Value: true
+        obotx_right_finger_2_link_1:
+          Value: true
+        obotx_right_finger_2_link_2:
+          Value: true
+        obotx_right_finger_2_link_3:
+          Value: true
+        obotx_right_finger_middle_link_0:
+          Value: true
+        obotx_right_finger_middle_link_1:
+          Value: true
+        obotx_right_finger_middle_link_2:
+          Value: true
+        obotx_right_finger_middle_link_3:
+          Value: true
+        obotx_right_hinge_telescopic_hand:
+          Value: true
+        obotx_right_palm:
+          Value: true
+        obotx_right_palm_wrist_pitch:
+          Value: true
+        obotx_right_palm_wrist_roll:
+          Value: true
+        obotx_right_slider_left:
+          Value: true
+        obotx_right_slider_left_hinge_frame:
+          Value: true
+        obotx_right_slider_left_prismatic_frame:
+          Value: true
+        obotx_right_slider_right_hinge_frame:
+          Value: true
+        obotx_right_slider_right_mesh:
+          Value: true
+        obotx_right_slider_right_slide_frame:
+          Value: true
+        obotx_right_telescopic_arm:
+          Value: true
+        obotx_right_tool0:
+          Value: true
+        odom:
+          Value: true
+        odom_gt:
+          Value: true
+        right_hand:
+          Value: true
+        world:
+          Value: true
+      Marker Scale: 0.30000001192092896
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        {}
+        odom_gt:
+          obotx_base_footprint_platform:
+            landmark:
+              {}
+            obotx_base_link_platform:
+              obotx_base_chapa:
+                {}
+              obotx_base_docking_contact:
+                {}
+              obotx_base_logo_front:
+                {}
+              obotx_base_logo_rear:
+                {}
+              obotx_front_left_wheel:
+                {}
+              obotx_front_right_wheel:
+                {}
+              obotx_left_arm_root_link:
+                obotx_left_slider_left_prismatic_frame:
+                  obotx_left_slider_left_hinge_frame:
+                    obotx_left_slider_left:
+                      obotx_left_telescopic_arm:
+                        obotx_left_hinge_telescopic_hand:
+                          obotx_left_palm_wrist_roll:
+                            obotx_left_palm_wrist_pitch:
+                              obotx_left_base_link_palm:
+                                obotx_left_palm:
+                                  obotx_left_finger_1_link_0:
+                                    obotx_left_finger_1_link_1:
+                                      obotx_left_finger_1_link_2:
+                                        obotx_left_finger_1_link_3:
+                                          {}
+                                  obotx_left_finger_2_link_0:
+                                    obotx_left_finger_2_link_1:
+                                      obotx_left_finger_2_link_2:
+                                        obotx_left_finger_2_link_3:
+                                          {}
+                                  obotx_left_finger_middle_link_0:
+                                    obotx_left_finger_middle_link_1:
+                                      obotx_left_finger_middle_link_2:
+                                        obotx_left_finger_middle_link_3:
+                                          {}
+                                  obotx_left_tool0:
+                                    {}
+                obotx_left_slider_right_slide_frame:
+                  obotx_left_slider_right_hinge_frame:
+                    obotx_left_slider_right_mesh:
+                      {}
+              obotx_rear_left_wheel:
+                {}
+              obotx_rear_right_wheel:
+                {}
+              obotx_right_arm_root_link:
+                obotx_right_slider_left_prismatic_frame:
+                  obotx_right_slider_left_hinge_frame:
+                    obotx_right_slider_left:
+                      obotx_right_telescopic_arm:
+                        obotx_right_hinge_telescopic_hand:
+                          obotx_right_palm_wrist_roll:
+                            obotx_right_palm_wrist_pitch:
+                              obotx_right_base_link_palm:
+                                obotx_right_palm:
+                                  obotx_right_finger_1_link_0:
+                                    obotx_right_finger_1_link_1:
+                                      obotx_right_finger_1_link_2:
+                                        obotx_right_finger_1_link_3:
+                                          {}
+                                  obotx_right_finger_2_link_0:
+                                    obotx_right_finger_2_link_1:
+                                      obotx_right_finger_2_link_2:
+                                        obotx_right_finger_2_link_3:
+                                          {}
+                                  obotx_right_finger_middle_link_0:
+                                    obotx_right_finger_middle_link_1:
+                                      obotx_right_finger_middle_link_2:
+                                        obotx_right_finger_middle_link_3:
+                                          {}
+                                  obotx_right_tool0:
+                                    {}
+                obotx_right_slider_right_slide_frame:
+                  obotx_right_slider_right_hinge_frame:
+                    obotx_right_slider_right_mesh:
+                      {}
       Update Interval: 0
-      Value: false
+      Value: true
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
       Name: MarkerArray
       Namespaces:
-        {}
+        body_edges: true
+        body_joints: true
+        hand_left_edges: true
+        hand_left_joints: true
+        hand_left_tips: true
+        hand_right_edges: true
+        hand_right_joints: true
+        hand_right_tips: true
       Topic:
         Depth: 5
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /rviz_visual_tools
+        Value: /body_landmarks
       Value: true
   Enabled: true
   Global Options:
@@ -701,25 +929,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.0437514781951904
+      Distance: 2.187631368637085
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.3520994484424591
-        Y: 0.38540276885032654
-        Z: 0.14069108664989471
+        X: 0.2198338508605957
+        Y: -0.04252609610557556
+        Z: 1.1251137256622314
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5150007605552673
+      Pitch: 0.48000091314315796
       Target Frame: world
       Value: Orbit (rviz_default_plugins)
-      Yaw: 1.0120097398757935
+      Yaw: 6.21019172668457
     Saved: ~
 Window Geometry:
   Displays:
@@ -733,11 +961,11 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000001c900000379fc0200000006fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb000000100044006900730070006c006100790073010000003b0000013b000000c700fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000017c000001f30000016900fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a0056006900650077007300000002fe000000b6000000a000fffffffb00000024005200760069007a00560069007300750061006c0054006f006f006c007300470075006901000003750000003f0000003f00ffffff000003cf0000037900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000001000000000000023100000379fc0200000006fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb000000100044006900730070006c006100790073010000003b000002e0000000c700fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067000000017c000001f30000016900fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a0056006900650077007300000002fe000000b6000000a000fffffffb00000024005200760069007a00560069007300750061006c0054006f006f006c00730047007500690100000321000000930000003f00ffffff000003670000037900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RvizVisualToolsGui:
     collapsed: false
   Views:
     collapsed: false
   Width: 1438
-  X: 8
-  Y: -33
+  X: 12
+  Y: -32
