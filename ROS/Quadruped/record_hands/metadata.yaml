@@ -1,0 +1,44 @@
+rosbag2_bagfile_information:
+  version: 9
+  storage_identifier: mcap
+  duration:
+    nanoseconds: 43200870327
+  starting_time:
+    nanoseconds_since_epoch: 1781279685871070101
+  message_count: 742
+  topics_with_message_count:
+    - topic_metadata:
+        name: /raw_landmarks
+        type: std_msgs/msg/String
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: transient_local
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 1
+              nsec: 0
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_df668c740482bbd48fb39d76a70dfd4bd59db1288021743503259e948f6b1a18
+      message_count: 742
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - record_hands_0.mcap
+  files:
+    - path: record_hands_0.mcap
+      starting_time:
+        nanoseconds_since_epoch: 1781279685871070101
+      duration:
+        nanoseconds: 43200870327
+      message_count: 742
+  custom_data: ~
+  ros_distro: jazzy

@@ -9,10 +9,10 @@
     <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+
     <!-- <group name="base_position">
         <joint name="position" />
     </group> -->
-
 
     <group name="left_finger_1">
         <chain base_link="obotx_left_palm" tip_link="obotx_left_finger_1_link_3"/>
@@ -114,6 +114,7 @@
                     parent_link="obotx_right_tool0" 
                     group="gripper_right" 
                     parent_group="right_arm"/>
+                    
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
     <virtual_joint name="position" type="planar" parent_frame="odom_gt" child_link="obotx_base_footprint_platform"/>
     <joint_property joint_name="position" property_name="motion_model" value="holonomic" />
@@ -161,59 +162,59 @@
 
     <!-- Gripper Open/Close -->
     <group_state name="close" group="gripper_left">
-        <joint name="obotx_left_palm_finger_1_joint"    value="-0.12"/>
-        <joint name="obotx_left_palm_finger_2_joint"    value="0.12"/>
-        <joint name="obotx_left_finger_1_joint_1"       value="0.6"/>
-        <joint name="obotx_left_finger_1_joint_2"       value="0.001"/>
-        <joint name="obotx_left_finger_1_joint_3"       value="-0.65"/>
-        <joint name="obotx_left_finger_2_joint_1"       value="0.6"/>
-        <joint name="obotx_left_finger_2_joint_2"       value="0.001"/>
-        <joint name="obotx_left_finger_2_joint_3"       value="-0.65"/>
-        <joint name="obotx_left_finger_middle_joint_1"  value="0.6"/>
-        <joint name="obotx_left_finger_middle_joint_2"  value="0.001"/>
-        <joint name="obotx_left_finger_middle_joint_3"  value="-0.65"/>
+        <joint name="obotx_left_palm_finger_1_joint"    value="0.0"/>
+        <joint name="obotx_left_palm_finger_2_joint"    value="0.0"/>
+        <joint name="obotx_left_finger_1_joint_1"       value="0.349066"/>
+        <joint name="obotx_left_finger_1_joint_2"       value="0.174533"/>
+        <joint name="obotx_left_finger_1_joint_3"       value="-0.610865"/>
+        <joint name="obotx_left_finger_2_joint_1"       value="0.349066"/>
+        <joint name="obotx_left_finger_2_joint_2"       value="0.174533"/>
+        <joint name="obotx_left_finger_2_joint_3"       value="-0.610865"/>
+        <joint name="obotx_left_finger_middle_joint_1"  value="0.349066"/>
+        <joint name="obotx_left_finger_middle_joint_2"  value="0.174533"/>
+        <joint name="obotx_left_finger_middle_joint_3"  value="-0.610865"/>
     </group_state>
 
     <group_state name="close" group="gripper_right">
-        <joint name="obotx_right_palm_finger_1_joint"   value="-0.120000"/>
-        <joint name="obotx_right_palm_finger_2_joint"   value="0.120000"/>
-        <joint name="obotx_right_finger_1_joint_1"      value="0.6"/>
-        <joint name="obotx_right_finger_1_joint_2"      value="0.001"/>
-        <joint name="obotx_right_finger_1_joint_3"      value="-0.65"/>
-        <joint name="obotx_right_finger_2_joint_1"      value="0.6"/>
-        <joint name="obotx_right_finger_2_joint_2"      value="0.001"/>
-        <joint name="obotx_right_finger_2_joint_3"      value="-0.65"/>
-        <joint name="obotx_right_finger_middle_joint_1" value="0.6"/>
-        <joint name="obotx_right_finger_middle_joint_2" value="0.001"/>
-        <joint name="obotx_right_finger_middle_joint_3" value="-0.65"/>
+        <joint name="obotx_right_palm_finger_1_joint"   value="0.0"/>
+        <joint name="obotx_right_palm_finger_2_joint"   value="0.0"/>
+        <joint name="obotx_right_finger_1_joint_1"      value="0.349066"/>
+        <joint name="obotx_right_finger_1_joint_2"      value="0.174533"/>
+        <joint name="obotx_right_finger_1_joint_3"      value="-0.610865"/>
+        <joint name="obotx_right_finger_2_joint_1"      value="0.349066"/>
+        <joint name="obotx_right_finger_2_joint_2"      value="0.174533"/>
+        <joint name="obotx_right_finger_2_joint_3"      value="-0.610865"/>
+        <joint name="obotx_right_finger_middle_joint_1" value="0.349066"/>
+        <joint name="obotx_right_finger_middle_joint_2" value="0.174533"/>
+        <joint name="obotx_right_finger_middle_joint_3" value="-0.610865"/>
     </group_state>
 
     <group_state name="open" group="gripper_left">
-        <joint name="obotx_left_palm_finger_1_joint"    value="-0.120000"/>
-        <joint name="obotx_left_palm_finger_2_joint"    value="0.120000"/>
-        <joint name="obotx_left_finger_1_joint_1"       value="0.049500"/>
-        <joint name="obotx_left_finger_1_joint_2"       value="0.000033"/>
-        <joint name="obotx_left_finger_1_joint_3"       value="-0.650000"/>
-        <joint name="obotx_left_finger_2_joint_1"       value="0.049500"/>
-        <joint name="obotx_left_finger_2_joint_2"       value="0.000033"/>
-        <joint name="obotx_left_finger_2_joint_3"       value="-0.650000"/>
-        <joint name="obotx_left_finger_middle_joint_1"  value="0.049500"/>
-        <joint name="obotx_left_finger_middle_joint_2"  value="0.000033"/>
-        <joint name="obotx_left_finger_middle_joint_3"  value="-0.650000"/>
+        <joint name="obotx_left_palm_finger_2_joint"    value="0.0"/>
+        <joint name="obotx_left_palm_finger_1_joint"    value="0.0"/>
+        <joint name="obotx_left_finger_1_joint_1"       value="0.0610865"/>
+        <joint name="obotx_left_finger_1_joint_2"       value="0.0"/>
+        <joint name="obotx_left_finger_1_joint_3"       value="-0.0872665"/>
+        <joint name="obotx_left_finger_2_joint_1"       value="0.0610865"/>
+        <joint name="obotx_left_finger_2_joint_2"       value="0.0"/>
+        <joint name="obotx_left_finger_2_joint_3"       value="-0.0872665"/>
+        <joint name="obotx_left_finger_middle_joint_1"  value="0.0610865"/>
+        <joint name="obotx_left_finger_middle_joint_2"  value="0.0"/>
+        <joint name="obotx_left_finger_middle_joint_3"  value="-0.0872665"/>
     </group_state>
 
     <group_state name="open" group="gripper_right">
         <joint name="obotx_right_palm_finger_1_joint"   value="-0.120000"/>
         <joint name="obotx_right_palm_finger_2_joint"   value="0.120000"/>
-        <joint name="obotx_right_finger_1_joint_1"      value="0.049500"/>
-        <joint name="obotx_right_finger_1_joint_2"      value="0.000033"/>
-        <joint name="obotx_right_finger_1_joint_3"      value="-0.650000"/>
-        <joint name="obotx_right_finger_2_joint_1"      value="0.049500"/>
-        <joint name="obotx_right_finger_2_joint_2"      value="0.000033"/>
-        <joint name="obotx_right_finger_2_joint_3"      value="-0.650000"/>
-        <joint name="obotx_right_finger_middle_joint_1" value="0.049500"/>
-        <joint name="obotx_right_finger_middle_joint_2" value="0.000033"/>
-        <joint name="obotx_right_finger_middle_joint_3" value="-0.650000"/>
+        <joint name="obotx_right_finger_1_joint_1"      value="0.0610865"/>
+        <joint name="obotx_right_finger_1_joint_2"      value="0.0"/>
+        <joint name="obotx_right_finger_1_joint_3"      value="-0.0872665"/>
+        <joint name="obotx_right_finger_2_joint_1"      value="0.0610865"/>
+        <joint name="obotx_right_finger_2_joint_2"      value="0.0"/>
+        <joint name="obotx_right_finger_2_joint_3"      value="-0.0872665"/>
+        <joint name="obotx_right_finger_middle_joint_1" value="0.0610865"/>
+        <joint name="obotx_right_finger_middle_joint_2" value="0.0"/>
+        <joint name="obotx_right_finger_middle_joint_3" value="-0.0872665"/>
     </group_state>
 
     <!-- Whole Body Gripper Open/Close -->

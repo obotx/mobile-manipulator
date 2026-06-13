@@ -122,6 +122,7 @@ def generate_launch_description():
         servo_config_right = os.path.join(config_dir, 'servo_right.yaml')
         pkg_mm_share = FindPackageShare(PKG_MM_DESC).find(PKG_MM_DESC)
         urdf_path = os.path.join(pkg_mm_share, 'urdf', 'robot', f'{robot_name}.urdf.xacro')
+        pilz_cartesian_limits_file_path = os.path.join(config_dir, 'pilz_cartesian_limits.yaml')
         
         moveit_config = (
             MoveItConfigsBuilder(robot_name, package_name=PKG_MOVEIT_CONFIG)
@@ -131,14 +132,15 @@ def generate_launch_description():
             .robot_description_kinematics(file_path=os.path.join(config_dir, 'kinematics.yaml'))
             .trajectory_execution(file_path=os.path.join(config_dir, 'moveit_controllers.yaml'))
             .planning_pipelines(
-                pipelines=["ompl"],
-                default_planning_pipeline="ompl"
+                pipelines=["ompl", "pilz_industrial_motion_planner", "stomp"],
+                default_planning_pipeline="pilz_industrial_motion_planner"
             )
             .planning_scene_monitor(
                 publish_robot_description=False,
                 publish_robot_description_semantic=True,
                 publish_planning_scene=True,
             )
+            .pilz_cartesian_limits(file_path=pilz_cartesian_limits_file_path)
             .to_moveit_configs()
         )
 
@@ -159,6 +161,7 @@ def generate_launch_description():
         planning_group_name_right = {"planning_group_name": "right_arm"}
 
         wait_for_active_controllers(context)
+
 
         container = launch_ros.actions.ComposableNodeContainer(
             name="moveit_servo_demo_container",
@@ -261,7 +264,7 @@ def generate_launch_description():
             }]
         )
 
-        start_move_group_cmd = Node(
+        move_group_cmd = Node(
             package='moveit_ros_move_group',
             executable='move_group',
             output='screen',
@@ -302,7 +305,7 @@ def generate_launch_description():
             condition=IfCondition(launch_as_standalone_node),
         )
 
-        start_rviz_cmd = Node(
+        rviz_cmd = Node(
             package='rviz2',
             executable='rviz2',
             output='screen',
@@ -321,16 +324,17 @@ def generate_launch_description():
         rviz_exit_handler = RegisterEventHandler(
             condition=IfCondition(LaunchConfiguration('use_rviz')),
             event_handler=OnProcessExit(
-                target_action=start_rviz_cmd,
+                target_action=rviz_cmd,
                 on_exit=EmitEvent(event=Shutdown(reason='RViz exited')),
             ),
         )
 
         return [
+            # move_group_cmd,
             container,
             servo_node_left, 
             servo_node_right, 
-            start_rviz_cmd, 
+            rviz_cmd, 
             base_bridge_node,  
             odom_republisher_node, 
             rviz_exit_handler,

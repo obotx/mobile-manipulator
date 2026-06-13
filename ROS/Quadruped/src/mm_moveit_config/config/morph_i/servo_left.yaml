@@ -32,6 +32,7 @@ pose_command_in_topic: ~/pose_cmd
 joint_topic: /joint_states
 status_topic: ~/status
 command_out_topic: /left_arm_controller/joint_trajectory
+is_primary_planning_scene_monitor: true
 
 check_collisions: false
 collision_check_rate: 30.0  # [Hz]

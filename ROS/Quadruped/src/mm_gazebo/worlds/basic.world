@@ -14,19 +14,24 @@
         <filename>gz-physics-dartsim-plugin</filename> 
       </engine>
     </plugin>
+    <!-- Plugin for handling user commands -->
     <plugin
       filename="gz-sim-user-commands-system"
       name="gz::sim::systems::UserCommands">
     </plugin>
+
+    <!-- Plugin for broadcasting scene updates -->
     <plugin
       filename="gz-sim-scene-broadcaster-system"
       name="gz::sim::systems::SceneBroadcaster">
     </plugin>
-    <plugin
-      filename="gz-sim-contact-system"
-      name="gz::sim::systems::Contact">
-    </plugin>
 
+    <!-- Plugin for sensor handling -->
+    <plugin
+      filename="gz-sim-sensors-system"
+      name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
 
     <light type="directional" name="sun">
       <cast_shadows>true</cast_shadows>

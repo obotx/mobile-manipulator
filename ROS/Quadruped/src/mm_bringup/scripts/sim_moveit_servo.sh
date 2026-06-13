@@ -34,7 +34,7 @@ PIDS+=($!)
 
 
 echo "[INFO] Launching Landmarks..."
-ros2 launch mm_robot_teleop hand_tracking.launch.py use_rviz:=false offset_z:=1.4 parent_frame:=odom_gt
+ros2 launch mm_robot_teleop hand_tracking.launch.py use_rviz:=false offset_x:=0.5 offset_z:=1.0 parent_frame:=odom_gt
 PIDS+=($!)
 
 wait

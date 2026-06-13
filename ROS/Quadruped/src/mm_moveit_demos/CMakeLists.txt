@@ -23,10 +23,13 @@ find_package(graph_msgs REQUIRED)
 find_package(moveit_visual_tools REQUIRED)
 find_package(geometric_shapes REQUIRED)
 find_package(tf2_eigen REQUIRED)
-find_package(tf2_geometry_msgs REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(rviz_visual_tools REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(control_msgs REQUIRED)
+find_package(rclcpp_action REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED src/pick_place_task.cpp)
 target_include_directories(${PROJECT_NAME}
@@ -45,36 +48,48 @@ ament_target_dependencies(pick_place_demo
 
 add_executable(move_arm_pose src/move_arm_pose.cpp)
 ament_target_dependencies(move_arm_pose
-rclcpp
-moveit_ros_planning_interface
-geometry_msgs
-sensor_msgs 
-graph_msgs
-tf2_geometry_msgs
-tf2
-moveit_visual_tools         
-rviz_visual_tools 
+  rclcpp
+  moveit_ros_planning_interface
+  geometry_msgs
+  sensor_msgs 
+  graph_msgs
+  tf2_geometry_msgs
+  tf2
+  moveit_visual_tools         
+  rviz_visual_tools 
 )
 
 add_executable(move_group_state src/move_group_state.cpp)
 ament_target_dependencies(move_group_state
-rclcpp
-moveit_ros_planning_interface
-geometry_msgs
-sensor_msgs 
-graph_msgs
-tf2_geometry_msgs
-tf2
-moveit_visual_tools         
-rviz_visual_tools 
+  rclcpp
+  moveit_ros_planning_interface
+  geometry_msgs
+  sensor_msgs 
+  graph_msgs
+  tf2_geometry_msgs
+  tf2
+  moveit_visual_tools         
+  rviz_visual_tools 
 )
+
+add_executable(direct_pose_target src/direct_pose_target.cpp)
+ament_target_dependencies(direct_pose_target
+  rclcpp
+  rclcpp_action
+  moveit_ros_planning_interface
+  geometry_msgs
+  tf2_geometry_msgs
+  tf2
+  tf2_ros
+)
+
 
 install(PROGRAMS
   src/pick_place.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(TARGETS ${PROJECT_NAME} pick_place_demo move_arm_pose move_group_state
+install(TARGETS ${PROJECT_NAME} direct_pose_target pick_place_demo move_arm_pose move_group_state
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -88,7 +103,8 @@ ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 ament_export_dependencies(
   eigen3_cmake_module Eigen3 geometry_msgs moveit_task_constructor_core rclcpp moveit_core
-  moveit_ros_planning_interface sensor_msgs
+  moveit_ros_planning_interface sensor_msgs moveit_ros_planning_interface tf2_ros tf2_geometry_msgs
+  control_msgs rclcpp_action
 )
 
 ament_package()

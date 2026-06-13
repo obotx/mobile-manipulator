@@ -65,7 +65,11 @@ def generate_launch_description():
         executable='landmark_processor',
         name='landmark_processor',
         output='screen',
-        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+        parameters=[
+            {'fix_x': True},
+            {'fix_y': True},
+            {'fix_z': False},
+            {'use_sim_time': LaunchConfiguration('use_sim_time')}]
     )
 
     marker_landmark_node = Node(
@@ -85,9 +89,9 @@ def generate_launch_description():
             '--x', offset_x,
             '--y', offset_y,
             '--z', offset_z,
-            '--yaw', '0.0',
-            '--pitch', '0.0',
             '--roll', '0.0',
+            '--pitch', '0.0',
+            '--yaw', '3.14159265',
             '--frame-id', parent_frame,
             '--child-frame-id', 'landmark'
         ],

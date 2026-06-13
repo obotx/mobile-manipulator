@@ -23,11 +23,18 @@ endif()
 
 install(
   DIRECTORY
+    src
     urdf
     meshes
     rviz
     launch
   DESTINATION share/${PROJECT_NAME}
 )
+
+install(PROGRAMS
+  src/workspace_visualizer.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 
 ament_package()

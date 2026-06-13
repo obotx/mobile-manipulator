@@ -123,6 +123,8 @@ class LandmarkMarker(Node):
         m.id = marker_id
         m.type = Marker.LINE_LIST
         m.scale.x = 0.01
+        m.scale.y = 0.01
+        m.scale.z = 0.01
         m.color.r, m.color.g, m.color.b, m.color.a = color
         for p in valid:
             pt = Point()
@@ -139,7 +141,7 @@ class LandmarkMarker(Node):
         m.pose.position.x = x
         m.pose.position.y = y
         m.pose.position.z = z + 0.15
-        m.scale.z = 0.08
+        m.scale.z = 0.01
         m.color.r, m.color.g, m.color.b, m.color.a = color
         m.text = text
         return m

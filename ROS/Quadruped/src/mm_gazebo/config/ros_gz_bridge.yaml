@@ -3,19 +3,36 @@
   ros_type_name: "rosgraph_msgs/msg/Clock"
   gz_type_name: "gz.msgs.Clock"
   direction: GZ_TO_ROS
+  
 # - ros_topic_name: "/cmd_vel"
 #   gz_topic_name: "/cmd_vel"
 #   ros_type_name: "geometry_msgs/msg/Twist"
 #   gz_type_name: "gz.msgs.Twist"
 #   direction: ROS_TO_GZ
 #   lazy: false
+
 - ros_topic_name: "/nestle_choco/pose"
   gz_topic_name: "/model/nestle_choco/pose"
   ros_type_name: "geometry_msgs/msg/Pose"
   gz_type_name: "gz.msgs.Pose"
   direction: GZ_TO_ROS
+
 - ros_topic_name: "/MORPH_I/pose"
   gz_topic_name: "/model/MORPH_I/pose"
   ros_type_name: "geometry_msgs/msg/Pose"
   gz_type_name: "gz.msgs.Pose"
+  direction: GZ_TO_ROS
+
+# Camera image
+- ros_topic_name: "/obotx_camera"
+  gz_topic_name: "/obotx_camera"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+# Camera info (calibration data)
+- ros_topic_name: "/camera_info"
+  gz_topic_name: "/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
   direction: GZ_TO_ROS

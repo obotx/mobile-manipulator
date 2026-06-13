@@ -11,6 +11,16 @@ class LandmarkProcessorNode(Node):
     def __init__(self):
         super().__init__('landmark_processor_node')
         
+        self.declare_parameter('fix_x', True)
+        self.declare_parameter('fix_y', True)
+        self.declare_parameter('fix_z', False)
+        
+        self.fix_x = self.get_parameter('fix_x').value
+        self.fix_y = self.get_parameter('fix_y').value
+        self.fix_z = self.get_parameter('fix_z').value
+        
+        self.get_logger().info(f"Origin fixing enabled: X={self.fix_x}, Y={self.fix_y}, Z={self.fix_z}")
+        
         self.subscription = self.create_subscription(
             String, '/raw_landmarks', self.raw_callback, 10)
         
@@ -18,7 +28,7 @@ class LandmarkProcessorNode(Node):
         self.left_hand_pub = self.create_publisher(HandLandmark, '/left_hand', 10)
         self.right_hand_pub = self.create_publisher(HandLandmark, '/right_hand', 10)
         
-        self.alpha = 0.3  # 0.3 = 70% history, 30% new data
+        self.alpha = 0.7  # 70% history, 30% new data
         
         self.prev_wrist_pos = {
             'Left': {'x': 0.0, 'y': 0.0, 'z': 0.0},
@@ -43,10 +53,13 @@ class LandmarkProcessorNode(Node):
     def get_distance(self, p1, p2):
         return ((p1['x'] - p2['x'])**2 + (p1['y'] - p2['y'])**2 + (p1['z'] - p2['z'])**2)**0.5
 
-    def _smooth_and_format_hand(self, hand, side_label) -> HandLandmark:
-        # 1. Transform wrist to ROS frame
+    def _smooth_and_format_hand(self, hand, side_label, shoulder_mid) -> HandLandmark:
         wx, wy, wz = hand["wrist_cm"]["x"], hand["wrist_cm"]["y"], hand["wrist_cm"]["z"]
         ros_wx, ros_wy, ros_wz = self._js_to_ros(wx, wy, wz)
+
+        ros_wx -= shoulder_mid[0]
+        ros_wy -= shoulder_mid[1]
+        ros_wz -= shoulder_mid[2]
 
         if not self.is_initialized[side_label]:
             self.prev_wrist_pos[side_label] = {'x': ros_wx, 'y': ros_wy, 'z': ros_wz}
@@ -56,10 +69,14 @@ class LandmarkProcessorNode(Node):
                 for i in range(21):
                     jx, jy, jz = joints[i]['x'], joints[i]['y'], joints[i]['z']
                     rjx, rjy, rjz = self._js_to_ros(jx, jy, jz)
+                    
+                    rjx -= shoulder_mid[0]
+                    rjy -= shoulder_mid[1]
+                    rjz -= shoulder_mid[2]
+                    
                     self.prev_joints[side_label][i] = {'x': rjx, 'y': rjy, 'z': rjz}
             self.is_initialized[side_label] = True
         
-        # 2. Smooth Wrist (in ROS coordinates)
         self.prev_wrist_pos[side_label]['x'] = self.alpha * ros_wx + (1 - self.alpha) * self.prev_wrist_pos[side_label]['x']
         self.prev_wrist_pos[side_label]['y'] = self.alpha * ros_wy + (1 - self.alpha) * self.prev_wrist_pos[side_label]['y']
         self.prev_wrist_pos[side_label]['z'] = self.alpha * ros_wz + (1 - self.alpha) * self.prev_wrist_pos[side_label]['z']
@@ -69,13 +86,16 @@ class LandmarkProcessorNode(Node):
         smoothed_wrist_m.y = round(self.prev_wrist_pos[side_label]['y'] / 100.0, 4)
         smoothed_wrist_m.z = round(self.prev_wrist_pos[side_label]['z'] / 100.0, 4)
 
-        # 3. Transform and Smooth Joints
         joints = hand.get("joints_cm", [])
         smoothed_joints_m = []
         if len(joints) == 21:
             for i in range(21):
                 jx, jy, jz = joints[i]['x'], joints[i]['y'], joints[i]['z']
                 rjx, rjy, rjz = self._js_to_ros(jx, jy, jz)
+                
+                rjx -= shoulder_mid[0]
+                rjy -= shoulder_mid[1]
+                rjz -= shoulder_mid[2]
                 
                 pj = self.prev_joints[side_label][i]
                 pj['x'] = self.alpha * rjx + (1 - self.alpha) * pj['x']
@@ -88,7 +108,6 @@ class LandmarkProcessorNode(Node):
                 pt.z = round(pj['z'] / 100.0, 4)
                 smoothed_joints_m.append(pt)
 
-        # 4. Build Message
         msg = HandLandmark()
         msg.present = True
         msg.confidence = round(hand.get("confidence", 0.0), 3)
@@ -96,7 +115,6 @@ class LandmarkProcessorNode(Node):
         msg.wrist_m = smoothed_wrist_m
         msg.joints_m = smoothed_joints_m
         
-        # Transform 3D vectors (palm normal and finger direction)
         if "palm_normal" in hand and isinstance(hand["palm_normal"], list) and len(hand["palm_normal"]) == 3:
             pn = hand["palm_normal"]
             msg.palm_normal = list(self._js_to_ros(pn[0], pn[1], pn[2]))
@@ -129,11 +147,39 @@ class LandmarkProcessorNode(Node):
         assigned_left = None
         assigned_right = None
 
-        # Helper to get ROS coordinates for distance calculation
+        shoulder_mid = [0.0, 0.0, 0.0]
+        raw_body = raw_data.get("body", {})
+        
+        ls_key = None
+        rs_key = None
+        for k in raw_body.keys():
+            k_lower = k.lower()
+            if "shoulder" in k_lower:
+                if "left" in k_lower or k_lower.endswith("_l"):
+                    ls_key = k
+                elif "right" in k_lower or k_lower.endswith("_r"):
+                    rs_key = k
+        
+        if ls_key and rs_key:
+            ls = raw_body[ls_key]
+            rs = raw_body[rs_key]
+            if isinstance(ls, list) and len(ls) == 3 and isinstance(rs, list) and len(rs) == 3:
+                rls_x, rls_y, rls_z = self._js_to_ros(ls[0], ls[1], ls[2])
+                rrs_x, rrs_y, rrs_z = self._js_to_ros(rs[0], rs[1], rs[2])
+                
+                shoulder_mid = [
+                    (rls_x + rrs_x) / 2.0 if self.fix_x else 0.0,
+                    (rls_y + rrs_y) / 2.0 if self.fix_y else 0.0,
+                    (rls_z + rrs_z) / 2.0 if self.fix_z else 0.0
+                ]
+
         def get_ros_pos(h):
             wx, wy, wz = h["wrist_cm"]["x"], h["wrist_cm"]["y"], h["wrist_cm"]["z"]
             rx, ry, rz = self._js_to_ros(wx, wy, wz)
-            return {'x': rx, 'y': ry, 'z': rz}, wx # Return ROS pos and original JS x for left/right check
+            rx -= shoulder_mid[0]
+            ry -= shoulder_mid[1]
+            rz -= shoulder_mid[2]
+            return {'x': rx, 'y': ry, 'z': rz}, wx
 
         if len(present_hands) == 1:
             hand = present_hands[0]
@@ -143,7 +189,7 @@ class LandmarkProcessorNode(Node):
             dist_right = self.get_distance(pos_ros, self.prev_wrist_pos["Right"]) if self.is_initialized["Right"] else float('inf')
             
             if not self.is_initialized["Left"] and not self.is_initialized["Right"]:
-                if js_x < 0: # JS x < 0 means left side of the image
+                if js_x < 0:
                     assigned_left = hand
                     self.is_initialized["Left"] = True
                 else:
@@ -162,7 +208,7 @@ class LandmarkProcessorNode(Node):
             p2_ros, js_x2 = get_ros_pos(h2)
             
             if not self.is_initialized["Left"] and not self.is_initialized["Right"]:
-                if js_x1 < js_x2: # Smaller JS x is more to the left
+                if js_x1 < js_x2:
                     assigned_left, assigned_right = h1, h2
                 else:
                     assigned_left, assigned_right = h2, h1
@@ -179,14 +225,15 @@ class LandmarkProcessorNode(Node):
                 else:
                     assigned_left, assigned_right = h2, h1
 
-        # 5. Transform and Smooth Body
-        raw_body = raw_data.get("body", {})
         smoothed_body_msgs = []
         
         if not self.is_body_initialized and raw_body:
             for joint, coords in raw_body.items():
                 if isinstance(coords, list) and len(coords) == 3:
                     rx, ry, rz = self._js_to_ros(coords[0], coords[1], coords[2])
+                    rx -= shoulder_mid[0]
+                    ry -= shoulder_mid[1]
+                    rz -= shoulder_mid[2]
                     self.prev_body[joint] = [rx, ry, rz]
             self.is_body_initialized = True
             
@@ -194,10 +241,17 @@ class LandmarkProcessorNode(Node):
             if isinstance(coords, list) and len(coords) == 3:
                 if joint not in self.prev_body:
                     rx, ry, rz = self._js_to_ros(coords[0], coords[1], coords[2])
+                    rx -= shoulder_mid[0]
+                    ry -= shoulder_mid[1]
+                    rz -= shoulder_mid[2]
                     self.prev_body[joint] = [rx, ry, rz]
                 
-                # Transform current coordinates
                 nx, ny, nz = self._js_to_ros(coords[0], coords[1], coords[2])
+                
+                nx -= shoulder_mid[0]
+                ny -= shoulder_mid[1]
+                nz -= shoulder_mid[2]
+                
                 px, py, pz = self.prev_body[joint]
                 
                 sx = self.alpha * nx + (1 - self.alpha) * px
@@ -213,7 +267,6 @@ class LandmarkProcessorNode(Node):
                 body_msg.z = round(sz / 100.0, 4)
                 smoothed_body_msgs.append(body_msg)
 
-        # 6. Build Output Message
         out_msg = LandmarkMsg()
         out_msg.t = float(raw_data.get("t", 0.0))
         out_msg.seq = int(raw_data.get("seq", 0))
@@ -225,14 +278,14 @@ class LandmarkProcessorNode(Node):
         out_msg.body_landmarks = smoothed_body_msgs
 
         if assigned_left:
-            left_hand_msg = self._smooth_and_format_hand(assigned_left, "Left")
+            left_hand_msg = self._smooth_and_format_hand(assigned_left, "Left", shoulder_mid)
             out_msg.left_hand = left_hand_msg
             self.left_hand_pub.publish(left_hand_msg)
         else:
             out_msg.left_hand.present = False
             
         if assigned_right:
-            right_hand_msg = self._smooth_and_format_hand(assigned_right, "Right")
+            right_hand_msg = self._smooth_and_format_hand(assigned_right, "Right", shoulder_mid)
             out_msg.right_hand = right_hand_msg
             self.right_hand_pub.publish(right_hand_msg)
         else:

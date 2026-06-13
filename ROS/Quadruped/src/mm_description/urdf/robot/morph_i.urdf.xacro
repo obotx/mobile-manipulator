@@ -6,6 +6,15 @@
     <xacro:arg name="use_gazebo" default="true"/>
     <xacro:arg name="use_moveit" default="true"/>
   
+    <!-- Camera Position -->
+    <xacro:arg name="camera_mount_x" default="-0.25" />
+    <xacro:arg name="camera_mount_y" default="0.0" />
+    <xacro:arg name="camera_mount_z" default="1.45" />
+
+    <xacro:arg name="camera_mount_r" default="0.0" />
+    <xacro:arg name="camera_mount_p" default="0.261799" />
+    <xacro:arg name="camera_mount_y" default="0.0" />
+
     <!-- Left Arm Mount -->
     <xacro:arg name="left_arm_mount_x" default="0.15"/>
     <xacro:arg name="left_arm_mount_y" default="0.15"/>
@@ -34,7 +43,55 @@
     <!-- ================= MOBILE BASE ================= -->
     <xacro:summit_xl prefix="$(arg prefix)" use_gazebo="$(arg use_gazebo)"/>
 
-    <!-- ================= 2. LEFT ARM ================= -->
+    <!-- ================= CAMERA ================= -->
+    <xacro:if value="$(arg use_gazebo)">
+        <link name="$(arg prefix)camera_link">
+            <!-- <visual>
+                <geometry>
+                    <box size="0.05 0.09 0.04"/>
+                </geometry>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <material name="Black">
+                    <color rgba="0.1 0.1 0.1 1.0"/>
+                </material>
+            </visual>
+            <collision>
+                <geometry>
+                    <box size="0.05 0.09 0.04"/>
+                </geometry>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+            </collision>
+            <inertial>
+                <mass value="0.05"/>
+                <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+            </inertial> -->
+        </link>
+
+        <joint name="$(arg prefix)camera_joint" type="fixed">
+            <parent link="$(arg prefix)base_link_platform"/>
+            <child link="$(arg prefix)camera_link"/>
+            <origin xyz="$(arg camera_mount_x) $(arg camera_mount_y) $(arg camera_mount_z)" 
+                    rpy="$(arg camera_mount_r) $(arg camera_mount_p) $(arg camera_mount_y)"/>
+        </joint>
+
+        <gazebo reference="$(arg prefix)camera_link">
+            <sensor name="camera" type="camera">
+                <camera>
+                    <horizontal_fov>2.2</horizontal_fov>
+                    <image>
+                        <width>640</width>
+                        <height>480</height>
+                    </image>
+                </camera>
+                <topic>$(arg prefix)camera</topic>
+                <always_on>1</always_on>
+                <update_rate>30</update_rate>
+                <visualize>true</visualize>
+            </sensor>
+        </gazebo>
+    </xacro:if>
+
+    <!-- ================= LEFT ARM ================= -->
     <joint name="$(arg prefix)left_arm_mount_joint" type="revolute">
         <parent link="$(arg prefix)base_link_platform"/>
         <child link="$(arg prefix)left_arm_root_link"/>

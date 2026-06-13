@@ -31,6 +31,7 @@ setup(
             'landmark_processor = mm_robot_teleop.landmark_processor:main',
             'servo_keyboard = mm_robot_teleop.servo_keyboard:main',
             'hand_pose_tracker = mm_robot_teleop.hand_pose_tracker:main',
+            'group_keyboard = mm_robot_teleop.group_keyboard:main',
         ],
     },
 )
