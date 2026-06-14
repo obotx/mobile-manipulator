@@ -8,7 +8,8 @@ import numpy as np
 import datetime, cv2
 from scipy.optimize import minimize
 import argparse
-from modules.pubsub import IPCPubSub
+from core.basic.pubsub import IPCPubSub
+from core.basic.mj_helpers import *
 import threading
 
 np.set_printoptions(suppress=True, precision=4)
@@ -372,6 +373,7 @@ class ParallelRobot:
         w, xq, yq, zq = self.data.xquat[self.base_id]
         yaw = np.arctan2(2 * (w * zq + xq * yq), 1 - 2 * (yq**2 + zq**2))
         return np.array([x, y, yaw])
+    
     
     def get_encoder(self):
         z1_left  = self.data.qpos[self.get_joint_qpos_addr("ColumnLeftBearingJoint_1")]

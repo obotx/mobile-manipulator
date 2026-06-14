@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from threading import local
 import mujoco, os
 import glfw
@@ -5,8 +8,11 @@ import numpy as np
 import datetime, cv2
 from scipy.optimize import minimize
 import argparse
+from core.basic.mj_helpers import *
+import open3d as o3d
 
 np.set_printoptions(suppress=True, precision=4)
+import numpy as np
 
 def wrap_angle(angle):
     return (angle + np.pi) % (2*np.pi) - np.pi
@@ -168,16 +174,17 @@ class ParallelRobot:
             
         if self.run_mode == "cv":
             self.top_camera_name = "top_view"
-            self.pov_camera_name = "pov"
 
             self.top_camera_id = mujoco.mj_name2id(
                 self.model, mujoco.mjtObj.mjOBJ_CAMERA, self.top_camera_name
             )
+            self.pov_camera_name = "pov"
             self.pov_camera_id = mujoco.mj_name2id(
                 self.model, mujoco.mjtObj.mjOBJ_CAMERA, self.pov_camera_name
             )
 
             self.renderer_top = mujoco.Renderer(self.model, height=640, width=1024)
+            self.renderer_pov_depth = mujoco.Renderer(self.model, height=640, width=1024)
             self.renderer_pov = mujoco.Renderer(self.model, height=640, width=1024)
 
             self.model.vis.global_.offheight = 640
@@ -549,37 +556,76 @@ class ParallelRobot:
             mujoco.mjr_render(self.viewport, self.scene, self.ctx)
             glfw.swap_buffers(self.window)
             glfw.poll_events()
-        
+
+    def get_pointcloud(self):
+        intr = get_camera_intrinsics(self.renderer_pov_depth, self.model, self.top_camera_id)
+        extr = get_camera_extrinsic(self.data, self.top_camera_id)
+        rgb, depth = render_rgbd(self.renderer_pov_depth, self.data, self.top_camera_id)
+        points = rgbd_to_pointcloud(rgb, depth, intr, extr, self.renderer_pov_depth)
+        return points
+            
     def camera_display(self):
+        if not getattr(self, '_pointcloud_displayed', False):
+            try:
+                xyzrgb = self.get_pointcloud()
+                if xyzrgb.size == 0 or xyzrgb.shape[0] == 0:
+                    print("Warning: Point cloud is empty.")
+                else:
+                    pcd = o3d.geometry.PointCloud()
+                    pcd.points = o3d.utility.Vector3dVector(xyzrgb[:, :3])
+                    pcd.colors = o3d.utility.Vector3dVector(xyzrgb[:, 3:])
+                    voxel_grid = o3d.geometry.VoxelGrid.create_from_point_cloud(pcd,
+                                                            voxel_size=0.05)
+                    # o3d.visualization.draw_geometries([voxel])
+                    frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
+                    o3d.visualization.draw_geometries([voxel_grid, frame], 
+                                                    window_name="Initial Point Cloud")
+                    self._pointcloud_displayed = True
+                    if not getattr(self, '_pointcloud_saved', False):
+                        xyzrgb = self.get_pointcloud()
+                        if xyzrgb.size > 0:
+                            self.save_pointcloud(xyzrgb, "map.ply")
+                        self._pointcloud_saved = True
+            except Exception as e:
+                print(f"Failed to generate/display point cloud: {e}")
+                self._pointcloud_displayed = True
+
         self.frame_count = getattr(self, 'frame_count', 0)
-        
+
+        # Top view
         self.renderer_top.update_scene(self.data, camera=self.top_camera_id)
         rgb_top = self.renderer_top.render()
-        if rgb_top is None or rgb_top.size == 0:
-            print("Error: Top view rendering failed")
-            return
-        bgr_top = cv2.cvtColor(rgb_top, cv2.COLOR_RGB2BGR)
-        
+        if rgb_top is not None and rgb_top.size > 0:
+            bgr_top = cv2.cvtColor(rgb_top, cv2.COLOR_RGB2BGR)
+            cv2.imshow("MuJoCo Top View", bgr_top)
+            if self.top_video_writer and self.top_video_writer.isOpened():
+                self.top_video_writer.write(bgr_top)
+
+        # POV view
         self.renderer_pov.update_scene(self.data, camera=self.pov_camera_id)
         rgb_side = self.renderer_pov.render()
-        if rgb_side is None or rgb_side.size == 0:
-            print("Error: Side view rendering failed")
-            return
-        bgr_side = cv2.cvtColor(rgb_side, cv2.COLOR_RGB2BGR)
+        if rgb_side is not None and rgb_side.size > 0:
+            bgr_side = cv2.cvtColor(rgb_side, cv2.COLOR_RGB2BGR)
+            cv2.imshow("MuJoCo Side View", bgr_side)
+            if self.pov_video_writer and self.pov_video_writer.isOpened():
+                self.pov_video_writer.write(bgr_side)
 
-        if self.top_video_writer is not None and self.top_video_writer.isOpened():
-            self.top_video_writer.write(bgr_top)
-        if self.pov_video_writer is not None and self.pov_video_writer.isOpened():
-            self.pov_video_writer.write(bgr_side)
         self.frame_count += 1
 
-        cv2.imshow("MuJoCo Top View", bgr_top)
-        cv2.imshow("MuJoCo Side View", bgr_side)
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             self._terminate = True
+            cv2.destroyAllWindows()
+            
+    def save_pointcloud(self, xyzrgb, filename="pointcloud.ply"):
+        pcd = o3d.geometry.PointCloud()
+        pcd.points = o3d.utility.Vector3dVector(xyzrgb[:, :3])
+        pcd.colors = o3d.utility.Vector3dVector(xyzrgb[:, 3:])
+        o3d.io.write_point_cloud(filename, pcd)
+        print(f"Saved point cloud to {filename}")
 
     def run_cv(self):
+            
         if self.record:
             output_dir = "output_videos"
             os.makedirs(output_dir, exist_ok=True)
@@ -604,8 +650,7 @@ class ParallelRobot:
             self._terminate = False
             while not self._terminate:
                 self.step_simulation()
-        except Exception as e:
-            print(f"Simulation error: {e}")
+            
         finally:
             if self.record:
                 if self.top_video_writer is not None:

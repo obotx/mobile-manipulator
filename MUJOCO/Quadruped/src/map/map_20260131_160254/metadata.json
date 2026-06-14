@@ -1,0 +1,17 @@
+{
+  "voxel_size": 0.05,
+  "total_voxels": 5448,
+  "inflate_radius": 0.0,
+  "min_height": 0.1,
+  "inflate_color": [
+    0.6,
+    0.6,
+    1.0
+  ],
+  "mode": "voxel",
+  "color_by": "rgb",
+  "transform_to_world": false,
+  "timestamp": "20260131_160254",
+  "original_points_estimate": 300424,
+  "saved_at": "2026-01-31T16:02:54.590171"
+}
