@@ -1,5 +1,7 @@
 import sys
 import os
+os.environ['PYOPENGL_PLATFORM'] = 'glx'
+os.environ['MESA_D3D12'] = '1'
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import mujoco
@@ -8,7 +10,6 @@ import numpy as np
 import imgui
 from imgui.integrations.glfw import GlfwRenderer
 from simulations.morph_i_free_move import ParallelRobot
-
 
 class Joystick:
     def __init__(self, inner_radius=50, padding=20, ring_width=20, dead_zone=0.1):
@@ -140,11 +141,18 @@ def main():
     xml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'env', 'market_world_plain.xml'))
     sim = ParallelRobot(xml_path, run_mode="glfw", record=False)
 
-    glfw.make_context_current(sim.window)
+    glfw_window = sim.window.window if hasattr(sim.window, 'window') else sim.window
+
+    if glfw_window is None:
+        raise RuntimeError("GLFW window handle is None. Check how 'window' is defined in ParallelRobot.")
+
+    # Use the extracted pointer for context and imgui
+    glfw.make_context_current(glfw_window)
     glfw.swap_interval(1)  
 
     imgui.create_context()
-    impl = GlfwRenderer(sim.window, attach_callbacks=False)
+    impl = GlfwRenderer(glfw_window, attach_callbacks=False)
+    # --- FIX ENDS HERE ---
 
     initial_x, initial_y, initial_yaw = sim.localization()
     target_x, target_y, target_yaw = initial_x, initial_y, initial_yaw
@@ -160,26 +168,27 @@ def main():
     sim.camera.elevation = -45
     sim.camera.lookat[:] = [0, 0, 0]
 
-    xpos, ypos = glfw.get_cursor_pos(sim.window)
+    # Use glfw_window for all GLFW cursor/mouse calls
+    xpos, ypos = glfw.get_cursor_pos(glfw_window)
     sim._last_mouse_x = xpos
     sim._last_mouse_y = ypos
 
-    while not glfw.window_should_close(sim.window):
-        # sim.get_keyframe("home")
+    # Use glfw_window in the loop condition
+    while not glfw.window_should_close(glfw_window):
         glfw.poll_events()
         impl.process_inputs()
 
-
         io = imgui.get_io()
         if not io.want_capture_mouse:
-            xpos, ypos = glfw.get_cursor_pos(sim.window)
+            xpos, ypos = glfw.get_cursor_pos(glfw_window)
             dx = xpos - sim._last_mouse_x
             dy = ypos - sim._last_mouse_y
             sim._last_mouse_x, sim._last_mouse_y = xpos, ypos
 
-            left = glfw.get_mouse_button(sim.window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS
-            right = glfw.get_mouse_button(sim.window, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS
-            middle = glfw.get_mouse_button(sim.window, glfw.MOUSE_BUTTON_MIDDLE) == glfw.PRESS
+            # Use glfw_window for mouse button checks
+            left = glfw.get_mouse_button(glfw_window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS
+            right = glfw.get_mouse_button(glfw_window, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS
+            middle = glfw.get_mouse_button(glfw_window, glfw.MOUSE_BUTTON_MIDDLE) == glfw.PRESS
 
             factor = 0.001
             if left:
@@ -189,7 +198,7 @@ def main():
             elif middle:
                 mujoco.mjv_moveCamera(sim.model, mujoco.mjtMouse.mjMOUSE_ZOOM, dx*factor, dy*factor, sim.scene, sim.camera)
         else:
-            xpos, ypos = glfw.get_cursor_pos(sim.window)
+            xpos, ypos = glfw.get_cursor_pos(glfw_window)
             sim._last_mouse_x = xpos
             sim._last_mouse_y = ypos
 
@@ -219,7 +228,7 @@ def main():
             sim.step_simulation(render=False)
 
         # RENDERING
-        fb_width, fb_height = glfw.get_framebuffer_size(sim.window)
+        fb_width, fb_height = glfw.get_framebuffer_size(glfw_window)
         sim.viewport.width = fb_width
         sim.viewport.height = fb_height
 
@@ -258,7 +267,7 @@ def main():
                     sim.direct_arm_commands[0:4] = l_enc  
                     sim.direct_arm_commands[4:8] = r_enc
 
-        # ARM CONNTROLS
+        # ARM CONTROLS
         imgui.separator()
         imgui.text("ARM1")
         if ik_enabled:
@@ -480,7 +489,7 @@ def main():
 
         imgui.render()
         impl.render(imgui.get_draw_data())
-        glfw.swap_buffers(sim.window)
+        glfw.swap_buffers(glfw_window)
 
     impl.shutdown()
 
