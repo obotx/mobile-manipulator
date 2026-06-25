@@ -188,7 +188,8 @@ class LandmarkVisualizer:
                 right_target_global = self.tf.transform_point(local_pos).tolist() if self.tf else local_pos.tolist()
             right_is_grab = bool(data['right_hand'].get('is_grab', False))
             
-        return  left_target_global, right_target_global, frame['left_present'],  frame['right_present'], left_is_grab,  right_is_grab
+        # return  left_target_global, right_target_global, frame['left_present'],  frame['right_present'], left_is_grab,  right_is_grab
+        return  right_target_global, left_target_global,  frame['right_present'], frame['left_present'], right_is_grab, left_is_grab
 
     def _add_sphere(self, scene, pos, radius=0.01, color=(1.0, 0.0, 0.0, 1.0)):
         if scene.ngeom >= scene.maxgeom - 50: return
