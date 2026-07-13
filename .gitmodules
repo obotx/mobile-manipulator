@@ -1,3 +1,12 @@
 [submodule "teleoperation/robot-teleoperation"]
 	path = teleoperation/robot-teleoperation
 	url = https://github.com/obotx/robot-teleoperation.git
+[submodule "MUJOCO/Quadruped/lib/mink"]
+	path = MUJOCO/Quadruped/lib/mink
+	url = https://github.com/kevinzakka/mink.git
+[submodule "MUJOCO/lib/babyros"]
+	path = MUJOCO/lib/babyros
+	url = https://github.com/drmwnrafi/babyros.git
+[submodule "MUJOCO/lib/MUJOCO/lib/babyros"]
+	path = MUJOCO/lib/MUJOCO/lib/babyros
+	url = https://github.com/drmwnrafi/babyros.git

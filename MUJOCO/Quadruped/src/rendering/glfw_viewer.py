@@ -8,11 +8,22 @@ logger = setup_logger("GlfwViewer")
 
 
 class GlfwViewer(Viewer):
-    def __init__(self, width: int = 1200, height: int = 900, title: str = "Gripper Simulation"):
+    def __init__(self, 
+                 width: int = 1200, 
+                 height: int = 900, 
+                 title: str = "Gripper Simulation",
+                 scroll_factor: float = 0.01,
+                 drag_factor: float = 0.001,
+                 middle_zoom_multiplier: float = 4.0):
         super().__init__()
         self.width = width
         self.height = height
         self.title = title
+        
+        self.scroll_factor = scroll_factor
+        self.drag_factor = drag_factor
+        self.middle_zoom_multiplier = middle_zoom_multiplier
+
         self.window = None
         self.ctx = None
         self.viewport = None
@@ -76,10 +87,11 @@ class GlfwViewer(Viewer):
     def _scroll_callback(self, window, xoffset, yoffset):
         if self.camera.type != mujoco.mjtCamera.mjCAMERA_FREE:
             return
-        factor = 0.05
+            
+        # Uses the configurable scroll_factor
         mujoco.mjv_moveCamera(
             self.model, mujoco.mjtMouse.mjMOUSE_ZOOM,
-            0, yoffset * factor, self.scene, self.camera
+            0, yoffset * self.scroll_factor, self.scene, self.camera
         )
 
     def _mouse_button_callback(self, window, button, action, mods):
@@ -100,21 +112,23 @@ class GlfwViewer(Viewer):
         dx = xpos - self._last_mouse_x
         dy = ypos - self._last_mouse_y
         self._last_mouse_x, self._last_mouse_y = xpos, ypos
-        factor = 0.005
+        
+        # Uses the configurable drag_factor
         if self._mouse_left_pressed:
             mujoco.mjv_moveCamera(
                 self.model, mujoco.mjtMouse.mjMOUSE_ROTATE_H,
-                dx * factor, dy * factor, self.scene, self.camera
+                dx * self.drag_factor, dy * self.drag_factor, self.scene, self.camera
             )
         elif self._mouse_right_pressed:
             mujoco.mjv_moveCamera(
                 self.model, mujoco.mjtMouse.mjMOUSE_MOVE_H,
-                dx * factor, dy * factor, self.scene, self.camera
+                dx * self.drag_factor, dy * self.drag_factor, self.scene, self.camera
             )
         elif self._mouse_middle_pressed:
+            # Uses both drag_factor and middle_zoom_multiplier
             mujoco.mjv_moveCamera(
                 self.model, mujoco.mjtMouse.mjMOUSE_ZOOM,
-                0.0, dy * factor * 10.0, self.scene, self.camera
+                0.0, dy * self.drag_factor * self.middle_zoom_multiplier, self.scene, self.camera
             )
 
     def prepare_scene(self, data: mujoco.MjData) -> mujoco.MjvScene:
