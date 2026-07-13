@@ -30,9 +30,12 @@ The project focuses on mobile manipulation systems integrating locomotion and ro
 
 ## Mobile Manipulator Type
 1. Quadruped Mobile Manipulator
-    - [MuJoco](./MUJOCO/Quadruped) (🚀 **Click to explore more**)
+    - [MuJoco](./MUJOCO) (🚀 **Click to explore more**)
       - **Morph - I** : Dual Independent Parallel Manipulators
       <img width="608" height="452" alt="basic_glfw_morph_i_trajectory" src="https://github.com/user-attachments/assets/aeaa1eab-2f9d-456a-9728-123f56364058" />
+
+      - **Morph - I** : Mediapipe Landmarks Based Control
+      <video src="https://github.com/user-attachments/assets/851bb311-2498-4350-bd4a-44178864ec4a" controls width="100%"></video>
 
       - **Morph - II**  : Single Closed-Chain Parallel Manipulator
       <img width="608" height="452" alt="basic_glfw_morph_ii_free_move" src="https://github.com/user-attachments/assets/ef014d18-7159-4b32-a7e8-b8f082fec64b" />
@@ -55,7 +58,7 @@ The project focuses on mobile manipulation systems integrating locomotion and ro
         https://github.com/user-attachments/assets/6b105c1f-9fc4-44df-bd5a-b8b21064ed55
 
 2. Tripod Mobile Manipulator
-    - [MuJoco](./MUJOCO/Tripod) (🚀 **Click to explore more**)
+    - [MuJoco](./MUJOCO) (🚀 **Click to explore more**)
       
       https://github.com/user-attachments/assets/5699a624-a83a-4c6a-859a-ceb459501354
       

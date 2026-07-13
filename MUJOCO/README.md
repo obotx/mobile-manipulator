@@ -104,12 +104,13 @@ The **MORPH** series implements two distinct parallel universal manipulator conf
 ---
 
 ## HOW TO USE
+Clone the repository and initialize all submodules :
 
 ```bash
 git clone --recurse-submodules https://github.com/obotx/mobile-manipulator.git
 cd mobile-manipulator/MUJOCO
 ```
-
+Use uv to sync the Python environment and install all necessary packages:
 ```bash
 uv sync
 ```
@@ -123,7 +124,7 @@ cd mobile-manipulator/MUJOCO/Quadruped
 
 **Landmark Based Control**
 
-In **Terminal 1**, start the webcam stream to detect and publish hand/body landmarks. This uses Body Pre-Focusing (BPF) for improved detection range.
+In **Terminal 1**, start the webcam stream to detect and publish hand/body landmarks. This uses Body Pre-Focusing (BPF) for improved detection range. This command from [robot-teleoperation](https://github.com/drmwnrafi/robot-teleoperation/tree/master)
 
 ```bash
 uv run src/examples/tracking_publisher.py \
