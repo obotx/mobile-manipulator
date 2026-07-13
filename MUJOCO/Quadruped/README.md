@@ -106,22 +106,30 @@ The **MORPH** series implements two distinct parallel universal manipulator conf
 ## HOW TO USE
 
 ```bash
-git clone https://github.com/obotx/mobile-manipulator.git
+git clone --recurse-submodules https://github.com/obotx/mobile-manipulator.git
 cd mobile-manipulator/MUJOCO/Quadruped
 ```
 
-
 ```bash
-python -m venv obotx_manip
-
-source obotx_manip/bin/activate   # Linux
-obotx_manip\Scripts\Activate.ps1  # Windows via PowerShell
-obotx_manip\Scripts\activate.bat  # Windows via cmd.exe
-
-pip install -r requirements.txt
+uv sync
 ```
 
 ### MORPH - I
+**Landmark Based Control**
+
+In terminal 1, run command to stream webcam to puslish the landmarks from ![robot-teleoperation](https://github.com/drmwnrafi/robot-teleoperation/tree/master):
+
+```bash
+uv run src/examples/tracking_publisher.py --calibration src/camera_calibration/calibration_results/cam_calib_\(10x7\)_22.0mm_1920x1080.npz --use-bpf --width 1920 --height 1080
+```
+
+In terminal 2, run MUJOCO landmark subscribers :
+```bash
+ uv run python src/landmarks_subscribers.py
+```
+
+<video src="https://github.com/user-attachments/assets/851bb311-2498-4350-bd4a-44178864ec4a" controls width="100%"></video>
+
 Plain environtment with free movement (GUI) :
 ```bash
 python src/gui/play.py
