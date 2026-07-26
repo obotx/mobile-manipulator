@@ -13,49 +13,139 @@ from scipy.spatial.transform import Rotation
 from rendering.glfw_viewer import GlfwViewer
 
 _HERE = Path(__file__).parent
-_XML = _HERE / "env" / "robot_description" / "robot" / "morph_i.xml"
+_XML = _HERE / "xmls" / "combine" / "floor_morph_i.xml"
 
-# Separate thresholds for left and right hands (in Newtons)
+ROBOT_PREFIXES = "robot"
+ARM_PREFIXES = ["left", "right"]
+ARM_MOTORS = [
+    "base_rotation", "primary_column_lift", "secondary_column_lift",
+    "telescopic_extend", "wrist_pitch", "gripper_roll_joint",
+    "gripper_pitch_joint", "gripper_yaw_joint"
+]
+
+ARM_MOTORS_MAX_VEL = {
+    "base_rotation":          np.pi * 4,
+    "primary_column_lift":    10.5,
+    "secondary_column_lift":  10.5,
+    "telescopic_extend":      10.5,
+    "wrist_pitch":            np.pi,
+    "gripper_roll_joint":     np.pi,
+    "gripper_pitch_joint":    np.pi,
+    "gripper_yaw_joint":      np.pi,
+}
+
 FORCE_THRESHOLD_LEFT = 15.0
 FORCE_THRESHOLD_RIGHT = 15.0
 
-# Movement step size for IK targets (in meters)
-TARGET_MOVE_STEP = 0.005  # 1 cm per frame
+TARGET_MOVE_STEP = 0.005  
+TRACKING_MODE = "upper-only"  # default mode
+MAX_ITER = 20
 
-def get_gripper_contact_force_per_finger(data: mujoco.MjData, side: str) -> dict:
-    """
-    Evaluate the contact force for each finger (A, B, C) individually on a given side.
-    Returns a dict like {'a': force_a, 'b': force_b, 'c': force_c}
-    """
-    forces = {'a': 0.0, 'b': 0.0, 'c': 0.0}
-    for i in range(1, data.model.nbody):
-        body_name = data.model.body(i).name
-        if body_name and side in body_name:
-            if "finger_a" in body_name and ("proximal" in body_name or "middle" in body_name or "distal" in body_name):
-                forces['a'] += np.linalg.norm(data.cfrc_ext[i, 3:6])
-            elif "finger_b" in body_name and ("proximal" in body_name or "middle" in body_name or "distal" in body_name):
-                forces['b'] += np.linalg.norm(data.cfrc_ext[i, 3:6])
-            elif "finger_c" in body_name and ("proximal" in body_name or "middle" in body_name or "distal" in body_name):
-                forces['c'] += np.linalg.norm(data.cfrc_ext[i, 3:6])
-    return forces
+HUMAN_SEATED_Z_MIN = 0.70
+HUMAN_SEATED_Z_MAX = 1.25
 
-PARENT_BODY_NAME = "mobile_base"
+ROBOT_Z_MIN = 0.00
+ROBOT_Z_MAX = 1.30
+
+Z_SCALE_FACTOR = (ROBOT_Z_MAX - ROBOT_Z_MIN) / (HUMAN_SEATED_Z_MAX - HUMAN_SEATED_Z_MIN)
+Z_OFFSET = ROBOT_Z_MIN - (HUMAN_SEATED_Z_MIN * Z_SCALE_FACTOR)
+
+# Z_SCALE_FACTOR = 1.0
+# Z_OFFSET = 0.0
+
+SEATED_HIP_HEIGHT = 0.65
+
+# --- Lateral (X/Y) amplification ---
+X_SCALE_FACTOR = 1.8
+Y_SCALE_FACTOR = 1.8
+xy_center_initialized = False
+XY_CENTER_X = 0.0             
+XY_CENTER_Y = 0.0
+
+# --- Robot base XY position (for gripper yaw calculation) ---
+ROBOT_BASE_XY = np.array([0.0, 0.0])
+
+# --- Face target toggle ---
+FACE_TARGET_ENABLED = True
+YAW_OFFSET = 0.0
+
+# --- Landmark smoothing (EMA low-pass filter) ---
+# 0.0 = no smoothing, 1.0 = fully frozen
+SMOOTHING_FACTOR = 0.8
+SMOOTHING_STEP = 0.05
+smoothed_pts = None 
+
+EYE_MAT_FLAT         = np.eye(3).flatten()
+POINT_SIZE_GEOM      = (0.01, 0.0, 0.0)
+SKELETON_RGBA_GEOM   = (0.5, 0.5, 0.5, 1.0)
+COLORS_GEOM          = [(0,1,1,1)]*33 + [(1,0,1,1)]*21 + [(1,0.5,0,1)]*21
+ 
+FINGER_BODY_IDS = {
+    "left": {"a": [], "b": [], "c": []},
+    "right": {"a": [], "b": [], "c": []}
+}
+
+PARENT_BODY_NAME = f"{ROBOT_PREFIXES}_mobile_base"
 BASE_TRANSFORM = StaticTransform(
-    x=0.3, y=0.0, z=0.0,
+    x=0.3, y=0.0, z=SEATED_HIP_HEIGHT,
     roll=90.0, pitch=0.0, yaw=90.0,
     use_degrees=True,
 )
-HIP_TRANSFORM = HipAnchoredTransform(
+
+FULL_BODY_TRANSFORM = HipAnchoredTransform(
     static_tf=BASE_TRANSFORM, anchor_init=True,
     foot_on_ground=True, ground_level=0.0, foot_offset=0.0,
 )
+
+UPPER_ONLY_TRANSFORM = HipAnchoredTransform(
+    static_tf=BASE_TRANSFORM, anchor_init=False,
+    foot_on_ground=False, ground_level=0.0, foot_offset=0.0,
+    fixed_hip=True,
+)
+
+def full_reset():
+    global xy_center_initialized, smoothed_pts
+    if model.nkey > 0 and "home" in [model.key(i).name for i in range(model.nkey)]:
+        mujoco.mj_resetDataKeyframe(model, data, model.key("home").id)
+    else:
+        mujoco.mj_resetData(model, data)
+    
+    configuration.update(data.qpos)
+    posture_task.set_target_from_configuration(configuration)
+    
+    mujoco.mj_forward(model, data)
+    mink.move_mocap_to_frame(model, data, "left_ik_target", f"{ROBOT_PREFIXES}_left_ee_site", "site")
+    mink.move_mocap_to_frame(model, data, "right_ik_target", f"{ROBOT_PREFIXES}_right_ee_site", "site")
+    
+    xy_center_initialized = False
+    smoothed_pts = None
+    print("[FULL RESET] Robot reset to home keyframe, IK targets synced to end-effectors")
+    print("[CENTER] XY neutral will be re-captured on next wrist detection")
+    print(f"[SMOOTH] Landmark smoothing reset (factor={SMOOTHING_FACTOR:.2f})")
+
+def get_gripper_roll_xy(data: mujoco.MjData, arm_idx: int) -> np.ndarray:
+    body_name = f"{ROBOT_PREFIXES}_{ARM_PREFIXES[arm_idx]}_gripper_roll"
+    try:
+        body_id = data.model.body(body_name).id
+        return data.xpos[body_id, :2].copy()
+    except KeyError:
+        return ROBOT_BASE_XY.copy()
+    
+def get_gripper_contact_forces(data: mujoco.MjData) -> dict:
+    forces = {'left': {'a': 0.0, 'b': 0.0, 'c': 0.0}, 
+              'right': {'a': 0.0, 'b': 0.0, 'c': 0.0}}
+    cfrc = data.cfrc_ext
+    for side in ("left", "right"):
+        for finger, ids in FINGER_BODY_IDS[side].items():
+            if len(ids) > 0:
+                forces[side][finger] = np.sum(np.linalg.norm(cfrc[ids, 3:6], axis=1))
+    return forces
 
 def get_body_world_pose(data: mujoco.MjData, body_name: str):
     body_id = data.model.body(body_name).id
     return data.xpos[body_id].copy(), data.xmat[body_id].reshape(3, 3).copy()
 
 def quat_to_mat(quat):
-    """Convert MuJoCo quaternion (w, x, y, z) to a 3x3 rotation matrix."""
     w, x, y, z = quat
     return np.array([
         [1 - 2*y**2 - 2*z**2, 2*x*y - 2*z*w, 2*x*z + 2*y*w],
@@ -63,26 +153,22 @@ def quat_to_mat(quat):
         [2*x*z - 2*y*w, 2*y*z + 2*x*w, 1 - 2*x**2 - 2*y**2]
     ])
 
+def compute_face_target_quat(target_pos, base_xy=ROBOT_BASE_XY, yaw_offset=0.0):
+    direction = target_pos[:2] - base_xy
+    if np.linalg.norm(direction) < 1e-5:
+        return np.array([1.0, 0.0, 0.0, 0.0])
+    yaw = np.arctan2(direction[1], direction[0]) + yaw_offset
+    rot = Rotation.from_euler('z', yaw)
+    quat_xyzw = rot.as_quat()
+    return np.array([quat_xyzw[3], quat_xyzw[0], quat_xyzw[1], quat_xyzw[2]])
+
 if __name__ == "__main__":
     model = mujoco.MjModel.from_xml_path(_XML.as_posix())
-
-    model.vis.quality.shadowsize = 0
-    for i in range(model.nmat):
-        model.mat_reflectance[i] = 0.0
-    for i in range(model.nlight):
-        model.light_castshadow[i] = 0
 
     data = mujoco.MjData(model)
     configuration = mink.Configuration(model)
 
-    PREFIXES = ["left", "right"]
-    ARM_MOTORS = [
-        "base_rotation", "left_column_lift", "right_column_lift",
-        "telescopic_extend", "wrist_pitch", "gripper_roll_joint",
-        "gripper_pitch_joint", "gripper_yaw_joint"
-    ]
-
-    motor_joint_names = [f"{prefix}_{motor}" for prefix in PREFIXES for motor in ARM_MOTORS]
+    motor_joint_names = [f"{ROBOT_PREFIXES}_{arm_prefix}_{motor}" for arm_prefix in ARM_PREFIXES for motor in ARM_MOTORS]
     motor_ctrl_ids = []
     motor_qpos_adrs = []
     for name in motor_joint_names:
@@ -146,41 +232,72 @@ if __name__ == "__main__":
                 finger_ctrl_ids[side][finger][j] = np.array(finger_ctrl_ids[side][finger][j])
                 finger_qpos_adrs[side][finger][j] = np.array(finger_qpos_adrs[side][finger][j])
 
+    for i in range(1, model.nbody):
+        name = model.body(i).name
+        if not name: 
+            continue
+        
+        side = "left" if "left" in name else "right" if "right" in name else None
+        if not side: 
+            continue
+        
+        if "finger_a" in name and ("proximal" in name or "middle" in name or "distal" in name):
+            FINGER_BODY_IDS[side]["a"].append(i)
+        elif "finger_b" in name and ("proximal" in name or "middle" in name or "distal" in name):
+            FINGER_BODY_IDS[side]["b"].append(i)
+        elif "finger_c" in name and ("proximal" in name or "middle" in name or "distal" in name):
+            FINGER_BODY_IDS[side]["c"].append(i)
+
+    for side in FINGER_BODY_IDS:
+        for finger in FINGER_BODY_IDS[side]:
+            FINGER_BODY_IDS[side][finger] = np.array(FINGER_BODY_IDS[side][finger], dtype=int)
+
     finger_close_targets = {"joint1": 0.33, "joint2": 0.0, "joint3": 0.0}
     finger_open_targets  = {"joint1": 0.0,  "joint2": 0.0, "joint3": 0.0}
 
     tasks = [
         left_end_effector_task := mink.FrameTask(
-            frame_name="left_ee_site", frame_type="site",
-            position_cost=100.0, orientation_cost=20.0, lm_damping=1e-6,
+            frame_name=f"{ROBOT_PREFIXES}_{ARM_PREFIXES[0]}_ee_site", frame_type="site",
+            position_cost=5.0, orientation_cost=1.0, lm_damping=1e-2,
         ),
         right_end_effector_task := mink.FrameTask(
-            frame_name="right_ee_site", frame_type="site",
-            position_cost=100.0, orientation_cost=20.0, lm_damping=1e-6,
+            frame_name=f"{ROBOT_PREFIXES}_{ARM_PREFIXES[1]}_ee_site", frame_type="site",
+            position_cost=5.0, orientation_cost=1.0, lm_damping=1e-2,
         ),
-        posture_task := mink.PostureTask(model=model, cost=1e-3),
+        posture_task := mink.PostureTask(model=model, cost=1e-3, lm_damping=1e-2),
     ]
     equality_task = mink.EqualityConstraintTask(model=model, cost=1000.0, gain=1.0, lm_damping=1e-3)
     tasks.append(equality_task)
 
-    left_arm_geoms = mink.get_subtree_geom_ids(model, model.body("left_arm_base").id)
-    right_arm_geoms = mink.get_subtree_geom_ids(model, model.body("right_arm_base").id)
-    base_geoms = mink.get_body_geom_ids(model, model.body("mobile_base").id)
+    left_arm_geoms = mink.get_subtree_geom_ids(model, model.body(f"{ROBOT_PREFIXES}_{ARM_PREFIXES[0]}_arm_base").id)
+    right_arm_geoms = mink.get_subtree_geom_ids(model, model.body(f"{ROBOT_PREFIXES}_{ARM_PREFIXES[1]}_arm_base").id)
+    base_geoms = mink.get_body_geom_ids(model, model.body(f"{ROBOT_PREFIXES}_base").id)
+    floor_geom = mink.get_body_geom_ids(model, model.body("world_floor").id)
 
     collision_avoidance_limit = mink.CollisionAvoidanceLimit(
         model=model,
         geom_pairs=[
+            (floor_geom, left_arm_geoms),
+            (floor_geom, right_arm_geoms),
             (left_arm_geoms, right_arm_geoms),
             (left_arm_geoms, base_geoms),
             (right_arm_geoms, base_geoms),
         ],
-        minimum_distance_from_collisions=0.05,
-        collision_detection_distance=0.1,
+        minimum_distance_from_collisions=0.012,
+        collision_detection_distance=0.012,
     )
+
+    max_velocities = {
+        f"{ROBOT_PREFIXES}_{arm}_{motor}": vel 
+        for arm in ARM_PREFIXES 
+        for motor, vel in ARM_MOTORS_MAX_VEL.items()
+    }
+    velocity_limit = mink.VelocityLimit(model, max_velocities)
+
     limits = [
-        mink.ConfigurationLimit(model=model),
+        mink.ConfigurationLimit(model=configuration.model),
         collision_avoidance_limit,
-        mink.VelocityLimit(model=model),
+        velocity_limit,
     ]
 
     solver = "daqp"
@@ -231,42 +348,50 @@ if __name__ == "__main__":
     camera.azimuth = 135.0
     camera.elevation = -20.0
     camera.lookat[:] = [0.0, 0.0, 0.8]
+
     scene = mujoco.MjvScene(model, maxgeom=2000)
     scene.flags[mujoco.mjtRndFlag.mjRND_SHADOW.value] = 0
     scene.flags[mujoco.mjtRndFlag.mjRND_REFLECTION.value] = 0
-    scene.flags[mujoco.mjtRndFlag.mjRND_FOG.value] = 0
+    scene.flags[mujoco.mjtRndFlag.mjRND_FOG.value] = 1
+
     opt = mujoco.MjvOption()
     opt.frame = mujoco.mjtFrame.mjFRAME_NONE
 
-    viewer = GlfwViewer(width=960, height=1000, title="Pick and Place Tracking")
+    viewer = GlfwViewer(width=960, height=1000, title="MORPH I <-> FLOOR")
     viewer.setup(model, camera, scene, opt)
 
-    # Helper function to perform a full reset
-    def full_reset():
-        """Reset the entire robot state to the home keyframe."""
-        if model.nkey > 0 and "home" in [model.key(i).name for i in range(model.nkey)]:
-            mujoco.mj_resetDataKeyframe(model, data, model.key("home").id)
-        else:
-            mujoco.mj_resetData(model, data)
-        
-        # Re-initialize configuration and posture task
-        configuration.update(data.qpos)
-        posture_task.set_target_from_configuration(configuration)
-        
-        # Reset IK targets to current end-effector positions
-        mujoco.mj_forward(model, data)
-        mink.move_mocap_to_frame(model, data, "left_ik_target", "left_ee_site", "site")
-        mink.move_mocap_to_frame(model, data, "right_ik_target", "right_ee_site", "site")
-        
-        print("[FULL RESET] Robot reset to home keyframe, IK targets synced to end-effectors")
+    # Print all keyboard callbacks
+    print("\n" + "=" * 60)
+    print("KEYBOARD CONTROLS")
+    print("=" * 60)
+    print("[GLOBAL]")
+    print("  BACKSPACE        -> Full reset (home pose + re-capture XY center)")
+    print("  M                -> Toggle tracking mode (upper-only / full-body)")
+    print("  F                -> Toggle gripper yaw face-target (ON/OFF)")
+    print("\n[SMOOTHING]")
+    print("  [ / ]            -> Decrease / increase landmark smoothing")
+    print(f"                     (current: {SMOOTHING_FACTOR:.2f})")
+    print("\n[LEFT ARM]  (hold Left Shift + key)")
+    print("  W / S            -> Move left target  forward / backward  (X)")
+    print("  <- / ->          -> Move left target  right / left        (Y)")
+    print("  ↑ / ↓            -> Move left target  up / down           (Z)")
+    print("  C                -> Close left gripper")
+    print("  O                -> Open left gripper")
+    print("\n[RIGHT ARM] (hold Right Shift + key)")
+    print("  W / S            -> Move right target forward / backward  (X)")
+    print("  <- / ->          -> Move right target right / left        (Y)")
+    print("  ↑ / ↓            -> Move right target up / down           (Z)")
+    print("  C                -> Close right gripper")
+    print("  O                -> Open right gripper")
+    print("=" * 60 + "\n")
 
-    # Initial setup
     full_reset()
+    print(f"[MODE] Tracking mode: {TRACKING_MODE}")
+    print(f"[FACE] Gripper face-target: {'ON' if FACE_TARGET_ENABLED else 'OFF'}")
 
     rte = RateLimiter(frequency=200.0, warn=False)
     poses = {'left': None, 'right': None}
     pose_lock = threading.Lock()
-
     force_log_counter = 0
 
     try:
@@ -285,50 +410,59 @@ if __name__ == "__main__":
 
             if len(poses_list) > 0:
                 n_pts = min(len(poses_list), MAX_POINTS)
-                raw_pts = np.zeros((n_pts, 3), dtype=np.float64)
-                for i in range(n_pts):
-                    p = poses_list[i]['position']
-                    raw_pts[i] = [p['x'], p['y'], p['z']]
-                world_pts = HIP_TRANSFORM.transform(raw_pts, parent_pos, parent_mat)
+                
+                raw_pts = np.array(
+                    [[p['position']['x'], p['position']['y'], p['position']['z']] for p in poses_list[:n_pts]], 
+                    dtype=np.float64
+                )
+                
+                if TRACKING_MODE == "upper-only":
+                    world_pts = UPPER_ONLY_TRANSFORM.transform(raw_pts, parent_pos, parent_mat)
+                else:
+                    world_pts = FULL_BODY_TRANSFORM.transform(raw_pts, parent_pos, parent_mat)
 
-                # ====================================================================
-                # EXTRACT WRIST POSITIONS AND ORIENTATIONS
-                # ====================================================================
-                if n_pts > 18:  # Ensure we have enough landmarks (up to right index)
-                    left_mid_palm = world_pts[15].copy()
-                    right_mid_palm = world_pts[16].copy()
-                    
-                    # Left wrist (15) to left index (17)
-                    vec_left = world_pts[17] - world_pts[15]
-                    if np.linalg.norm(vec_left) > 1e-5:
-                        z_left = vec_left / np.linalg.norm(vec_left)
-                        x_left = np.cross(z_left, [0, 0, 1])
-                        if np.linalg.norm(x_left) < 1e-5:
-                            x_left = np.cross(z_left, [0, 1, 0])
-                        x_left /= np.linalg.norm(x_left)
-                        y_left = np.cross(z_left, x_left)
-                        mat_left = np.array([x_left, y_left, z_left]).T
-                        rot_left = Rotation.from_matrix(mat_left)
-                        # MuJoCo expects w, x, y, z
-                        left_quat = np.array([rot_left.as_quat()[3], rot_left.as_quat()[0], rot_left.as_quat()[1], rot_left.as_quat()[2]])
+                # --- LANDMARK SMOOTHING (EMA) ---
+                if world_pts is not None:
+                    if smoothed_pts is None or smoothed_pts.shape != world_pts.shape:
+                        smoothed_pts = world_pts.copy()
                     else:
-                        left_quat = np.array([1.0, 0.0, 0.0, 0.0])
+                        smoothed_pts = (1.0 - SMOOTHING_FACTOR) * smoothed_pts + SMOOTHING_FACTOR * world_pts
+                    world_pts = smoothed_pts
 
-                    # Right wrist (16) to right index (18)
-                    vec_right = world_pts[18] - world_pts[16]
-                    if np.linalg.norm(vec_right) > 1e-5:
-                        z_right = vec_right / np.linalg.norm(vec_right)
-                        x_right = np.cross(z_right, [0, 0, 1])
-                        if np.linalg.norm(x_right) < 1e-5:
-                            x_right = np.cross(z_right, [0, 1, 0])
-                        x_right /= np.linalg.norm(x_right)
-                        y_right = np.cross(z_right, x_right)
-                        mat_right = np.array([x_right, y_right, z_right]).T
-                        rot_right = Rotation.from_matrix(mat_right)
-                        right_quat = np.array([rot_right.as_quat()[3], rot_right.as_quat()[0], rot_right.as_quat()[1], rot_right.as_quat()[2]])
+                if n_pts > 18: 
+                    scaled_pts = world_pts.copy()
+
+                    if not xy_center_initialized:
+                        wrist_mid = 0.5 * (scaled_pts[15, :2] + scaled_pts[16, :2])
+                        XY_CENTER_X = wrist_mid[0]
+                        XY_CENTER_Y = wrist_mid[1]
+                        xy_center_initialized = True
+                        print(f"[CENTER] XY neutral locked at X={XY_CENTER_X:.3f}, Y={XY_CENTER_Y:.3f}")
+
+                    scaled_pts[:, 0] = XY_CENTER_X + (scaled_pts[:, 0] - XY_CENTER_X) * X_SCALE_FACTOR
+                    scaled_pts[:, 1] = XY_CENTER_Y + (scaled_pts[:, 1] - XY_CENTER_Y) * Y_SCALE_FACTOR
+
+                    if TRACKING_MODE == "upper-only":
+                        scaled_pts[:, 2] = scaled_pts[:, 2] * Z_SCALE_FACTOR + Z_OFFSET
+
+                    LEFT_HAND_OFFSET = 33
+                    RIGHT_HAND_OFFSET = 54
+                    PALM_LANDMARKS = [0, 5, 9, 13, 17]
+
+                    left_hand_exists = n_pts >= 54
+                    right_hand_exists = n_pts >= 75
+
+                    if left_hand_exists:
+                        left_palm_idx = [LEFT_HAND_OFFSET + i for i in PALM_LANDMARKS]
+                        left_mid_palm = scaled_pts[left_palm_idx].mean(axis=0)
                     else:
-                        right_quat = np.array([1.0, 0.0, 0.0, 0.0])
-                # ====================================================================
+                        left_mid_palm = scaled_pts[19].copy()
+
+                    if right_hand_exists:
+                        right_palm_idx = [RIGHT_HAND_OFFSET + i for i in PALM_LANDMARKS]
+                        right_mid_palm = scaled_pts[right_palm_idx].mean(axis=0)
+                    else:
+                        right_mid_palm = scaled_pts[20].copy()
 
             window = glfw.get_current_context()
             left_kb_active = False
@@ -338,17 +472,53 @@ if __name__ == "__main__":
                 l_shift = glfw.get_key(window, glfw.KEY_LEFT_SHIFT) == glfw.PRESS
                 r_shift = glfw.get_key(window, glfw.KEY_RIGHT_SHIFT) == glfw.PRESS
                 
-                # ====================================================================
-                # FULL RESET WITH BACKSPACE
-                # ====================================================================
+                # --- GLOBAL KEYS ---
                 if glfw.get_key(window, glfw.KEY_BACKSPACE) == glfw.PRESS:
                     if not getattr(viewer, '_backspace', False):
                         full_reset()
                         viewer._backspace = True
                 else:
                     viewer._backspace = False
-                # ====================================================================
+
+                if glfw.get_key(window, glfw.KEY_M) == glfw.PRESS:
+                    if not getattr(viewer, '_m', False):
+                        TRACKING_MODE = "full-body" if TRACKING_MODE == "upper-only" else "upper-only"
+                        print(f"[MODE] Switched to: {TRACKING_MODE}")
+                        viewer._m = True
+                else:
+                    viewer._m = False
+
+                # --- F KEY: Toggle face-target ---
+                if glfw.get_key(window, glfw.KEY_F) == glfw.PRESS:
+                    if not getattr(viewer, '_f', False):
+                        FACE_TARGET_ENABLED = not FACE_TARGET_ENABLED
+                        print(f"[FACE] Gripper face-target: {'ON' if FACE_TARGET_ENABLED else 'OFF'}")
+                        viewer._f = True
+                else:
+                    viewer._f = False
                 
+                # --- SMOOTHING CONTROLS ---
+                # Decrease smoothing (more responsive)
+                if glfw.get_key(window, glfw.KEY_LEFT_BRACKET) == glfw.PRESS:
+                    if not getattr(viewer, '_lb', False):
+                        SMOOTHING_FACTOR = max(0.0, SMOOTHING_FACTOR - SMOOTHING_STEP)
+                        smoothed_pts = None  # reset EMA to avoid jump
+                        print(f"[SMOOTH] factor={SMOOTHING_FACTOR:.2f} (more responsive)")
+                        viewer._lb = True
+                else:
+                    viewer._lb = False
+
+                # Increase smoothing (smoother, more lag)
+                if glfw.get_key(window, glfw.KEY_RIGHT_BRACKET) == glfw.PRESS:
+                    if not getattr(viewer, '_rb', False):
+                        SMOOTHING_FACTOR = min(1.0, SMOOTHING_FACTOR + SMOOTHING_STEP)
+                        smoothed_pts = None
+                        print(f"[SMOOTH] factor={SMOOTHING_FACTOR:.2f} (smoother)")
+                        viewer._rb = True
+                else:
+                    viewer._rb = False
+                
+                # --- LEFT ARM KEYBOARD ---
                 if l_shift:
                     left_kb_active = True
                     pos = data.mocap_pos[left_mocap_id].copy()
@@ -360,6 +530,7 @@ if __name__ == "__main__":
                     if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS: pos[0] -= TARGET_MOVE_STEP
                     data.mocap_pos[left_mocap_id] = pos
                     
+                # --- RIGHT ARM KEYBOARD ---
                 if r_shift:
                     right_kb_active = True
                     pos = data.mocap_pos[right_mocap_id].copy()
@@ -371,14 +542,27 @@ if __name__ == "__main__":
                     if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS: pos[0] -= TARGET_MOVE_STEP
                     data.mocap_pos[right_mocap_id] = pos
 
-            # Apply tracking data to IK targets (Position + Orientation)
-            if not left_kb_active and left_mid_palm is not None and left_quat is not None:
+            if not left_kb_active and left_mid_palm is not None:
                 data.mocap_pos[left_mocap_id] = left_mid_palm
-                # data.mocap_quat[left_mocap_id] = left_quat
 
-            if not right_kb_active and right_mid_palm is not None and right_quat is not None:
+            if not right_kb_active and right_mid_palm is not None:
                 data.mocap_pos[right_mocap_id] = right_mid_palm
-                # data.mocap_quat[right_mocap_id] = right_quat
+
+            if FACE_TARGET_ENABLED:
+                left_pos_for_yaw = data.mocap_pos[left_mocap_id] if left_kb_active else left_mid_palm
+                right_pos_for_yaw = data.mocap_pos[right_mocap_id] if right_kb_active else right_mid_palm
+
+                left_gripper_xy  = get_gripper_roll_xy(data, arm_idx=0)
+                right_gripper_xy = get_gripper_roll_xy(data, arm_idx=1)
+
+                if left_pos_for_yaw is not None:
+                    data.mocap_quat[left_mocap_id] = compute_face_target_quat(
+                        left_pos_for_yaw, base_xy=left_gripper_xy, yaw_offset=YAW_OFFSET
+                    )
+                if right_pos_for_yaw is not None:
+                    data.mocap_quat[right_mocap_id] = compute_face_target_quat(
+                        right_pos_for_yaw, base_xy=right_gripper_xy, yaw_offset=YAW_OFFSET
+                    )
 
             T_left = mink.SE3.from_mocap_name(model, data, "left_ik_target")
             left_end_effector_task.set_target(T_left)
@@ -453,26 +637,12 @@ if __name__ == "__main__":
 
             if gripper_commands:
                 new_posture_target = configuration.q.copy()
-                
-                left_forces = get_gripper_contact_force_per_finger(data, "left")
-                right_forces = get_gripper_contact_force_per_finger(data, "right")
-                
-                force_log_counter += 1
-                if force_log_counter % 100 == 0:
-                    print(f"\n[LEFT HAND Forces]  A:{left_forces['a']:.2f} N | B:{left_forces['b']:.2f} N | C:{left_forces['c']:.2f} N (Threshold: {FORCE_THRESHOLD_LEFT} N)")
-                    print(f"[RIGHT HAND Forces] A:{right_forces['a']:.2f} N | B:{right_forces['b']:.2f} N | C:{right_forces['c']:.2f} N (Threshold: {FORCE_THRESHOLD_RIGHT} N)")
-                
+                all_forces = get_gripper_contact_forces(data)
+
                 for (side, finger, j), target_val in gripper_commands.items():
                     is_closing = np.isclose(target_val, finger_close_targets[j], atol=1e-3)
-                    
-                    if side == "left":
-                        forces = left_forces
-                        threshold = FORCE_THRESHOLD_LEFT
-                    else:
-                        forces = right_forces
-                        threshold = FORCE_THRESHOLD_RIGHT
-                    
-                    finger_force = forces[finger]
+                    threshold = FORCE_THRESHOLD_LEFT if side == "left" else FORCE_THRESHOLD_RIGHT
+                    finger_force = all_forces[side][finger]
                     
                     if is_closing and finger_force > threshold:
                         current_qpos = data.qpos[finger_qpos_adrs[side][finger][j]]
@@ -486,30 +656,36 @@ if __name__ == "__main__":
                         new_posture_target[finger_qpos_adrs[side][finger][j]] = target_val
                         
                 posture_task.target = new_posture_target
-
-            vel = mink.solve_ik(configuration, tasks, rte.dt, solver,
-                                safety_break=False, damping=1e-6, limits=limits)
+            
+            vel = mink.solve_ik(configuration, tasks, rte.dt, solver, safety_break=False, damping=1e-4, limits=limits)
             configuration.integrate_inplace(vel, rte.dt)
 
             data.ctrl[motor_ctrl_ids] = configuration.q[motor_qpos_adrs]
-            mujoco.mj_step(model, data, nstep=5)
+            mujoco.mj_step(model, data, nstep=10)
             configuration.update(data.qpos)
 
             scene = viewer.prepare_scene(data)
 
             if world_pts is not None and n_pts > 0:
-                colors = [[0,1,1,1]]*33 + [[1,0,1,1]]*21 + [[1,0.5,0,1]]*21
-
                 for i in range(n_pts):
+                    if TRACKING_MODE == "upper-only" and 25 <= i <= 32:
+                        continue
+                    
                     if scene.ngeom >= scene.maxgeom:
                         break
                     g = scene.geoms[scene.ngeom]
                     mujoco.mjv_initGeom(g, mujoco.mjtGeom.mjGEOM_SPHERE,
-                        size=np.array([0.01,0,0]), pos=world_pts[i],
-                        mat=np.eye(3).flatten(), rgba=np.array(colors[i]))
+                        size=POINT_SIZE_GEOM,
+                        pos=world_pts[i],
+                        mat=EYE_MAT_FLAT,
+                        rgba=COLORS_GEOM[i])
                     scene.ngeom += 1
 
                 for c in SKELETON_CONNECTIONS:
+                    if TRACKING_MODE == "upper-only":
+                        if (25 <= c[0] <= 32) or (25 <= c[1] <= 32):
+                            continue
+                    
                     if c[0] >= n_pts or c[1] >= n_pts:
                         continue
                     if scene.ngeom >= scene.maxgeom:
@@ -526,32 +702,20 @@ if __name__ == "__main__":
                     mat = np.array([x_ax, y_ax, z_ax]).T.flatten()
                     g = scene.geoms[scene.ngeom]
                     mujoco.mjv_initGeom(g, mujoco.mjtGeom.mjGEOM_CAPSULE,
-                        size=np.array([0.005, length/2.0, 0.0]),
-                        pos=(p1+p2)/2.0, mat=mat,
-                        rgba=np.array([0.5,0.5,0.5,1.0]))
-                    scene.ngeom += 1
-
-                if left_mid_palm is not None and scene.ngeom < scene.maxgeom:
-                    g = scene.geoms[scene.ngeom]
-                    mujoco.mjv_initGeom(g, mujoco.mjtGeom.mjGEOM_SPHERE,
-                        size=np.array([0.025, 0, 0]), pos=left_mid_palm,
-                        mat=np.eye(3).flatten(), rgba=np.array([1.0, 0.0, 0.0, 1.0]))
-                    scene.ngeom += 1
-                    
-                if right_mid_palm is not None and scene.ngeom < scene.maxgeom:
-                    g = scene.geoms[scene.ngeom]
-                    mujoco.mjv_initGeom(g, mujoco.mjtGeom.mjGEOM_SPHERE,
-                        size=np.array([0.025, 0, 0]), pos=right_mid_palm,
-                        mat=np.eye(3).flatten(), rgba=np.array([0.0, 0.0, 1.0, 1.0]))
+                        size=(0.005, length/2.0, 0.0),
+                        pos=(p1+p2)/2.0, 
+                        mat=mat,
+                        rgba=SKELETON_RGBA_GEOM)
                     scene.ngeom += 1
                     
             viewer.render_frame(scene)
             rte.sleep()
+            force_log_counter += 1
 
     except KeyboardInterrupt:
-        print("\n[Main] Interrupted by user.")
+        print("\nInterrupted by user")
     finally:
         tracking_sub.delete()
         gesture_sub.delete()
         viewer.close()
-        print("Subscriber cleanup complete.")
+        print("Subscriber cleanup complete")

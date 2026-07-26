@@ -1,0 +1,557 @@
+<mujoco model="morph_i_arm">
+    <compiler angle="radian"/>
+    
+    <asset>
+        <!-- Materials used by the arm -->
+        <material name="0.301961_0.301961_0.301961_0.000000_0.021" specular="0.0" shininess="0.0" rgba="0.302000 0.302000 0.302000 1.000000"/>
+        <material name="0.301961_0.301961_0.301961_0.000000_0.022" specular="0.0" shininess="0.0" rgba="0.302000 0.302000 0.302000 1.000000"/>
+        <material name="0.301961_0.301961_0.301961_0.000000_0.023" specular="0.0" shininess="0.0" rgba="0.302000 0.302000 0.302000 1.000000"/>
+        <material name="0.301961_0.301961_0.301961_0.000000_0.024" specular="0.0" shininess="0.0" rgba="0.302000 0.302000 0.302000 1.000000"/>
+        <material name="0.901961_0.901961_0.901961_0.000000_0.013" specular="0.0" shininess="0.0" rgba="0.902000 0.902000 0.902000 1.000000"/>
+        <material name="0.901961_0.901961_0.901961_0.000000_0.014" specular="0.0" shininess="0.0" rgba="0.902000 0.902000 0.902000 1.000000"/>
+        
+        <material name="0.301961_0.301961_0.301961_0.000000_0.030" specular="0.0" shininess="0.0" rgba="0.302000 0.302000 0.302000 1.000000"/>
+        <material name="0.501961_0.501961_0.501961_0.000000_0.007" specular="0.0" shininess="0.0" rgba="0.502000 0.502000 0.502000 1.000000"/>
+        <material name="0.901961_0.901961_0.901961_0.000000_0.019" shininess="0.9" specular="0.9" reflectance="0.7" rgba="0.1 0.1 0.1 1"/>
+        
+        <material name="0.301961_0.301961_0.301961_0.000000_0.026" specular="0.0" shininess="0.0" rgba="0.302000 0.302000 0.302000 1.000000"/>
+        <material name="0.501961_0.501961_0.501961_0.000000_0.008" specular="0.0" shininess="0.0" rgba="0.502000 0.502000 0.502000 1.000000"/>
+        <material name="0.901961_0.901961_0.901961_0.000000_0.016" shininess="0.9" specular="0.9" reflectance="0.7" rgba="0.1 0.1 0.1 1"/>
+            
+        <material name="0.301961_0.301961_0.301961_0.000000_0.028" specular="0.0" shininess="0.0" rgba="0.302000 0.302000 0.302000 1.000000"/>
+        <material name="0.901961_0.901961_0.901961_0.000000_0.018" shininess="0.9" specular="0.9" reflectance="0.7" rgba="0.1 0.1 0.1 1"/>
+
+        <material name="0.000000_1.000000_0.000000_0.000000_0.001" specular="0.95" shininess="0.95" rgba="0.000000 1.000000 0.000000 1.000000"/>
+        <material name="0.780392_0.760784_0.741176_0.000000_0.001" specular="0.92" shininess="0.90" rgba="0.780400 0.760800 0.741200 1.000000"/>
+        <material name="0.898039_0.898039_0.898039_0.000000_0.001" specular="0.98" shininess="0.98" rgba="0.898000 0.898000 0.898000 1.000000"/> 
+        <material name="0.792157_0.819608_0.933333_0.000000_0.001" specular="0.0" shininess="0.0" rgba="0.792200 0.819600 0.933300 1.000000"/>
+        <material name="0.250980_0.250980_0.250980_0.000000_0.001" specular="0.0" shininess="0.0" rgba="0.251000 0.251000 0.251000 1.000000"/>
+        <material name="0.301961_0.301961_0.301961_0.000000_0.029" specular="0.0" shininess="0.0" rgba="0.302000 0.302000 0.302000 1.000000"/>
+        <material name="0.666667_0.698039_0.768627_0.000000_0.001" specular="0.0" shininess="0.0" rgba="0.666700 0.698000 0.768600 1.000000"/>
+
+        <material name="0.301961_0.301961_0.301961_0.000000_0.027" specular="0.0" shininess="0.0" rgba="0.302000 0.302000 0.302000 1.000000"/>
+        <material name="0.901961_0.901961_0.901961_0.000000_0.017" specular="0.7" shininess="0.4" rgba="0.85 0.85 0.85 1.0"/>
+
+        <material name="robotiq_black" shininess="0.9" specular="0.9" reflectance="0.7" rgba="0.1 0.1 0.1 1" />
+        <material name="robotiq_chrome" shininess="0.95" specular="1.0" reflectance="0.9" rgba="0.8 0.8 0.85 1"/>
+        <material name="connection_marker_green" rgba="0 1 0 0.5"/>
+        <material name="connection_marker_blue" rgba="0 0 1 0.5"/>
+
+        <!-- Meshes used by the arm -->
+        <mesh file="meshes/VerticalArm/VerticalArm_0.obj"/>
+        <mesh file="meshes/VerticalArm/VerticalArm_1.obj"/>
+        <mesh file="meshes/VerticalArm/VerticalArm_2.obj"/>
+        <mesh file="meshes/VerticalArm/VerticalArm_3.obj"/>
+        <mesh file="meshes/VerticalArm/VerticalArm_4.obj"/>
+        <mesh file="meshes/VerticalArm/VerticalArm_5.obj"/>
+        
+        <mesh file="meshes/LeftVerticalRotationSlider/LeftVerticalRotationSlider_0.obj"/>
+        <mesh file="meshes/LeftVerticalRotationSlider/LeftVerticalRotationSlider_1.obj"/>
+        <mesh file="meshes/LeftVerticalRotationSlider/LeftVerticalRotationSlider_2.obj"/>
+        
+        <mesh file="meshes/RightVerticalRotationSlider/RightVerticalRotationSlider_0.obj"/>
+        <mesh file="meshes/RightVerticalRotationSlider/RightVerticalRotationSlider_1.obj"/>
+        <mesh file="meshes/RightVerticalRotationSlider/RightVerticalRotationSlider_2.obj"/>
+            
+        <mesh file="meshes/LeftHorizontalSlider/LeftHorizontalSlider_0.obj"/>
+        <mesh file="meshes/LeftHorizontalSlider/LeftHorizontalSlider_1.obj"/>
+
+        <mesh file="meshes/RightHorizontalSlider/RightHorizontalSlider_1.obj"/>
+        <mesh file="meshes/RightHorizontalSlider/RightHorizontalSlider_2.obj"/>
+        <mesh file="meshes/RightHorizontalSlider/RightHorizontalSlider_3.obj"/>
+        <mesh file="meshes/RightHorizontalSlider/RightHorizontalSlider_4.obj"/>
+        <mesh file="meshes/RightHorizontalSlider/RightHorizontalSlider_5.obj"/>
+        <mesh file="meshes/RightHorizontalSlider/RightHorizontalSlider_6.obj"/>
+        <mesh file="meshes/RightHorizontalSlider/RightHorizontalSlider_7.obj"/>
+
+        <mesh file="meshes/HorizontalArm/HorizontalArm_0.obj"/>
+        <mesh file="meshes/HorizontalArm/HorizontalArm_1.obj"/>
+
+        <mesh name="Contact_Cylinder"   file="meshes/Wrist/Contact_Cylinder.stl"/>
+        <mesh name="Hand_Bearing"       file="meshes/Wrist/Hand_Bearing.stl" scale="0.7 0.7 0.7"/>
+        <mesh name="link_0_real"        file="meshes/robotiq_3f/link_0_real.stl" scale="0.7 0.7 0.7"/>
+        <mesh name="link_1_real"        file="meshes/robotiq_3f/link_1_real.stl" scale="0.7 0.7 0.7"/>
+        <mesh name="link_2_real"        file="meshes/robotiq_3f/link_2_real.stl" scale="0.7 0.7 0.7"/>
+        <mesh name="link_3_real"        file="meshes/robotiq_3f/link_3_real.stl" scale="0.7 0.7 0.7"/>
+        <mesh name="palm_real"          file="meshes/robotiq_3f/palm_real.stl" scale="0.7 0.7 0.7"/>
+        <mesh name="palm_atc"           file="meshes/robotiq_3f/chrome.stl" scale="0.7 0.7 0.7"/>
+    </asset>
+
+    <default>
+        <default class="visual">
+            <geom group="2" type="mesh" contype="0" conaffinity="0"/>
+        </default>
+        <default class="collision_visual">
+            <geom type="mesh" contype="1" conaffinity="1"/>
+        </default>
+        <default class="collision">
+            <geom type="mesh" group="3" contype="1" conaffinity="1"/>
+        </default>
+        <default class="primitive_collision">
+            <geom group="3" contype="1" conaffinity="1" condim="6" solmix="3"/>
+        </default>
+        <default class="pad_box1">
+            <geom mass="0" type="box" friction="15 15 15"  solimp="0.9 0.95 0.001 0.5 2" solref="0.0001 1" solmix="3" priority="1" condim="6" rgba="1 0 0 0"/>
+        </default>
+        <default class="pad_box2">
+            <geom mass="0" type="box" friction="15 15 15"  solimp="0.9 0.95 0.001 0.5 2" solref="0.0001 1" solmix="3" priority="1" condim="6" rgba="1 0 0 0"/>
+        </default>
+    </default>
+
+    <worldbody>
+        <!-- Single Arm Instance -->
+        <body name="arm_base" pos="0 0 0">
+            <joint name="base_rotation" pos="0 0 0" axis="0 0 1" range="-6.28318530718 6.28318530718" limited="false"/>
+            <geom mesh="VerticalArm_0" material="0.301961_0.301961_0.301961_0.000000_0.024" class="visual"/>
+            <geom mesh="VerticalArm_1" material="0.301961_0.301961_0.301961_0.000000_0.023" class="visual"/>
+            <geom mesh="VerticalArm_2" material="0.301961_0.301961_0.301961_0.000000_0.022" class="visual"/>
+            <geom mesh="VerticalArm_3" material="0.901961_0.901961_0.901961_0.000000_0.014" class="visual"/>
+            <geom mesh="VerticalArm_4" material="0.301961_0.301961_0.301961_0.000000_0.021" class="visual"/>
+            <geom mesh="VerticalArm_5" material="0.901961_0.901961_0.901961_0.000000_0.013" class="visual"/>
+
+            <!-- <body name="bottom_plate" pos="0 0 0.0105">
+                <geom type="cylinder" size="0.145 0.008" class="primitive_collision" rgba="1 0 0 1"/>
+            </body> -->
+
+            <body name="upper_plate" pos="0 0 1.556">
+                <geom type="cylinder" size="0.145 0.008" class="primitive_collision" rgba="1 0 0 1"/>
+            </body>
+
+            <body name="vertical_primary_bar" pos="-0.05 0.075 0.77181">
+                <geom type="box" size="0.05 0.02 0.77181" class="primitive_collision" rgba="1 0 0 1"/>
+            </body>
+
+            <body name="vertical_secondary_bar" pos="0.05 -0.075 0.77181">
+                <geom type="box" size="0.05 0.02 0.77181" class="primitive_collision" rgba="1 0 0 1"/>
+            </body>
+
+            <body name="camera_mount" pos="-1 0 1.8" euler="0 -0.785398 -1.57">
+                <camera name="pov_camera" fovy="100"/>
+            </body>
+            
+            <!-- Left Vertical Column (Parallel) -->
+            <body name="primary_vertical_column" pos="0 0 0">
+                <joint name="primary_column_lift" pos="0 0 0" axis="0 0 1" type="slide" range="0 1.4" damping="2000"/>
+                <geom mesh="LeftVerticalRotationSlider_0" material="0.301961_0.301961_0.301961_0.000000_0.030" class="visual"/>
+                <geom mesh="LeftVerticalRotationSlider_1" material="0.901961_0.901961_0.901961_0.000000_0.019" class="visual"/>
+                <geom mesh="LeftVerticalRotationSlider_2" material="0.501961_0.501961_0.501961_0.000000_0.007" class="visual"/>
+                
+                <body name="column_to_arm_connector" pos="0 0 0">
+                    <joint name="arm_pitch" pos="0.049998 -0.040458 0.069379" axis="0 1 0" stiffness="0"/>
+                    <geom mesh="LeftHorizontalSlider_0" material="0.301961_0.301961_0.301961_0.000000_0.028" class="visual"/>
+                    <geom mesh="LeftHorizontalSlider_1" material="0.901961_0.901961_0.901961_0.000000_0.018" class="visual"/>
+                    
+                    <!-- Main Telescopic Arm -->
+                    <body name="telescopic_arm_main" pos="0 0 0">
+                        <joint name="telescopic_extend" pos="0 0 0" axis="1 0 0" type="slide" range="0 0.6" damping="2000"/>
+                        <geom mesh="HorizontalArm_0" material="0.301961_0.301961_0.301961_0.000000_0.027" class="visual"/>
+                        <geom mesh="HorizontalArm_1" material="0.901961_0.901961_0.901961_0.000000_0.017" class="visual"/>
+                        <geom type="box" size="0.40 0.02 0.04" pos="-0.31 0 0.07" quat="1 0 0 0" class="primitive_collision" rgba="1 0 0 1"/>
+                        <geom type="box" size="0.03 0.04 0.03" pos="-0.69 -0.02 0.07" quat="1 0 0 0" class="primitive_collision" rgba="1 0 0 1"/>
+                        
+                        <!-- Secondary Telescopic Arm (Gripper Side) -->
+                        <body name="telescopic_arm_secondary" pos="0 0 0">
+                            <joint name="telescopic_grip" pos="0 0 0" axis="1 0 0" type="slide" range="-0.525 0.1" limited="true" stiffness="500" damping="10"/>
+                            <geom mesh="RightHorizontalSlider_1" material="0.780392_0.760784_0.741176_0.000000_0.001" class="visual"/>
+                            <geom mesh="RightHorizontalSlider_2" material="0.898039_0.898039_0.898039_0.000000_0.001" class="visual"/>
+                            <geom mesh="RightHorizontalSlider_3" material="0.666667_0.698039_0.768627_0.000000_0.001" class="visual"/>
+                            <geom mesh="RightHorizontalSlider_4" material="0.792157_0.819608_0.933333_0.000000_0.001" class="visual"/>
+                            <geom mesh="RightHorizontalSlider_5" material="0.250980_0.250980_0.250980_0.000000_0.001" class="visual"/>
+                            <geom mesh="RightHorizontalSlider_6" material="0.000000_1.000000_0.000000_0.000000_0.001" class="visual"/>
+                            <geom mesh="RightHorizontalSlider_7" material="0.301961_0.301961_0.301961_0.000000_0.029" class="visual"/>
+                            
+                            <body name="arm_end_effector" pos="-0.049998 0.040458 0.069379">
+                                <joint name="end_effector_rotation" pos="0 0 0" axis="0 1 0" damping="0.0"/>
+                                <geom pos="-0.325 -0.05 -0.5" quat="1 0 0 0" type="mesh" rgba="0.75 0.75 0.75 1" mesh="Contact_Cylinder"/>
+                                <site name="cyl_weld_site" pos="0 0 0" size="0.005" rgba="1 0 0 0" type="sphere" material="connection_marker_green"/>
+                            </body>
+                        </body>
+                        
+                        <!-- Gripper Assembly -->
+                        <body name="gripper_wrist" pos="0.111 -0.04 0.069">
+                            <joint name="wrist_pitch" pos="0 0 0" axis="0 1 0" stiffness="10" damping="10" range="-1.57 1.57"/>
+                            <geom pos="-0.2275 0.035 -0.35" quat="1 0 0 0" type="mesh" rgba="0.75 0.75 0.75 1" mesh="Hand_Bearing"/>
+                            <geom size="0.0175 0.0175" pos="0.0175 0.035 0" quat="0.707107 0 0.707107 0" type="cylinder" rgba="0.75 0.75 0.75 1"/>
+                            
+                            <body name="gripper_roll" pos="0.035 0.035 0" quat="0.707107 0 0.707107 0">
+                                <site name="attachment_site" pos="0 0 -0.05" size="0.007" rgba="1 0 0 0" group="1"/>
+                                <joint name="gripper_roll_joint" pos="0 0 0" axis="0 0 1" range="-3.14159 3.14159" stiffness="10" damping="10"/>
+                                <geom size="0.021 0.0105" type="cylinder" material="robotiq_chrome"/>
+                                
+                                <body name="gripper_pitch" pos="0 0 0.02">
+                                    <joint name="gripper_pitch_joint" pos="0 0 0.0" axis="0 1 0" range="-1.5708 1.5708" stiffness="10" damping="10"/>
+                                    <geom size="0.028" material="robotiq_black"/>
+                                    
+                                    <body name="gripper_yaw" euler="0 0 1.57">
+                                        <joint name="gripper_yaw_joint" pos="0 0 0" axis="0 1 0" range="-1.5708 1.5708" stiffness="10" damping="10"/>
+                                        <geom pos="0 0 0.028" quat="0.707107 0.707107 0 0" type="mesh" material="robotiq_black" mesh="palm_real"/>
+                                        <geom pos="0 0 0.028" quat="0.707107 0.707107 0 0" type="mesh" material="robotiq_chrome" mesh="palm_atc"/>
+                                        <geom pos="0.03186113 0 0.05698" quat="0.500199 0.500199 -0.499801 0.499801" type="mesh" mesh="link_0_real" material="robotiq_black"/>
+                                        
+                                        <body name="end_effector_frame" pos="0 0 0.1" euler="1.57 3.14 1.57">
+                                            <site name="ee_site" size="0.01" rgba="1 0 0 0" group="1"/>
+                                        </body>
+                                        
+                                        <!-- Finger C -->
+                                        <body name="finger_c_base" pos="-0.03185 -0.0252 0.04298" quat="-0.499803 0.499799 0.500197 0.500201">
+                                            <joint name="finger_c_spread" pos="0 0 0" axis="0 1 0" range="-0.1784 0.192" stiffness="1" damping="10"/>
+                                            <geom pos="0.014 0 0" quat="1 0 0 0" type="mesh" mesh="link_0_real" material="robotiq_black"/>
+                                            
+                                            <body name="finger_c_proximal" pos="0.014 0 0">
+                                                <joint name="finger_c_joint1" pos="0 0 0" axis="0 0 1" range="0.0495 1.2218" stiffness="10" damping="10"/>
+                                                <geom pos="0.035 -0.0196 0" quat="0.96639 0 0 -0.257081" type="mesh" mesh="link_1_real" material="robotiq_black"/>
+                                                <geom class="pad_box1" rgba="1 0 0 0.0" size="0.0217 0.0035 0.0091" pos="0.0245 -0.007 0" euler="0 -0 -0.55"/>
+                                                <geom class="pad_box2" rgba="1 0 0 0.0" size="0.0217 0.0035 0.0091" pos="0.0245 -0.0084 0" euler="0 -0 -0.55"/>
+                                                
+                                                <body name="finger_c_middle" pos="0.035 -0.0196 0" quat="0.96639 0 0 -0.257081">
+                                                    <joint name="finger_c_joint2" pos="0 0 0" axis="0 0 1" range="0 1.5708" stiffness="1" damping="10"/>
+                                                    <geom pos="0.0273 0 0.00525" quat="1 0 0 0" type="mesh" mesh="link_2_real" material="robotiq_black"/>
+                                                    <geom class="pad_box1" rgba="1 0 0 0.0" size="0.0154 0.0035 0.0091" pos="0.0175 0.0049 0" euler="0 -0 0"/>
+                                                    <geom class="pad_box2" rgba="1 0 0 0.0" size="0.0154 0.0035 0.0091" pos="0.0175 0.00504 0" euler="0 -0 0"/>
+                                                    
+                                                    <body name="finger_c_distal" pos="0.0273 0 0">
+                                                        <joint name="finger_c_joint3" pos="0 0 0" axis="0 0 1" range="-1.2217 -0.0523" stiffness="1" damping="10"/>
+                                                        <geom quat="0.96639 0 0 0.257081" type="mesh" material="robotiq_black" mesh="link_3_real"/>
+                                                        <geom class="pad_box1" rgba="1 0 0 0.0" size="0.014 0.0035 0.0091" pos="0.007 0.0105 0" euler="0 -0 0.5"/>
+                                                        <geom class="pad_box2" rgba="1 0 0 0.0" size="0.014 0.0035 0.0091" pos="0.007 0.01078 0" euler="0 -0 0.5"/>
+                                                        <geom class="pad_box2" rgba="1 0 0 0.0" size="0.014 0.0035 0.0091" pos="0.007 0.0112 0" euler="0 -0 0.5"/>
+                                                    </body>
+                                                </body>
+                                            </body>
+                                        </body>
+                                        
+                                        <!-- Finger B -->
+                                        <body name="finger_b_base" pos="-0.03185 0.0252 0.04298" quat="-0.499803 0.499799 0.500197 0.500201">
+                                            <joint name="finger_b_spread" pos="0 0 0" axis="0 1 0" range="-0.192 0.1784" stiffness="1" damping="10"/>
+                                            <geom pos="0.014 0 0" quat="1 0 0 0" type="mesh" mesh="link_0_real" material="robotiq_black"/>
+                                            
+                                            <body name="finger_b_proximal" pos="0.014 0 0">
+                                                <joint name="finger_b_joint1" pos="0 0 0" axis="0 0 1" range="0.0495 1.2218" stiffness="10" damping="10"/>
+                                                <geom pos="0.035 -0.0196 0" quat="0.96639 0 0 -0.257081" type="mesh" mesh="link_1_real" material="robotiq_black"/>
+                                                <geom class="pad_box1" rgba="1 0 0 0.0" size="0.0217 0.0035 0.0091" pos="0.0245 -0.007 0" euler="0 -0 -0.55"/>
+                                                <geom class="pad_box2" rgba="1 0 0 0.0" size="0.0217 0.0035 0.0091" pos="0.0245 -0.0084 0" euler="0 -0 -0.55"/>
+                                                
+                                                <body name="finger_b_middle" pos="0.035 -0.0196 0" quat="0.96639 0 0 -0.257081">
+                                                    <joint name="finger_b_joint2" pos="0 0 0" axis="0 0 1" range="0 1.5708" stiffness="1" damping="10"/>
+                                                    <geom pos="0.0273 0 0.00525" quat="1 0 0 0" type="mesh" mesh="link_2_real" material="robotiq_black"/>
+                                                    <geom class="pad_box1" rgba="1 0 0 0.0" size="0.0154 0.0035 0.0091" pos="0.0175 0.0049 0" euler="0 -0 0"/>
+                                                    <geom class="pad_box2" rgba="1 0 0 0.0" size="0.0154 0.0035 0.0091" pos="0.0175 0.00504 0" euler="0 -0 0"/>
+                                                    
+                                                    <body name="finger_b_distal" pos="0.0273 0 0">
+                                                        <joint name="finger_b_joint3" pos="0 0 0" axis="0 0 1" range="-1.2217 -0.0523" stiffness="1" damping="10"/>
+                                                        <geom quat="0.96639 0 0 0.257081" type="mesh" material="robotiq_black" mesh="link_3_real"/>
+                                                        <geom class="pad_box1" rgba="1 0 0 0.0" size="0.014 0.0035 0.0091" pos="0.007 0.0105 0" euler="0 -0 0.5"/>
+                                                        <geom class="pad_box2" rgba="1 0 0 0.0" size="0.014 0.0035 0.0091" pos="0.007 0.01092 0" euler="0 -0 0.5"/>
+                                                        <geom class="pad_box2" rgba="1 0 0 0.0" size="0.014 0.0035 0.0091" pos="0.007 0.0112 0" euler="0 -0 0.5"/>
+                                                    </body>
+                                                </body>
+                                            </body>
+                                        </body>
+                                        
+                                        <!-- Finger A (Thumb) -->
+                                        <body name="finger_a_base" pos="0.03186113 0 0.05698" quat="0.500199 0.500199 -0.499801 0.499801">
+                                            <joint name="finger_a_joint1" pos="0 0 0" axis="0 0 1" range="0.0495 1.2218" stiffness="10" damping="10"/>
+                                            <geom pos="0.035 -0.0196 0" quat="0.96639 0 0 -0.257081" type="mesh" mesh="link_1_real" material="robotiq_black"/>
+                                            <geom class="pad_box1" rgba="1 0 0 0.0" size="0.0217 0.0035 0.0105" pos="0.0245 -0.007 0" euler="0 -0 -0.55"/>
+                                            <geom class="pad_box2" rgba="1 0 0 0.0" size="0.0217 0.0035 0.0105" pos="0.0245 -0.0105 0" euler="0 -0 -0.55"/>
+                                            
+                                            <body name="finger_a_middle" pos="0.035 -0.0196 0" quat="0.96639 0 0 -0.257081">
+                                                <joint name="finger_a_joint2" pos="0 0 0" axis="0 0 1" range="0 1.5708" stiffness="1" damping="10"/>
+                                                <geom pos="0.0273 0 0.00525" quat="1 0 0 0" type="mesh" mesh="link_2_real" material="robotiq_black"/>
+                                                <geom class="pad_box1" rgba="1 0 0 0.0" size="0.0154 0.0035 0.0105" pos="0.0175 0.0049 0" euler="0 -0 0"/>
+                                                <geom class="pad_box2" rgba="1 0 0 0.0" size="0.0154 0.0035 0.0105" pos="0.0175 0.00504 0" euler="0 -0 0"/>
+                                                
+                                                <body name="finger_a_distal" pos="0.0273 0 0">
+                                                    <joint name="finger_a_joint3" pos="0 0 0" axis="0 0 1" range="-1.2217 -0.0523" stiffness="1" damping="10"/>
+                                                    <geom quat="0.96639 0 0 0.257081" type="mesh" material="robotiq_black" mesh="link_3_real"/>
+                                                    <geom class="pad_box1" rgba="1 0 0 0.0" size="0.014 0.0035 0.0091" pos="0.007 0.0105 0" euler="0 -0 0.5"/>
+                                                    <geom class="pad_box2" rgba="1 0 0 0.0" size="0.014 0.0035 0.0091" pos="0.007 0.01092 0" euler="0 -0 0.5"/>
+                                                    <geom class="pad_box2" rgba="1 0 0 0.0" size="0.014 0.0035 0.0091" pos="0.007 0.0112 0" euler="0 -0 0.5"/>
+                                                </body>
+                                            </body>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+            
+            <!-- Right Vertical Column (Parallel) -->
+            <body name="secondary_vertical_column" pos="0 0 0">
+                <joint name="secondary_column_lift" pos="0 0 0" axis="0 0 1" type="slide" range="0 1.4" damping="2000"/>
+                <geom mesh="RightVerticalRotationSlider_0" material="0.501961_0.501961_0.501961_0.000000_0.008" class="visual"/>
+                <geom mesh="RightVerticalRotationSlider_1" material="0.301961_0.301961_0.301961_0.000000_0.026" class="visual"/>
+                <geom mesh="RightVerticalRotationSlider_2" material="0.901961_0.901961_0.901961_0.000000_0.016" class="visual"/>
+                
+                <body name="secondary_column_connector">
+                    <body name="secondary_end_effector" pos="-0.049998 0.040458 0.069379">
+                        <joint name="secondary_end_rotation" pos="0 0 0" axis="0 1 0" damping="0.0"/>
+                        <geom pos="-0.325 -0.05 -0.5" quat="1 0 0 0" type="mesh" rgba="0.75 0.75 0.75 1" mesh="Contact_Cylinder"/>
+                        <site name="arm_weld_site" pos="0 0 0" size="0.005" rgba="0 0 0 0" type="sphere" material="connection_marker_blue"/>
+                    </body>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+
+    <actuator>
+        <!-- BASE JOINT -->
+        <position joint="base_rotation" name="base_rotation_motor" ctrlrange="-6.28318530718 6.28318530718" kp="500" dampratio="1"/>
+
+        <!-- PARALLEL VERTICAL COLUMNS -->
+        <position joint="primary_column_lift" name="primary_column_lift_motor"    ctrlrange="0 1.4"   kp="25000"/>
+        <position joint="secondary_column_lift" name="secondary_column_lift_motor"  ctrlrange="0 1.4"   kp="25000"/>
+        
+        <!-- TELESCOPIC ARM -->
+        <position joint="telescopic_extend" name="telescopic_extend_motor" ctrlrange="0 0.6"    kp="25000"      dampratio="0.5"/>
+
+        <!-- WRIST & GRIPPER ORIENTATION -->
+        <position name="wrist_pitch_motor" joint="wrist_pitch"              ctrlrange="-1.5708 1.5708"      kp="127" dampratio="0.5"/>
+        <position name="gripper_roll_motor" joint="gripper_roll_joint"      ctrlrange="-3.14159 3.14159"    kp="500" dampratio="0.5"/>
+        <position name="gripper_pitch_motor" joint="gripper_pitch_joint"    ctrlrange="-1.5708 1.5708"      kp="500" dampratio="0.5"/>
+        <position name="gripper_yaw_motor" joint="gripper_yaw_joint"        ctrlrange="-1.5708 1.5708"      kp="500" dampratio="0.5"/>
+
+        <!-- GRIPPER FINGER ACTUATORS -->
+        <!-- Finger C -->
+        <position joint="finger_c_spread" name="finger_c_spread_motor" ctrlrange="-0.1784 0.192"    kp="60"    dampratio="1.0" />
+        <position joint="finger_c_joint1" name="finger_c_joint1_motor" ctrlrange="-1 1.2218"        kp="60"    dampratio="1.0" /> 
+        <position joint="finger_c_joint2" name="finger_c_joint2_motor" ctrlrange="0 1.5708"         kp="60"    dampratio="1.0" />
+        <position joint="finger_c_joint3" name="finger_c_joint3_motor" ctrlrange="-1.2217 -0.0523"  kp="60"    dampratio="1.0" />
+        
+        <!-- Finger B -->
+        <position joint="finger_b_spread" name="finger_b_spread_motor" ctrlrange="-0.192 0.1784"    kp="60"    dampratio="1.0"/>
+        <position joint="finger_b_joint1" name="finger_b_joint1_motor" ctrlrange="-1 1.2218"        kp="60"    dampratio="1.0"/>
+        <position joint="finger_b_joint2" name="finger_b_joint2_motor" ctrlrange="0 1.5708"         kp="60"    dampratio="1.0"/>
+        <position joint="finger_b_joint3" name="finger_b_joint3_motor" ctrlrange="-1.2217 -0.0523"  kp="60"    dampratio="1.0"/>
+        
+        <!-- Finger A (Thumb) -->
+        <position joint="finger_a_joint1" name="finger_a_joint1_motor" ctrlrange="-1 1.2218"        kp="60"    dampratio="1.0"/>
+        <position joint="finger_a_joint2" name="finger_a_joint2_motor" ctrlrange="0 1.5708"         kp="60"    dampratio="1.0"/>
+        <position joint="finger_a_joint3" name="finger_a_joint3_motor" ctrlrange="-1.2217 -0.0523"  kp="60"    dampratio="1.0"/>
+    </actuator>
+
+    <equality>
+        <connect name="weld_contact_arm_sites" site1="cyl_weld_site" site2="arm_weld_site" solimp="0.95 0.9 0.9 0.5 100" solref="0.00000000000000000000000000000000000001 1"/>
+    </equality>
+
+    <contact>
+        <!-- Self-collision exclusions for all arm components -->
+        <exclude body1="primary_vertical_column" body2="column_to_arm_connector"/>
+        <exclude body1="primary_vertical_column" body2="telescopic_arm_main"/>
+        <exclude body1="primary_vertical_column" body2="telescopic_arm_secondary"/>
+        <exclude body1="primary_vertical_column" body2="arm_end_effector"/>
+        <exclude body1="primary_vertical_column" body2="gripper_wrist"/>
+        <exclude body1="primary_vertical_column" body2="gripper_roll"/>
+        <exclude body1="primary_vertical_column" body2="gripper_pitch"/>
+        <exclude body1="primary_vertical_column" body2="gripper_yaw"/>
+        <exclude body1="primary_vertical_column" body2="finger_c_base"/>
+        <exclude body1="primary_vertical_column" body2="finger_c_proximal"/>
+        <exclude body1="primary_vertical_column" body2="finger_c_middle"/>
+        <exclude body1="primary_vertical_column" body2="finger_c_distal"/>
+        <exclude body1="primary_vertical_column" body2="finger_b_base"/>
+        <exclude body1="primary_vertical_column" body2="finger_b_proximal"/>
+        <exclude body1="primary_vertical_column" body2="finger_b_middle"/>
+        <exclude body1="primary_vertical_column" body2="finger_b_distal"/>
+        <exclude body1="primary_vertical_column" body2="finger_a_base"/>
+        <exclude body1="primary_vertical_column" body2="finger_a_middle"/>
+        <exclude body1="primary_vertical_column" body2="finger_a_distal"/>
+
+        <exclude body1="column_to_arm_connector" body2="telescopic_arm_main"/>
+        <exclude body1="column_to_arm_connector" body2="telescopic_arm_secondary"/>
+        <exclude body1="column_to_arm_connector" body2="arm_end_effector"/>
+        <exclude body1="column_to_arm_connector" body2="gripper_wrist"/>
+        <exclude body1="column_to_arm_connector" body2="gripper_roll"/>
+        <exclude body1="column_to_arm_connector" body2="gripper_pitch"/>
+        <exclude body1="column_to_arm_connector" body2="gripper_yaw"/>
+        <exclude body1="column_to_arm_connector" body2="finger_c_base"/>
+        <exclude body1="column_to_arm_connector" body2="finger_c_proximal"/>
+        <exclude body1="column_to_arm_connector" body2="finger_c_middle"/>
+        <exclude body1="column_to_arm_connector" body2="finger_c_distal"/>
+        <exclude body1="column_to_arm_connector" body2="finger_b_base"/>
+        <exclude body1="column_to_arm_connector" body2="finger_b_proximal"/>
+        <exclude body1="column_to_arm_connector" body2="finger_b_middle"/>
+        <exclude body1="column_to_arm_connector" body2="finger_b_distal"/>
+        <exclude body1="column_to_arm_connector" body2="finger_a_base"/>
+        <exclude body1="column_to_arm_connector" body2="finger_a_middle"/>
+        <exclude body1="column_to_arm_connector" body2="finger_a_distal"/>
+
+        <exclude body1="telescopic_arm_main" body2="telescopic_arm_secondary"/>
+        <exclude body1="telescopic_arm_main" body2="arm_end_effector"/>
+        <exclude body1="telescopic_arm_main" body2="gripper_wrist"/>
+        <exclude body1="telescopic_arm_main" body2="gripper_roll"/>
+        <exclude body1="telescopic_arm_main" body2="gripper_pitch"/>
+        <exclude body1="telescopic_arm_main" body2="gripper_yaw"/>
+        <exclude body1="telescopic_arm_main" body2="finger_c_base"/>
+        <exclude body1="telescopic_arm_main" body2="finger_c_proximal"/>
+        <exclude body1="telescopic_arm_main" body2="finger_c_middle"/>
+        <exclude body1="telescopic_arm_main" body2="finger_c_distal"/>
+        <exclude body1="telescopic_arm_main" body2="finger_b_base"/>
+        <exclude body1="telescopic_arm_main" body2="finger_b_proximal"/>
+        <exclude body1="telescopic_arm_main" body2="finger_b_middle"/>
+        <exclude body1="telescopic_arm_main" body2="finger_b_distal"/>
+        <exclude body1="telescopic_arm_main" body2="finger_a_base"/>
+        <exclude body1="telescopic_arm_main" body2="finger_a_middle"/>
+        <exclude body1="telescopic_arm_main" body2="finger_a_distal"/>
+
+        <exclude body1="telescopic_arm_secondary" body2="arm_end_effector"/>
+        <exclude body1="telescopic_arm_secondary" body2="gripper_wrist"/>
+        <exclude body1="telescopic_arm_secondary" body2="gripper_roll"/>
+        <exclude body1="telescopic_arm_secondary" body2="gripper_pitch"/>
+        <exclude body1="telescopic_arm_secondary" body2="gripper_yaw"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_c_base"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_c_proximal"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_c_middle"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_c_distal"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_b_base"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_b_proximal"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_b_middle"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_b_distal"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_a_base"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_a_middle"/>
+        <exclude body1="telescopic_arm_secondary" body2="finger_a_distal"/>
+
+        <exclude body1="arm_end_effector" body2="gripper_wrist"/>
+        <exclude body1="arm_end_effector" body2="gripper_roll"/>
+        <exclude body1="arm_end_effector" body2="gripper_pitch"/>
+        <exclude body1="arm_end_effector" body2="gripper_yaw"/>
+        <exclude body1="arm_end_effector" body2="finger_c_base"/>
+        <exclude body1="arm_end_effector" body2="finger_c_proximal"/>
+        <exclude body1="arm_end_effector" body2="finger_c_middle"/>
+        <exclude body1="arm_end_effector" body2="finger_c_distal"/>
+        <exclude body1="arm_end_effector" body2="finger_b_base"/>
+        <exclude body1="arm_end_effector" body2="finger_b_proximal"/>
+        <exclude body1="arm_end_effector" body2="finger_b_middle"/>
+        <exclude body1="arm_end_effector" body2="finger_b_distal"/>
+        <exclude body1="arm_end_effector" body2="finger_a_base"/>
+        <exclude body1="arm_end_effector" body2="finger_a_middle"/>
+        <exclude body1="arm_end_effector" body2="finger_a_distal"/>
+
+        <exclude body1="gripper_wrist" body2="gripper_roll"/>
+        <exclude body1="gripper_wrist" body2="gripper_pitch"/>
+        <exclude body1="gripper_wrist" body2="gripper_yaw"/>
+        <exclude body1="gripper_wrist" body2="finger_c_base"/>
+        <exclude body1="gripper_wrist" body2="finger_c_proximal"/>
+        <exclude body1="gripper_wrist" body2="finger_c_middle"/>
+        <exclude body1="gripper_wrist" body2="finger_c_distal"/>
+        <exclude body1="gripper_wrist" body2="finger_b_base"/>
+        <exclude body1="gripper_wrist" body2="finger_b_proximal"/>
+        <exclude body1="gripper_wrist" body2="finger_b_middle"/>
+        <exclude body1="gripper_wrist" body2="finger_b_distal"/>
+        <exclude body1="gripper_wrist" body2="finger_a_base"/>
+        <exclude body1="gripper_wrist" body2="finger_a_middle"/>
+        <exclude body1="gripper_wrist" body2="finger_a_distal"/>
+
+        <exclude body1="gripper_roll" body2="gripper_pitch"/>
+        <exclude body1="gripper_roll" body2="gripper_yaw"/>
+        <exclude body1="gripper_roll" body2="finger_c_base"/>
+        <exclude body1="gripper_roll" body2="finger_c_proximal"/>
+        <exclude body1="gripper_roll" body2="finger_c_middle"/>
+        <exclude body1="gripper_roll" body2="finger_c_distal"/>
+        <exclude body1="gripper_roll" body2="finger_b_base"/>
+        <exclude body1="gripper_roll" body2="finger_b_proximal"/>
+        <exclude body1="gripper_roll" body2="finger_b_middle"/>
+        <exclude body1="gripper_roll" body2="finger_b_distal"/>
+        <exclude body1="gripper_roll" body2="finger_a_base"/>
+        <exclude body1="gripper_roll" body2="finger_a_middle"/>
+        <exclude body1="gripper_roll" body2="finger_a_distal"/>
+
+        <exclude body1="gripper_pitch" body2="gripper_yaw"/>
+        <exclude body1="gripper_pitch" body2="finger_c_base"/>
+        <exclude body1="gripper_pitch" body2="finger_c_proximal"/>
+        <exclude body1="gripper_pitch" body2="finger_c_middle"/>
+        <exclude body1="gripper_pitch" body2="finger_c_distal"/>
+        <exclude body1="gripper_pitch" body2="finger_b_base"/>
+        <exclude body1="gripper_pitch" body2="finger_b_proximal"/>
+        <exclude body1="gripper_pitch" body2="finger_b_middle"/>
+        <exclude body1="gripper_pitch" body2="finger_b_distal"/>
+        <exclude body1="gripper_pitch" body2="finger_a_base"/>
+        <exclude body1="gripper_pitch" body2="finger_a_middle"/>
+        <exclude body1="gripper_pitch" body2="finger_a_distal"/>
+
+        <exclude body1="gripper_yaw" body2="finger_c_base"/>
+        <exclude body1="gripper_yaw" body2="finger_c_proximal"/>
+        <exclude body1="gripper_yaw" body2="finger_c_middle"/>
+        <exclude body1="gripper_yaw" body2="finger_c_distal"/>
+        <exclude body1="gripper_yaw" body2="finger_b_base"/>
+        <exclude body1="gripper_yaw" body2="finger_b_proximal"/>
+        <exclude body1="gripper_yaw" body2="finger_b_middle"/>
+        <exclude body1="gripper_yaw" body2="finger_b_distal"/>
+        <exclude body1="gripper_yaw" body2="finger_a_base"/>
+        <exclude body1="gripper_yaw" body2="finger_a_middle"/>
+        <exclude body1="gripper_yaw" body2="finger_a_distal"/>
+
+        <!-- Finger exclusions -->
+        <exclude body1="finger_c_base" body2="finger_c_proximal"/>
+        <exclude body1="finger_c_base" body2="finger_c_middle"/>
+        <exclude body1="finger_c_base" body2="finger_c_distal"/>
+        <exclude body1="finger_c_base" body2="finger_b_base"/>
+        <exclude body1="finger_c_base" body2="finger_b_proximal"/>
+        <exclude body1="finger_c_base" body2="finger_b_middle"/>
+        <exclude body1="finger_c_base" body2="finger_b_distal"/>
+        <exclude body1="finger_c_base" body2="finger_a_base"/>
+        <exclude body1="finger_c_base" body2="finger_a_middle"/>
+        <exclude body1="finger_c_base" body2="finger_a_distal"/>
+
+        <exclude body1="finger_c_proximal" body2="finger_c_middle"/>
+        <exclude body1="finger_c_proximal" body2="finger_c_distal"/>
+        <exclude body1="finger_c_proximal" body2="finger_b_base"/>
+        <exclude body1="finger_c_proximal" body2="finger_b_proximal"/>
+        <exclude body1="finger_c_proximal" body2="finger_b_middle"/>
+        <exclude body1="finger_c_proximal" body2="finger_b_distal"/>
+        <exclude body1="finger_c_proximal" body2="finger_a_base"/>
+        <exclude body1="finger_c_proximal" body2="finger_a_middle"/>
+        <exclude body1="finger_c_proximal" body2="finger_a_distal"/>
+
+        <exclude body1="finger_c_middle" body2="finger_c_distal"/>
+        <exclude body1="finger_c_middle" body2="finger_b_base"/>
+        <exclude body1="finger_c_middle" body2="finger_b_proximal"/>
+        <exclude body1="finger_c_middle" body2="finger_b_middle"/>
+        <exclude body1="finger_c_middle" body2="finger_b_distal"/>
+        <exclude body1="finger_c_middle" body2="finger_a_base"/>
+        <exclude body1="finger_c_middle" body2="finger_a_middle"/>
+        <exclude body1="finger_c_middle" body2="finger_a_distal"/>
+
+        <exclude body1="finger_c_distal" body2="finger_b_base"/>
+        <exclude body1="finger_c_distal" body2="finger_b_proximal"/>
+        <exclude body1="finger_c_distal" body2="finger_b_middle"/>
+        <exclude body1="finger_c_distal" body2="finger_b_distal"/>
+        <exclude body1="finger_c_distal" body2="finger_a_base"/>
+        <exclude body1="finger_c_distal" body2="finger_a_middle"/>
+        <exclude body1="finger_c_distal" body2="finger_a_distal"/>
+
+        <exclude body1="finger_b_base" body2="finger_b_proximal"/>
+        <exclude body1="finger_b_base" body2="finger_b_middle"/>
+        <exclude body1="finger_b_base" body2="finger_b_distal"/>
+        <exclude body1="finger_b_base" body2="finger_a_base"/>
+        <exclude body1="finger_b_base" body2="finger_a_middle"/>
+        <exclude body1="finger_b_base" body2="finger_a_distal"/>
+
+        <exclude body1="finger_b_proximal" body2="finger_b_middle"/>
+        <exclude body1="finger_b_proximal" body2="finger_b_distal"/>
+        <exclude body1="finger_b_proximal" body2="finger_a_base"/>
+        <exclude body1="finger_b_proximal" body2="finger_a_middle"/>
+        <exclude body1="finger_b_proximal" body2="finger_a_distal"/>
+
+        <exclude body1="finger_b_middle" body2="finger_b_distal"/>
+        <exclude body1="finger_b_middle" body2="finger_a_base"/>
+        <exclude body1="finger_b_middle" body2="finger_a_middle"/>
+        <exclude body1="finger_b_middle" body2="finger_a_distal"/>
+
+        <exclude body1="finger_b_distal" body2="finger_a_base"/>
+        <exclude body1="finger_b_distal" body2="finger_a_middle"/>
+        <exclude body1="finger_b_distal" body2="finger_a_distal"/>
+
+        <exclude body1="finger_a_base" body2="finger_a_middle"/>
+        <exclude body1="finger_a_base" body2="finger_a_distal"/>
+
+        <exclude body1="finger_a_middle" body2="finger_a_distal"/>
+
+        <!-- Right column exclusions -->
+        <exclude body1="secondary_vertical_column" body2="secondary_column_connector"/>
+        <exclude body1="secondary_vertical_column" body2="secondary_end_effector"/>
+        <exclude body1="secondary_column_connector" body2="secondary_end_effector"/>
+        <exclude body1="secondary_end_effector" body2="arm_end_effector"/>
+    </contact>
+</mujoco>

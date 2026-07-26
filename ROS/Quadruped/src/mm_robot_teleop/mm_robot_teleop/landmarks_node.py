@@ -1,392 +1,563 @@
-#!/usr/bin/env python3
-
-import rclpy
-import math
-import numpy as np
-from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
-from rclpy.duration import Duration
-from rclpy.time import Time
-
-from sensor_msgs.msg import CompressedImage
-from visualization_msgs.msg import MarkerArray, Marker
-from geometry_msgs.msg import Point, TransformStamped, Quaternion
-from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
-
 import cv2
 import mediapipe as mp
+import numpy as np
+import os
+import json
+import rclpy
+from rclpy.node import Node
+from cv_bridge import CvBridge  # <-- ADDED
 
-POSE_CONNECTIONS = [(11, 12), (11, 13), (13, 15), (12, 14), (14, 16)]
-BODY_LANDMARKS = [11, 12, 13, 14, 15, 16]
-HAND_CONNECTIONS = list(mp.solutions.hands.HAND_CONNECTIONS)
-FINGERTIP_INDICES = [4, 8, 12, 16, 20]
+from sensor_msgs.msg import Image, CompressedImage  # <-- ADDED Image
+from geometry_msgs.msg import Pose, PoseArray, Point
+from visualization_msgs.msg import Marker, MarkerArray
+from std_msgs.msg import String, ColorRGBA
 
-class MediaPipeBodyNode(Node):
+mp_drawing = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
+mp_hands = mp.solutions.hands
+mp_pose = mp.solutions.pose
 
-    def __init__(self):
-        super().__init__('mediapipe_body_node')
 
-        self.declare_parameter('arm_length_scale', 1.0)
-        self.arm_length_scale = self.get_parameter('arm_length_scale').value
+class GestureRecognizer:
+    """Recognize hand gestures (open/close) from MediaPipe landmarks."""
+    THUMB_TIP = 4; THUMB_IP = 3; THUMB_MCP = 2; THUMB_CMC = 1
+    INDEX_TIP = 8; INDEX_PIP = 6; INDEX_MCP = 5
+    MIDDLE_TIP = 12; MIDDLE_PIP = 10; MIDDLE_MCP = 9
+    RING_TIP = 16; RING_PIP = 14; RING_MCP = 13
+    PINKY_TIP = 20; PINKY_PIP = 18; PINKY_MCP = 17
+    WRIST = 0
+    
+    def __init__(self, open_ratio=0.6):
+        self.open_ratio = open_ratio
+    
+    def is_finger_extended(self, landmarks, tip_idx, pip_idx, mcp_idx=None):
+        tip = np.array([landmarks[tip_idx].x, landmarks[tip_idx].y, landmarks[tip_idx].z])
+        pip = np.array([landmarks[pip_idx].x, landmarks[pip_idx].y, landmarks[pip_idx].z])
+        wrist = np.array([landmarks[self.WRIST].x, landmarks[self.WRIST].y, landmarks[self.WRIST].z])
         
-        self.declare_parameter('target_frame', 'obotx_base_footprint_platform')
-        self.target_frame = self.get_parameter('target_frame').value
-
-        self.declare_parameter('offset_x', 0.0)
-        self.declare_parameter('offset_y', 0.0)
-        self.declare_parameter('offset_z', 0.0)
-        
-        self.offset_x = self.get_parameter('offset_x').value
-        self.offset_y = self.get_parameter('offset_y').value
-        self.offset_z = self.get_parameter('offset_z').value
-
-        qos_img = QoSProfile(
-            reliability=ReliabilityPolicy.BEST_EFFORT,
-            history=HistoryPolicy.KEEP_LAST,
-            depth=1
-        )
-
-        self.image_sub = self.create_subscription(
-            CompressedImage, '/image_raw/compressed', self.compressed_callback, qos_profile=qos_img
-        )
-        self.landmark_pub = self.create_publisher(MarkerArray, '/body_landmarks', 10)
-        
-        self.tf_broadcaster = TransformBroadcaster(self)
-        self.static_tf_broadcaster = StaticTransformBroadcaster(self)
-        
-        self.publish_static_transform()
-
-        self.mp_pose = mp.solutions.pose.Pose(
-            model_complexity=0, smooth_landmarks=True,
-            min_detection_confidence=0.5, min_tracking_confidence=0.5
-        )
-        self.mp_hands = mp.solutions.hands.Hands(
-            max_num_hands=2, min_detection_confidence=0.3, min_tracking_confidence=0.3
-        )
-
-        self.last_hand_results = None
-        self.process_hands_every = 1
-        self._frame_count = 0
-        self.prev_pose_world = [None] * 33
-        self.pose_alpha = 0.3
-
-        self.quat_alpha = 0.35
-        self.prev_quats = {'left': None, 'right': None}
-        self.prev_hand_wrist_pos = {'left': None, 'right': None}
-
-        self.get_logger().info(f"MediaPipe node started. Target: '{self.target_frame}', Offset: ({self.offset_x}, {self.offset_y}, {self.offset_z})")
-
-    def publish_static_transform(self):
-        static_transform = TransformStamped()
-        static_transform.header.stamp = Time().to_msg() 
-        static_transform.header.frame_id = self.target_frame
-        static_transform.child_frame_id = 'landmark'
-        static_transform.transform.translation.x = float(self.offset_x)
-        static_transform.transform.translation.y = float(self.offset_y)
-        static_transform.transform.translation.z = float(self.offset_z)
-        static_transform.transform.rotation.x = 0.0
-        static_transform.transform.rotation.y = 0.0
-        static_transform.transform.rotation.z = 0.0
-        static_transform.transform.rotation.w = 1.0
-        
-        self.static_tf_broadcaster.sendTransform(static_transform)
-        self.get_logger().info(f"Published static transform: '{self.target_frame}' -> 'landmark'")
-
-
-    def apply_ema_filter(self, landmarks):
-        alpha = self.pose_alpha
-        if self.prev_pose_world[0] is None:
-            self.prev_pose_world = [(lm.x, lm.y, lm.z) for lm in landmarks]
-            return landmarks
-        for i, lm in enumerate(landmarks):
-            px, py, pz = self.prev_pose_world[i]
-            lm.x = alpha * lm.x + (1.0 - alpha) * px
-            lm.y = alpha * lm.y + (1.0 - alpha) * py
-            lm.z = alpha * lm.z + (1.0 - alpha) * pz
-            self.prev_pose_world[i] = (lm.x, lm.y, lm.z)
-        return landmarks
-
-    def create_line_marker(self, ns, marker_id, landmarks, connections, color, transform_fn, line_width=0.005, use_visibility=False, lifetime_sec=0.1, stamp=None):
-        marker = Marker()
-        marker.header.frame_id = 'landmark'
-        marker.header.stamp = stamp if stamp else self.get_clock().now().to_msg()
-        marker.ns = ns; marker.id = marker_id
-        marker.type = Marker.LINE_LIST; marker.action = Marker.ADD
-        marker.scale.x = line_width; marker.color.a = 1.0
-        marker.color.r, marker.color.g, marker.color.b = color
-        marker.lifetime = Duration(seconds=lifetime_sec).to_msg()
-        for start, end in connections:
-            if use_visibility and (landmarks[start].visibility < 0.5 or landmarks[end].visibility < 0.5): continue
-            marker.points.append(transform_fn(landmarks[start]))
-            marker.points.append(transform_fn(landmarks[end]))
-        return marker
-
-    def create_points_marker(self, ns, marker_id, landmarks, indices, color, transform_fn, point_size=0.015, use_visibility=False, lifetime_sec=0.1, stamp=None):
-        marker = Marker()
-        marker.header.frame_id = 'landmark'
-        marker.header.stamp = stamp if stamp else self.get_clock().now().to_msg()
-        marker.ns = ns; marker.id = marker_id
-        marker.type = Marker.POINTS; marker.action = Marker.ADD
-        marker.scale.x, marker.scale.y = point_size, point_size
-        marker.color.a = 1.0
-        marker.color.r, marker.color.g, marker.color.b = color
-        marker.lifetime = Duration(seconds=lifetime_sec).to_msg()
-        for idx in indices:
-            lm = landmarks[idx]
-            if use_visibility and lm.visibility < 0.5: continue
-            marker.points.append(transform_fn(lm))
-        return marker
-
-    def _mp_vec_to_ros(self, v):
-        return np.array([-v[2], -v[0], -v[1]])
-
-    def _mat_to_quaternion(self, m):
-        trace = m[0,0] + m[1,1] + m[2,2]
-        if trace > 0:
-            s = 0.5 / math.sqrt(trace + 1.0)
-            qw, qx, qy, qz = 0.25/s, (m[2,1]-m[1,2])*s, (m[0,2]-m[2,0])*s, (m[1,0]-m[0,1])*s
-        elif m[0,0] > m[1,1] and m[0,0] > m[2,2]:
-            s = 2.0 * math.sqrt(1.0 + m[0,0] - m[1,1] - m[2,2])
-            qw, qx, qy, qz = (m[2,1]-m[1,2])/s, 0.25*s, (m[0,1]+m[1,0])/s, (m[0,2]+m[2,0])/s
-        elif m[1,1] > m[2,2]:
-            s = 2.0 * math.sqrt(1.0 + m[1,1] - m[0,0] - m[2,2])
-            qw, qx, qy, qz = (m[0,2]-m[2,0])/s, (m[0,1]+m[1,0])/s, 0.25*s, (m[1,2]+m[2,1])/s
+        if mcp_idx is not None:
+            mcp = np.array([landmarks[mcp_idx].x, landmarks[mcp_idx].y, landmarks[mcp_idx].z])
+            tip_to_pip = np.linalg.norm(tip - pip)
+            mcp_to_pip = np.linalg.norm(mcp - pip)
+            return tip_to_pip > mcp_to_pip * 1.2
         else:
-            s = 2.0 * math.sqrt(1.0 + m[2,2] - m[0,0] - m[1,1])
-            qw, qx, qy, qz = (m[1,0]-m[0,1])/s, (m[0,2]+m[2,0])/s, (m[1,2]+m[2,1])/s, 0.25*s
-        norm = math.sqrt(qx*qx + qy*qy + qz*qz + qw*qw)
-        return Quaternion(x=qx/norm, y=qy/norm, z=qz/norm, w=qw/norm)
-
-    def compute_hand_quaternion(self, hand_lms, side):
-        w = np.array([hand_lms[0].x, hand_lms[0].y, hand_lms[0].z])
-        mid_mcp = np.array([hand_lms[9].x, hand_lms[9].y, hand_lms[9].z])
-        thumb_mcp = np.array([hand_lms[2].x, hand_lms[2].y, hand_lms[2].z])
-
-        x_mp = mid_mcp - w
-        norm_x = np.linalg.norm(x_mp)
-        x_mp = x_mp / norm_x if norm_x > 1e-6 else np.array([1.0, 0.0, 0.0])
-
-        y_raw = thumb_mcp - w
-        y_mp = y_raw - np.dot(y_raw, x_mp) * x_mp
-        norm_y = np.linalg.norm(y_mp)
-        y_mp = y_mp / norm_y if norm_y > 1e-6 else np.array([0.0, 1.0, 0.0])
-
-        z_mp = np.cross(y_mp, x_mp)
-        norm_z = np.linalg.norm(z_mp)
-        z_mp = z_mp / norm_z if norm_z > 1e-6 else np.array([0.0, 0.0, 1.0])
-
-        x_ros = self._mp_vec_to_ros(x_mp)
-        y_ros = self._mp_vec_to_ros(y_mp)
-        z_ros = self._mp_vec_to_ros(z_mp)
-
-        R = np.column_stack((x_ros, y_ros, z_ros))
-        if side == 'left':
-            R_x_180 = np.array([[1.0,  0.0,  0.0], [0.0, -1.0,  0.0], [0.0,  0.0, -1.0]])
-            R = R @ R_x_180
-
-        return self._mat_to_quaternion(R)
-
-    def smooth_quaternion(self, side, q_new):
-        if self.prev_quats[side] is None:
-            self.prev_quats[side] = q_new
-            return q_new
-        q_prev = self.prev_quats[side]
+            tip_to_wrist = np.linalg.norm(tip - wrist)
+            pip_to_wrist = np.linalg.norm(pip - wrist)
+            return tip_to_wrist > pip_to_wrist + 0.02
+    
+    def recognize_gesture(self, landmarks):
+        if len(landmarks) < 21:
+            return "unknown"
         
-        dot = q_prev.x*q_new.x + q_prev.y*q_new.y + q_prev.z*q_new.z + q_prev.w*q_new.w
-        if dot < 0:
-            q_prev = Quaternion(x=-q_prev.x, y=-q_prev.y, z=-q_prev.z, w=-q_prev.w)
-            dot = -dot
-            
-        dot = max(min(dot, 1.0), -1.0)
-        theta = math.acos(dot)
-        if theta < 1e-6:
-            return q_new
-            
-        sin_t = math.sin(theta)
-        a = math.sin((1.0 - self.quat_alpha) * theta) / sin_t
-        b = math.sin(self.quat_alpha * theta) / sin_t
+        fingers_extended = []
+        fingers_extended.append(self.is_finger_extended(landmarks, self.THUMB_TIP, self.THUMB_IP, self.INDEX_MCP))
+        fingers_extended.append(self.is_finger_extended(landmarks, self.INDEX_TIP, self.INDEX_PIP))
+        fingers_extended.append(self.is_finger_extended(landmarks, self.MIDDLE_TIP, self.MIDDLE_PIP))
+        fingers_extended.append(self.is_finger_extended(landmarks, self.RING_TIP, self.RING_PIP))
+        fingers_extended.append(self.is_finger_extended(landmarks, self.PINKY_TIP, self.PINKY_PIP))
         
-        q_smooth = Quaternion(
-            x=a*q_prev.x + b*q_new.x,
-            y=a*q_prev.y + b*q_new.y,
-            z=a*q_prev.z + b*q_new.z,
-            w=a*q_prev.w + b*q_new.w
-        )
-        self.prev_quats[side] = q_smooth
-        return q_smooth
-
-    def compressed_callback(self, msg):
-        self._frame_count += 1
-        marker_stamp = Time().to_msg()
-        if msg.header.stamp.sec != 0 or msg.header.stamp.nanosec != 0:
-            tf_stamp = msg.header.stamp
+        extended_count = sum(fingers_extended)
+        total_fingers = len(fingers_extended)
+        
+        if extended_count >= total_fingers * self.open_ratio:
+            return "open"
+        elif extended_count <= total_fingers * (1 - self.open_ratio):
+            return "close"
         else:
-            tf_stamp = (self.get_clock().now() - Duration(seconds=0.2)).to_msg()
+            return "partial"
 
+
+class BodyPreFocus:    
+    def __init__(self, hand_padding_factor=1.5, min_hand_size=100):
+        self.hand_padding_factor = hand_padding_factor
+        self.min_hand_size = min_hand_size
+        
+    def get_wrist_positions(self, pose_landmarks, frame_width, frame_height):
+        if pose_landmarks is None or len(pose_landmarks.landmark) < 16:
+            return None, None
+        
+        left_wrist = pose_landmarks.landmark[15]
+        right_wrist = pose_landmarks.landmark[16]
+        left_elbow = pose_landmarks.landmark[13]
+        right_elbow = pose_landmarks.landmark[14]
+        
+        left_wrist_px = (int(left_wrist.x * frame_width), int(left_wrist.y * frame_height))
+        right_wrist_px = (int(right_wrist.x * frame_width), int(right_wrist.y * frame_height))
+        left_elbow_px = (int(left_elbow.x * frame_width), int(left_elbow.y * frame_height))
+        right_elbow_px = (int(right_elbow.x * frame_width), int(right_elbow.y * frame_height))
+        
+        return (left_wrist_px, left_elbow_px), (right_wrist_px, right_elbow_px)
+    
+    def create_hand_crop(self, wrist_px, elbow_px, frame_width, frame_height):
+        wrist_x, wrist_y = wrist_px
+        elbow_x, elbow_y = elbow_px
+        
+        arm_length = np.sqrt((wrist_x - elbow_x)**2 + (wrist_y - elbow_y)**2)
+        hand_size = int(arm_length * self.hand_padding_factor)
+        hand_size = max(hand_size, self.min_hand_size)
+        
+        x_min = max(0, wrist_x - hand_size)
+        y_min = max(0, wrist_y - hand_size)
+        x_max = min(frame_width, wrist_x + hand_size)
+        y_max = min(frame_height, wrist_y + hand_size)
+        
+        if x_max - x_min < self.min_hand_size:
+            center_x = (x_min + x_max) // 2
+            x_min = max(0, center_x - self.min_hand_size // 2)
+            x_max = min(frame_width, center_x + self.min_hand_size // 2)
+            
+        if y_max - y_min < self.min_hand_size:
+            center_y = (y_min + y_max) // 2
+            y_min = max(0, center_y - self.min_hand_size // 2)
+            y_max = min(frame_height, center_y + self.min_hand_size // 2)
+        
+        return (x_min, y_min, x_max, y_max)
+    
+    def shift_landmarks_to_original(self, landmarks, crop_box, frame_width, frame_height):
+        x_min, y_min, _, _ = crop_box
+        for landmark in landmarks.landmark:
+            landmark.x = (landmark.x * (crop_box[2] - crop_box[0]) + x_min) / frame_width
+            landmark.y = (landmark.y * (crop_box[3] - crop_box[1]) + y_min) / frame_height
+
+
+class EMAFilter:
+    def __init__(self, alpha=0.4):
+        self.alpha = alpha
+        self.prev_points = None
+
+    def filter(self, points):
+        if self.prev_points is None:
+            self.prev_points = points.copy()
+            return points
+        filtered = self.alpha * points + (1 - self.alpha) * self.prev_points
+        self.prev_points = filtered
+        return filtered
+
+
+class RigidTransformFilter:
+    def __init__(self, alpha=0.2):
+        self.alpha = alpha
+        self.prev_rvec = None
+        self.prev_tvec = None
+
+    def filter(self, rvec, tvec):
+        if self.prev_rvec is None:
+            self.prev_rvec = rvec.copy()
+            self.prev_tvec = tvec.copy()
+            return rvec, tvec
+        
+        filtered_rvec = self.alpha * rvec + (1 - self.alpha) * self.prev_rvec
+        filtered_tvec = self.alpha * tvec + (1 - self.alpha) * self.prev_tvec
+        
+        self.prev_rvec = filtered_rvec
+        self.prev_tvec = filtered_tvec
+        return filtered_rvec, filtered_tvec
+
+
+def get_camera_matrix(frame_width, frame_height):
+    focal_length = frame_width
+    center = (frame_width / 2, frame_height / 2)
+    camera_matrix = np.array([[focal_length, 0, center[0]], [0, focal_length, center[1]], [0, 0, 1]], dtype="double")
+    distortion = np.zeros((4, 1))
+    return camera_matrix, distortion
+
+
+def load_calibration(calib_file, frame_width, frame_height):
+    if calib_file and os.path.exists(calib_file):
         try:
-            cv_image = cv2.imdecode(np.frombuffer(msg.data, np.uint8), cv2.IMREAD_COLOR)
-            if cv_image is None: return
+            calib_data = np.load(calib_file)
+            return calib_data["camera_matrix"], calib_data["dist_coeffs"]
         except Exception as e:
-            self.get_logger().error(f"Decode failed: {e}"); return
+            print(f" Error loading calibration: {e}. Falling back.")
+    return get_camera_matrix(frame_width, frame_height)
 
-        cv_image = cv2.resize(cv_image, (640, 480))
-        cv_image = cv2.flip(cv_image, 1)
-        rgb = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
 
-        pose_results = self.mp_pose.process(rgb)
-        if self._frame_count % self.process_hands_every == 0:
-            self.last_hand_results = self.mp_hands.process(rgb)
-        hand_results = self.last_hand_results
+class SyntheticResults:
+    def __init__(self, landmarks_list, sides_list):
+        self.multi_hand_landmarks = landmarks_list
+        self.multi_handedness = None
+        self.multi_hand_world_landmarks = None
+        self.hand_sides = sides_list
 
-        marker_array = MarkerArray()
-        current_id = 0
 
-        if pose_results.pose_world_landmarks and pose_results.pose_landmarks:
-            pose_world = list(pose_results.pose_world_landmarks.landmark)
-            pose_world = self.apply_ema_filter(pose_world)
-
-            if self.arm_length_scale != 1.0:
-                for idx in [13, 15]:
-                    pose_world[idx].x = pose_world[11].x + (pose_world[idx].x - pose_world[11].x) * self.arm_length_scale
-                    pose_world[idx].y = pose_world[11].y + (pose_world[idx].y - pose_world[11].y) * self.arm_length_scale
-                    pose_world[idx].z = pose_world[11].z + (pose_world[idx].z - pose_world[11].z) * self.arm_length_scale
-                for idx in [14, 16]:
-                    pose_world[idx].x = pose_world[12].x + (pose_world[idx].x - pose_world[12].x) * self.arm_length_scale
-                    pose_world[idx].y = pose_world[12].y + (pose_world[idx].y - pose_world[12].y) * self.arm_length_scale
-                    pose_world[idx].z = pose_world[12].z + (pose_world[idx].z - pose_world[12].z) * self.arm_length_scale
-
-            Sx = (pose_world[11].x + pose_world[12].x) / 2.0
-            Sy = (pose_world[11].y + pose_world[12].y) / 2.0
-            Sz = (pose_world[11].z + pose_world[12].z) / 2.0
-            shoulder_offset = (Sx, Sy, Sz)
-
-            def body_transform(lm):
-                p = Point()
-                p.x = -(lm.z - shoulder_offset[2]); p.y = -(lm.x - shoulder_offset[0]); p.z = -(lm.y - shoulder_offset[1])
-                return p
-
-            marker_array.markers.append(self.create_line_marker('body_edges', current_id, pose_world, POSE_CONNECTIONS, (0.0, 1.0, 0.0), body_transform, line_width=0.01, lifetime_sec=0.1, stamp=marker_stamp))
-            current_id += 1
-            marker_array.markers.append(self.create_points_marker('body_joints', current_id, pose_world, BODY_LANDMARKS, (0.0, 1.0, 0.0), body_transform, point_size=0.01, lifetime_sec=0.1, stamp=marker_stamp))
-            current_id += 1
-
-            if hand_results and hand_results.multi_hand_world_landmarks:
-                current_hands = []
-                for i in range(len(hand_results.multi_hand_world_landmarks)):
-                    hand_world = hand_results.multi_hand_world_landmarks[i]
-                    wrist_lm = hand_world.landmark[0]
-                    wrist_pos = np.array([wrist_lm.x, wrist_lm.y, wrist_lm.z])
-                    label = hand_results.multi_handedness[i].classification[0].label
-                    
-                    current_hands.append({
-                        'landmarks': hand_world.landmark,
-                        'wrist_pos': wrist_pos,
-                        'mp_label': 'left' if label == 'Left' else 'right'
-                    })
-
-                matched_hands = {'left': None, 'right': None}
-                left_candidates = [h for h in current_hands if h['mp_label'] == 'left']
-                right_candidates = [h for h in current_hands if h['mp_label'] == 'right']
-
-                if left_candidates:
-                    if self.prev_hand_wrist_pos['left'] is not None:
-                        matched_hands['left'] = min(left_candidates, key=lambda h: np.linalg.norm(h['wrist_pos'] - self.prev_hand_wrist_pos['left']))
-                    else:
-                        matched_hands['left'] = left_candidates[0]
-
-                if right_candidates:
-                    if self.prev_hand_wrist_pos['right'] is not None:
-                        matched_hands['right'] = min(right_candidates, key=lambda h: np.linalg.norm(h['wrist_pos'] - self.prev_hand_wrist_pos['right']))
-                    else:
-                        matched_hands['right'] = right_candidates[0]
-
-                for side in ['left', 'right']:
-                    if matched_hands[side] is None:
-                        self.prev_hand_wrist_pos[side] = None
-                        continue
-
-                    hand_lms = matched_hands[side]['landmarks']
-                    self.prev_hand_wrist_pos[side] = matched_hands[side]['wrist_pos']
-
-                    body_wrist_idx = 15 if side == "left" else 16
-                    body_wrist = pose_world[body_wrist_idx]
-                    hand_wrist_mp = hand_lms[0]
-
-                    dx = body_wrist.x - hand_wrist_mp.x
-                    dy = body_wrist.y - hand_wrist_mp.y
-                    dz = body_wrist.z - hand_wrist_mp.z
-
-                    def hand_transform(lm, dx=dx, dy=dy, dz=dz, offset=shoulder_offset):
-                        x = lm.x + dx; y = lm.y + dy; z = lm.z + dz
-                        p = Point()
-                        p.x = -(z - offset[2]); p.y = -(x - offset[0]); p.z = -(y - offset[1])
-                        return p
-
-                    # Markers use marker_stamp (Time 0)
-                    marker_array.markers.append(self.create_line_marker(f'hand_{side}_edges', current_id, hand_lms, HAND_CONNECTIONS, (1.0, 0.0, 0.0), hand_transform, 0.007, lifetime_sec=0.1, stamp=marker_stamp))
-                    current_id += 1
-                    marker_array.markers.append(self.create_points_marker(f'hand_{side}_joints', current_id, hand_lms, list(range(21)), (1.0, 0.0, 0.0), hand_transform, point_size=0.01, lifetime_sec=0.1, stamp=marker_stamp))
-                    current_id += 1
-                    marker_array.markers.append(self.create_points_marker(f'hand_{side}_tips', current_id, hand_lms, FINGERTIP_INDICES, (1.0, 1.0, 0.0), hand_transform, point_size=0.01, lifetime_sec=0.1, stamp=marker_stamp))
-                    current_id += 1
-
-                    wrist_pos = hand_transform(hand_lms[0])
-                    hand_quat = self.compute_hand_quaternion(hand_lms, side)
-                    hand_quat = self.smooth_quaternion(side, hand_quat)
-
-                    t_hand = TransformStamped()
-                    # TF uses tf_stamp (Valid time, usually from image header)
-                    t_hand.header.stamp = tf_stamp 
-                    t_hand.header.frame_id = 'landmark'
-                    t_hand.child_frame_id = f'{side}_hand'
-                    t_hand.transform.translation.x = wrist_pos.x
-                    t_hand.transform.translation.y = wrist_pos.y
-                    t_hand.transform.translation.z = wrist_pos.z
-                    t_hand.transform.rotation = hand_quat
-                    self.tf_broadcaster.sendTransform(t_hand)
-        else:
-            self.prev_pose_world = [None] * 33
-            self.prev_hand_wrist_pos = {'left': None, 'right': None}
-            self.prev_quats = {'left': None, 'right': None}
-            
-            for ns_suffix in ['body_edges', 'body_joints', 'hand_left_edges', 'hand_left_joints', 'hand_left_tips', 
-                              'hand_right_edges', 'hand_right_joints', 'hand_right_tips']:
-                del_marker = Marker()
-                del_marker.header.frame_id = 'landmark'
-                del_marker.header.stamp = marker_stamp # Time 0
-                del_marker.ns = ns_suffix
-                del_marker.id = 0
-                del_marker.action = Marker.DELETEALL
-                marker_array.markers.append(del_marker)
-                
-            for side in ['left', 'right']:
-                t = TransformStamped()
-                t.header.stamp = tf_stamp # Valid time
-                t.header.frame_id = 'landmark'
-                t.child_frame_id = f'{side}_hand'
-                t.transform.rotation.w = 1.0
-                self.tf_broadcaster.sendTransform(t)
-
-        if not marker_array.markers:
-            clear = Marker()
-            clear.header.frame_id = 'landmark'
-            clear.header.stamp = marker_stamp # Time 0
-            clear.action = Marker.DELETEALL
-            marker_array.markers.append(clear)
-
-        self.landmark_pub.publish(marker_array)
+class HandPoseTrackerNode(Node):
+    def __init__(self):
+        super().__init__('hand_pose_tracker_node')
         
+        # Declare parameters
+        self.declare_parameter('calibration_file', 'cam_calib_(10x7)_22.0mm.npz')
+        self.declare_parameter('smoothing', 0.10)
+        self.declare_parameter('detect_conf_hand', 0.3)
+        self.declare_parameter('track_conf_hand', 0.3)
+        self.declare_parameter('detect_conf_pose', 0.5)
+        self.declare_parameter('track_conf_pose', 0.5)
+        self.declare_parameter('hand_padding', 3.0)
+        self.declare_parameter('use_bpf', False)
+        self.declare_parameter('enhance', False)
+        self.declare_parameter('publish_2d', True)
+
+        # Get parameters
+        self.calib_file = self.get_parameter('calibration_file').value
+        self.smoothing = self.get_parameter('smoothing').value
+        self.use_bpf = self.get_parameter('use_bpf').value
+        self.enhance = self.get_parameter('enhance').value
+        self.publish_2d = self.get_parameter('publish_2d').value
+
+        # Publishers
+        self.pub_tracking = self.create_publisher(PoseArray, '/landmarks', 10)
+        self.pub_gesture = self.create_publisher(String, '/hand_gestures', 10)
+        self.pub_image = self.create_publisher(CompressedImage, '/image_landmark', 10)
+        self.pub_markers = self.create_publisher(MarkerArray, '/visualization_marker_array', 10)
+
+        self.get_logger().info("Publishers initialized: '/landmarks', '/hand_gestures', '/image_landmark', '/visualization_marker_array'")
+        if self.use_bpf:
+            self.get_logger().info(f"Body Pre-Focusing ENABLED (hand_padding={self.get_parameter('hand_padding').value})")
+        if not self.publish_2d:
+            self.get_logger().info("2D Image Publishing DISABLED (Headless mode)")
+
+        # Components
+        self.bpf = BodyPreFocus(hand_padding_factor=self.get_parameter('hand_padding').value) if self.use_bpf else None
+        self.gesture_recognizer = GestureRecognizer()
+        
+        if self.enhance:
+            self.get_logger().info("Software Image Enhancement ENABLED (CLAHE + Unsharp Masking)")
+            self.clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
+        else:
+            self.clahe = None
+
+        # Filters
+        self.hand_rigid_filter_left = RigidTransformFilter(alpha=self.smoothing)
+        self.hand_rigid_filter_right = RigidTransformFilter(alpha=self.smoothing)
+        self.pose_filter = EMAFilter(alpha=self.smoothing)
+        self.pose_rigid_filter = RigidTransformFilter(alpha=self.smoothing)
+
+        # MediaPipe Models
+        self.hands = mp_hands.Hands(
+            model_complexity=0, max_num_hands=2,
+            min_detection_confidence=self.get_parameter('detect_conf_hand').value,
+            min_tracking_confidence=self.get_parameter('track_conf_hand').value
+        )
+        self.pose = mp_pose.Pose(
+            model_complexity=2, smooth_landmarks=True, enable_segmentation=True,
+            min_detection_confidence=self.get_parameter('detect_conf_pose').value,
+            min_tracking_confidence=self.get_parameter('track_conf_pose').value
+        )
+
+        # CvBridge for converting ROS Image to OpenCV
+        self.bridge = CvBridge()
+
+        # Subscriber: CHANGED to Image and /image_raw
+        self.sub_image = self.create_subscription(
+            Image,
+            '/image_raw',
+            self.image_callback,
+            1
+        )
+        
+        self.get_logger().info("Starting Tracking & Publishing with Gesture Recognition...")
+        self.frame_count = 0
+
+    def image_callback(self, msg: Image):
+        try:
+            # Convert ROS Image message to OpenCV BGR format
+            image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+        except Exception as e:
+            self.get_logger().error(f"CV Bridge conversion error: {e}")
+            return
+
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        frame_h, frame_w = image.shape[:2]
+
+        # Load calibration on first frame
+        if not hasattr(self, 'camera_matrix'):
+            self.camera_matrix, self.distortion = load_calibration(self.calib_file, frame_w, frame_h)
+
+        # Enhance
+        if self.clahe is not None:
+            lab = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2LAB)
+            l, a, b = cv2.split(lab)
+            l = self.clahe.apply(l)
+            lab = cv2.merge((l, a, b))
+            image_rgb = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
+            blurred = cv2.GaussianBlur(image_rgb, (0, 0), 2.0)
+            image_rgb = cv2.addWeighted(image_rgb, 1.5, blurred, -0.5, 0)
+
+        # Pose Processing
+        results_pose = self.pose.process(image_rgb)
+        left_wrist_elbow, right_wrist_elbow = None, None
+        left_crop, right_crop = None, None
+        
+        if results_pose.pose_landmarks and self.bpf is not None and self.use_bpf:
+            left_wrist_elbow, right_wrist_elbow = self.bpf.get_wrist_positions(
+                results_pose.pose_landmarks, frame_w, frame_h
+            )
+            if left_wrist_elbow:
+                left_crop = self.bpf.create_hand_crop(left_wrist_elbow[0], left_wrist_elbow[1], frame_w, frame_h)
+            if right_wrist_elbow:
+                right_crop = self.bpf.create_hand_crop(right_wrist_elbow[0], right_wrist_elbow[1], frame_w, frame_h)
+
+        # Hand Processing (with BPF logic)
+        results_hands = None
+        hands_detected_in_crop = False
+        
+        if self.use_bpf and self.bpf is not None and (left_crop or right_crop):
+            if left_crop and right_crop:
+                x_min = min(left_crop[0], right_crop[0])
+                y_min = min(left_crop[1], right_crop[1])
+                x_max = max(left_crop[2], right_crop[2])
+                y_max = max(left_crop[3], right_crop[3])
+                combined_crop = (x_min, y_min, x_max, y_max)
+                
+                if x_max > x_min and y_max > y_min:
+                    cropped_image = image_rgb[y_min:y_max, x_min:x_max]
+                    if cropped_image.size > 0:
+                        results_hands = self.hands.process(cropped_image)
+                        if results_hands.multi_hand_landmarks:
+                            hands_detected_in_crop = True
+                            for hand_landmarks in results_hands.multi_hand_landmarks:
+                                self.bpf.shift_landmarks_to_original(hand_landmarks, combined_crop, frame_w, frame_h)
+            else:
+                crops_to_process = []
+                if left_crop: crops_to_process.append(('left', left_crop))
+                if right_crop: crops_to_process.append(('right', right_crop))
+                
+                all_hand_landmarks = []
+                all_hand_sides = []
+                
+                for side, crop in crops_to_process:
+                    x_min, y_min, x_max, y_max = crop
+                    if x_max <= x_min or y_max <= y_min: continue
+                    cropped_image = image_rgb[y_min:y_max, x_min:x_max]
+                    if cropped_image.size == 0: continue
+                        
+                    crop_results = self.hands.process(cropped_image)
+                    if crop_results.multi_hand_landmarks:
+                        hands_detected_in_crop = True
+                        for hand_landmarks in crop_results.multi_hand_landmarks:
+                            self.bpf.shift_landmarks_to_original(hand_landmarks, crop, frame_w, frame_h)
+                            all_hand_landmarks.append(hand_landmarks)
+                            all_hand_sides.append(side)
+                
+                if all_hand_landmarks:
+                    results_hands = SyntheticResults(all_hand_landmarks, all_hand_sides)
+
+            if not hands_detected_in_crop:
+                results_hands = self.hands.process(image_rgb)
+        else:
+            results_hands = self.hands.process(image_rgb)
+
+        # 3D Pose Calculation
+        pose_world_points = None
+        if results_pose.pose_world_landmarks and results_pose.pose_landmarks:
+            model_points = np.array([[lm.x, lm.y, lm.z] for lm in results_pose.pose_world_landmarks.landmark])
+            image_points = np.array([[lm.x * frame_w, lm.y * frame_h] for lm in results_pose.pose_landmarks.landmark])
+
+            success_pnp, rvec, tvec = cv2.solvePnP(model_points, image_points, self.camera_matrix, self.distortion, flags=cv2.SOLVEPNP_SQPNP)
+            if success_pnp:
+                rvec, tvec = self.pose_rigid_filter.filter(rvec, tvec)
+                rmat, _ = cv2.Rodrigues(rvec)
+                transformation = np.eye(4)
+                transformation[0:3, 0:3] = rmat
+                transformation[0:3, 3] = tvec.squeeze()
+
+                model_points_hom = np.concatenate((model_points, np.ones((33, 1))), axis=1)
+                pose_world_points = model_points_hom.dot(transformation.T)[:, :3]
+                pose_world_points[:, 1] = -pose_world_points[:, 1]
+                pose_world_points[:, 2] = -pose_world_points[:, 2]
+                pose_world_points = self.pose_filter.filter(pose_world_points)
+
+        # 3D Hand Calculation & Gestures
+        left_hand_final_points = None
+        right_hand_final_points = None
+        left_gesture = "unknown"
+        right_gesture = "unknown"
+
+        if results_hands and getattr(results_hands, 'multi_hand_landmarks', None):
+            for idx, hand_landmarks in enumerate(results_hands.multi_hand_landmarks):
+                gesture = self.gesture_recognizer.recognize_gesture(hand_landmarks.landmark)
+                
+                if results_hands.multi_hand_world_landmarks and idx < len(results_hands.multi_hand_world_landmarks):
+                    world_landmarks = results_hands.multi_hand_world_landmarks[idx]
+                    hand_model_points = np.array([[lm.x, lm.y, lm.z] for lm in world_landmarks.landmark])
+                else:
+                    hand_model_points = np.array([[lm.x, lm.y, lm.z] for lm in hand_landmarks.landmark])
+                
+                hand_image_points = np.array([[lm.x * frame_w, lm.y * frame_h] for lm in hand_landmarks.landmark])
+                
+                if hasattr(results_hands, 'hand_sides') and idx < len(results_hands.hand_sides):
+                    is_left_hand = (results_hands.hand_sides[idx] == 'left')
+                else:
+                    wrist_x = hand_image_points[0, 0]
+                    is_left_hand = (wrist_x > frame_w / 2)
+                
+                if is_left_hand: left_gesture = gesture
+                else: right_gesture = gesture
+                
+                success_pnp, rvec, tvec = cv2.solvePnP(hand_model_points, hand_image_points, self.camera_matrix, self.distortion, flags=cv2.SOLVEPNP_SQPNP)
+                if success_pnp:
+                    if is_left_hand:
+                        rvec, tvec = self.hand_rigid_filter_left.filter(rvec, tvec)
+                    else:
+                        rvec, tvec = self.hand_rigid_filter_right.filter(rvec, tvec)
+
+                    rmat, _ = cv2.Rodrigues(rvec)
+                    transformation = np.eye(4)
+                    transformation[0:3, 0:3] = rmat
+                    transformation[0:3, 3] = tvec.squeeze()
+                    
+                    hand_model_hom = np.concatenate((hand_model_points, np.ones((21, 1))), axis=1)
+                    hand_world_points = hand_model_hom.dot(transformation.T)[:, :3]
+                    hand_world_points[:, 1] = -hand_world_points[:, 1]
+                    hand_world_points[:, 2] = -hand_world_points[:, 2]
+                    
+                    if pose_world_points is not None:
+                        if is_left_hand and len(pose_world_points) > 15:
+                            offset = hand_world_points - hand_world_points[0]
+                            hand_world_points = pose_world_points[15] + offset
+                        elif not is_left_hand and len(pose_world_points) > 16:
+                            offset = hand_world_points - hand_world_points[0]
+                            hand_world_points = pose_world_points[16] + offset
+                    
+                    if is_left_hand:
+                        left_hand_final_points = hand_world_points.copy()
+                    else:
+                        right_hand_final_points = hand_world_points.copy()
+
+        # --- PUBLISHING ---
+        current_time = self.get_clock().now().to_msg()
+
+        # 1. PoseArray (Landmarks)
+        poses_list = []
+        if pose_world_points is not None and len(pose_world_points) == 33:
+            for pt in pose_world_points:
+                poses_list.append({"position": {"x": float(pt[0]), "y": float(pt[1]), "z": float(pt[2])}, "orientation": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0}})
+        if left_hand_final_points is not None and len(left_hand_final_points) == 21:
+            for pt in left_hand_final_points:
+                poses_list.append({"position": {"x": float(pt[0]), "y": float(pt[1]), "z": float(pt[2])}, "orientation": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0}})
+        if right_hand_final_points is not None and len(right_hand_final_points) == 21:
+            for pt in right_hand_final_points:
+                poses_list.append({"position": {"x": float(pt[0]), "y": float(pt[1]), "z": float(pt[2])}, "orientation": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0}})
+
+        if len(poses_list) > 0:
+            pose_array_msg = PoseArray()
+            pose_array_msg.header.stamp = current_time
+            pose_array_msg.header.frame_id = "world"
+            for p in poses_list:
+                pose = Pose()
+                pose.position.x, pose.position.y, pose.position.z = p["position"]["x"], p["position"]["y"], p["position"]["z"]
+                pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w = p["orientation"]["x"], p["orientation"]["y"], p["orientation"]["z"], p["orientation"]["w"]
+                pose_array_msg.poses.append(pose)
+            self.pub_tracking.publish(pose_array_msg)
+
+        # 2. Gestures
+        gesture_msg = String()
+        gesture_msg.data = json.dumps({"left_hand": left_gesture, "right_hand": right_gesture})
+        self.pub_gesture.publish(gesture_msg)
+
+        # 3. MarkerArray (3D Visualization for RViz)
+        marker_array = MarkerArray()
+        stamp = current_time
+        frame_id = "world"
+
+        def add_sphere_list(points, ns, id, color, scale=0.02):
+            marker = Marker()
+            marker.header.stamp = stamp; marker.header.frame_id = frame_id
+            marker.ns = ns; marker.id = id
+            marker.type = Marker.SPHERE_LIST; marker.action = Marker.ADD
+            marker.scale.x = scale; marker.scale.y = scale; marker.scale.z = scale
+            marker.color = color
+            for pt in points:
+                p = Point(); p.x, p.y, p.z = float(pt[0]), float(pt[1]), float(pt[2])
+                marker.points.append(p)
+            marker_array.markers.append(marker)
+
+        def add_line_list(points, connections, ns, id, color, scale=0.005):
+            marker = Marker()
+            marker.header.stamp = stamp; marker.header.frame_id = frame_id
+            marker.ns = ns; marker.id = id
+            marker.type = Marker.LINE_LIST; marker.action = Marker.ADD
+            marker.scale.x = scale; marker.color = color
+            for conn in connections:
+                p1, p2 = points[conn[0]], points[conn[1]]
+                pt1 = Point(); pt1.x, pt1.y, pt1.z = float(p1[0]), float(p1[1]), float(p1[2])
+                pt2 = Point(); pt2.x, pt2.y, pt2.z = float(p2[0]), float(p2[1]), float(p2[2])
+                marker.points.append(pt1); marker.points.append(pt2)
+            marker_array.markers.append(marker)
+
+        if pose_world_points is not None:
+            add_sphere_list(pose_world_points, "pose_points", 0, ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0), 0.03)
+            add_line_list(pose_world_points, mp_pose.POSE_CONNECTIONS, "pose_lines", 1, ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0), 0.008)
+        if left_hand_final_points is not None:
+            add_sphere_list(left_hand_final_points, "left_hand_points", 2, ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0), 0.02)
+            add_line_list(left_hand_final_points, mp_hands.HAND_CONNECTIONS, "left_hand_lines", 3, ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0), 0.005)
+        if right_hand_final_points is not None:
+            add_sphere_list(right_hand_final_points, "right_hand_points", 4, ColorRGBA(r=1.0, g=0.6, b=0.0, a=1.0), 0.02)
+            add_line_list(right_hand_final_points, mp_hands.HAND_CONNECTIONS, "right_hand_lines", 5, ColorRGBA(r=1.0, g=0.6, b=0.0, a=1.0), 0.005)
+
+        if len(marker_array.markers) > 0:
+            self.pub_markers.publish(marker_array)
+
+        # 4. 2D Annotated Image Publishing (Conditional)
+        if self.publish_2d:
+            image_bgr = image # Already in BGR from CvBridge
+            
+            # Draw landmarks
+            if results_pose.pose_landmarks:
+                mp_drawing.draw_landmarks(
+                    image_bgr, results_pose.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                    mp_drawing_styles.get_default_pose_landmarks_style())
+            
+            if results_hands and getattr(results_hands, 'multi_hand_landmarks', None):
+                for hand_landmarks in results_hands.multi_hand_landmarks:
+                    mp_drawing.draw_landmarks(
+                        image_bgr, hand_landmarks, mp_hands.HAND_CONNECTIONS,
+                        mp_drawing_styles.get_default_hand_landmarks_style(),
+                        mp_drawing_styles.get_default_hand_connections_style())
+                
+                if self.use_bpf and self.bpf is not None:
+                    if left_crop:
+                        x_min, y_min, x_max, y_max = left_crop
+                        cv2.rectangle(image_bgr, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+                        cv2.putText(image_bgr, "Left Hand ROI", (x_min, y_min-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                    if right_crop:
+                        x_min, y_min, x_max, y_max = right_crop
+                        cv2.rectangle(image_bgr, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
+                        cv2.putText(image_bgr, "Right Hand ROI", (x_min, y_min-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+
+            # Add text overlays
+            cv2.putText(image_bgr, f"BPF: {'ON' if self.use_bpf else 'OFF'}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0) if self.use_bpf else (0, 0, 255), 2)
+            cv2.putText(image_bgr, f"Enhance: {'ON' if self.clahe is not None else 'OFF'}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0) if self.clahe is not None else (0, 0, 255), 2)
+            cv2.putText(image_bgr, f"Left: {left_gesture}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
+            cv2.putText(image_bgr, f"Right: {right_gesture}", (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
+
+            # Encode and publish
+            _, encoded_image = cv2.imencode('.jpg', image_bgr, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
+            comp_img_msg = CompressedImage()
+            comp_img_msg.header = msg.header
+            comp_img_msg.header.stamp = current_time
+            comp_img_msg.format = "jpeg"
+            comp_img_msg.data = encoded_image.tobytes()
+            
+            self.pub_image.publish(comp_img_msg)
+
+        self.frame_count += 1
+
     def destroy_node(self):
-        self.mp_pose.close(); self.mp_hands.close()
+        self.hands.close()
+        self.pose.close()
         super().destroy_node()
 
 
 def main(args=None):
     rclpy.init(args=args)
-    node = MediaPipeBodyNode()
-    try: rclpy.spin(node)
-    except KeyboardInterrupt: pass
-    finally: node.destroy_node(); rclpy.shutdown()
+    node = HandPoseTrackerNode()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

@@ -1,0 +1,22 @@
+<mujoco model="ROBOT MORPH-I">
+    <asset>
+        <model name="summit_xls"    file="../platform/summit_xls.xml"/>
+        <model name="morph_i_arm"   file="../arm/morph_i.xml"/>
+    </asset>
+
+    <worldbody>
+        <body name='morph_i'>
+            <!-- <freejoint/> -->
+            <body name="mobile_base" pos='0 0 0'>
+                <attach model="summit_xls" body="base" prefix=""/>
+                <body name="arm_left" pos="0.15 0.15 0.285566">
+                    <attach model="morph_i_arm" body="arm_base" prefix="left_"/>
+                </body>
+                <body name="arm_right" pos="0.15 -0.15 0.285566">
+                    <attach model="morph_i_arm" body="arm_base" prefix="right_"/>
+                </body>
+            </body>
+        </body>
+    
+    </worldbody>
+</mujoco>

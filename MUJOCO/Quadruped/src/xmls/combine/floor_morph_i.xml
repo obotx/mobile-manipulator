@@ -1,0 +1,46 @@
+<mujoco model="FLOOR <-> MORPH I">
+    <option cone="elliptic" impratio="100" timestep="0.002" noslip_iterations="3" integrator="implicitfast"/>
+    <compiler autolimits="true" angle="radian" inertiafromgeom="true"/>
+
+    <option>
+        <flag multiccd="enable"/>
+    </option>
+
+    <visual>
+        <quality shadowsize="0"/>
+    </visual>
+
+    <default>
+        <default class="visual">
+            <geom group="2" type="mesh" contype="0" conaffinity="0"/>
+        </default>
+    </default>
+
+    <asset>
+        <texture name="skybox"      type="skybox" builtin="gradient" rgb1="0.8 0.9 1" rgb2="0.8 0.9 1" width="512" height="512"/>
+        <model name="morph_i"       file="../robot/morph_i.xml"/>
+        <model name="floor"         file="../world/floor.xml"/>
+    </asset>
+
+    <worldbody>
+        <body name="left_ik_target" mocap="true" pos="0.4 0.15 0.5">
+            <site name="left_target_site" size="0.01" rgba="1 0 0 0.0"/>
+            <geom type="box" size="0.02 0.02 0.02" rgba="1 0 0 0.1" class="visual"/>
+        </body>
+        <body name="right_ik_target" mocap="true" pos="0.4 -0.15 0.5">
+            <geom type="box" size="0.02 0.02 0.02" rgba="1 0 0 0.1" class="visual"/>
+            <site name="right_target_site" size="0.01" rgba="1 0 0 0.0"/>
+        </body>
+        <body name="base_ik_target" mocap="true" pos="0 0 0">
+            <geom type="box" size="0.02 0.02 0.02" rgba="1 0 0 0.0" class="visual"/>
+            <site name="base_target_site" size="0.01" rgba="1 0 0 0.0"/>
+        </body>
+        <!-- <body name="object" pos="0.813 -0.058 0.5"> 
+            <freejoint name="object_joint"/>
+            <geom type="cylinder" size="0.038 0.15" rgba="1 1 0 1" mass="0.01" condim="6"/>
+        </body> -->
+        
+        <attach model="floor" body="floor" prefix="world_"/>
+        <attach model="morph_i" body="morph_i" prefix="robot_"/>
+    </worldbody>
+</mujoco>

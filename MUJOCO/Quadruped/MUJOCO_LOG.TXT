@@ -1,0 +1,36 @@
+WARNING Sun Jul 26 12:19:36 2026: Attach conflict when attaching 'morph_i' to 'FLOOR <-> MORPH I', policy is 'warning'
+noslip_iterations: parent has 0, child has 3, keeping parent value
+impratio: parent has 1, child has 100, keeping parent value
+integrator: parent has 0, child has 3, keeping parent value
+cone: parent has 0, child has 1, keeping parent value
+
+WARNING Sun Jul 26 12:20:35 2026: Attach conflict when attaching 'morph_i' to 'FLOOR <-> MORPH I', policy is 'warning'
+noslip_iterations: parent has 0, child has 3, keeping parent value
+impratio: parent has 1, child has 100, keeping parent value
+integrator: parent has 0, child has 3, keeping parent value
+cone: parent has 0, child has 1, keeping parent value
+
+WARNING Sun Jul 26 12:21:00 2026: Attach conflict when attaching 'morph_i' to 'FLOOR <-> MORPH I', policy is 'warning'
+noslip_iterations: parent has 0, child has 3, keeping parent value
+impratio: parent has 1, child has 100, keeping parent value
+integrator: parent has 0, child has 3, keeping parent value
+cone: parent has 0, child has 1, keeping parent value
+
+WARNING Sun Jul 26 12:21:27 2026: Attach conflict when attaching 'morph_i' to 'FLOOR <-> MORPH I', policy is 'warning'
+noslip_iterations: parent has 0, child has 3, keeping parent value
+impratio: parent has 1, child has 100, keeping parent value
+integrator: parent has 0, child has 3, keeping parent value
+cone: parent has 0, child has 1, keeping parent value
+
+WARNING Sun Jul 26 12:22:00 2026: Attach conflict when attaching 'morph_i' to 'FLOOR <-> MORPH I', policy is 'warning'
+noslip_iterations: parent has 0, child has 3, keeping parent value
+impratio: parent has 1, child has 100, keeping parent value
+integrator: parent has 0, child has 3, keeping parent value
+cone: parent has 0, child has 1, keeping parent value
+
+WARNING Sun Jul 26 12:24:01 2026: Attach conflict when attaching 'morph_i' to 'FLOOR <-> MORPH I', policy is 'warning'
+noslip_iterations: parent has 0, child has 3, keeping parent value
+impratio: parent has 1, child has 100, keeping parent value
+integrator: parent has 0, child has 3, keeping parent value
+cone: parent has 0, child has 1, keeping parent value
+

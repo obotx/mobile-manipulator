@@ -344,8 +344,6 @@ class ArmTracker:
             self.reachability_error = 0.0
 
 
-# ----------------------------- BaseController Class -----------------------------
-# (Unchanged, kept for completeness, but currently not used – see comment in callback)
 class BaseController:
     def __init__(self, node):
         self.state = "IDLE"

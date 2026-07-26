@@ -50,12 +50,14 @@ class HipAnchoredTransform:
                  anchor_init: bool = True,
                  foot_on_ground: bool = False,
                  ground_level: float = 0.0,
-                 foot_offset: float = 0.0):
+                 foot_offset: float = 0.0,
+                 fixed_hip: bool = False):
         self.static_tf = static_tf
         self.anchor_init = anchor_init
         self.foot_on_ground = foot_on_ground
         self.ground_level = ground_level
         self.foot_offset = foot_offset
+        self.fixed_hip = fixed_hip
         self.initial_hip_pos: Optional[np.ndarray] = None
         self.current_hip_pos: Optional[np.ndarray] = None
         self.initialized = False
@@ -75,14 +77,20 @@ class HipAnchoredTransform:
         self.current_hip_pos = hip_center.copy()
         relative_points = points - hip_center
         local_points = relative_points @ self.static_tf.R.T
-        if self.anchor_init:
+        
+        if self.fixed_hip:
+            # Fixed hip: use static transform position for all axes
+            translation = self.static_tf.t.copy()
+        elif self.anchor_init:
             translation = np.array([self.static_tf.t[0], self.static_tf.t[1], hip_center[2]], dtype=np.float64)
         else:
             translation = hip_center.copy()
+            
         for i in range(3):
             if self.static_tf.rigid[i]:
                 translation[i] = self.static_tf.t[i]
         local_points = local_points + translation
+        
         if self.foot_on_ground and len(points) > max(self.FOOT_INDICES):
             foot_points = local_points[self.FOOT_INDICES]
             lowest_foot_z = np.min(foot_points[:, 2])
@@ -99,10 +107,14 @@ class HipAnchoredTransform:
             return (local_point @ parent_mat.T) + parent_pos
         relative_point = point - self.current_hip_pos
         local_point = relative_point @ self.static_tf.R.T
-        if self.anchor_init:
+        
+        if self.fixed_hip:
+            translation = self.static_tf.t.copy()
+        elif self.anchor_init:
             translation = np.array([self.static_tf.t[0], self.static_tf.t[1], self.current_hip_pos[2]], dtype=np.float64)
         else:
             translation = self.current_hip_pos.copy()
+            
         for i in range(3):
             if self.static_tf.rigid[i]:
                 translation[i] = self.static_tf.t[i]
