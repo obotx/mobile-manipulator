@@ -6,7 +6,7 @@ import mujoco
 import numpy as np
 from loop_rate_limiters import RateLimiter
 import babyros
-from geometry.transform import StaticTransform, HipAnchoredTransform
+from geometry.transform import StaticTransform, AnchoredTransform
 import mink
 import glfw
 from scipy.spatial.transform import Rotation
@@ -393,14 +393,14 @@ class LandmarkPipeline:
             roll=90.0, pitch=0.0, yaw=90.0,
             use_degrees=True,
         )
-        self.full_body_transform = HipAnchoredTransform(
+        self.full_body_transform = AnchoredTransform(
             anchor_init=True,
             foot_on_ground=True, ground_level=0.0, foot_offset=0.0,
         )
-        self.upper_only_transform = HipAnchoredTransform(
+        self.upper_only_transform = AnchoredTransform(
             anchor_init=False, origin='hip',
             foot_on_ground=False, ground_level=0.0, foot_offset=0.0,
-            lock_ori=None,
+            lock_ori="shoulder",
         )
     
     def reset(self):
@@ -444,11 +444,9 @@ class LandmarkPipeline:
         return self.smoothed_pts
     
     def _scale_point_for_ik(self, point: np.ndarray, side: str, world_pts: np.ndarray, n_pts: int, robot: RobotInterface) -> np.ndarray:
-        """Scale a single point (palm) from human space to robot workspace for IK targeting."""
         side_idx = 0 if side == "left" else 1
         c = self.config
         
-        # Calculate human-side midpoints for scaling
         human_y_mid = c.human_y_mid[side_idx]
         if self.config.shoulder_to_y_mid and n_pts > 12:
             human_y_mid = world_pts[11 if side == "left" else 12, 1]
@@ -461,25 +459,20 @@ class LandmarkPipeline:
             elbow = world_pts[elbow_idx, :2]
             human_x_mid = np.linalg.norm(elbow - shoulder)
         
-        # Calculate robot-side midpoints
         robot_y_mid = c.robot_y_mid[side_idx]
         if self.config.arm_to_y_mid:
             robot_y_mid = robot.get_robot_arm_y(side)
         
-        # Scale the point
         out = point.copy()
         
-        # X scaling
         local_x = out[0] - human_x_mid
         scale_x = c.x_scale_pos[side_idx] if local_x >= 0 else c.x_scale_neg[side_idx]
         out[0] = local_x * scale_x + c.robot_x_mid[side_idx]
         
-        # Y scaling
         local_y = out[1] - human_y_mid
         scale_y = c.y_scale_pos[side_idx] if local_y >= 0 else c.y_scale_neg[side_idx]
         out[1] = local_y * scale_y + robot_y_mid
         
-        # Z scaling
         local_z = out[2] - c.human_z_mid[side_idx]
         scale_z = c.z_scale_pos[side_idx] if local_z >= 0 else c.z_scale_neg[side_idx]
         out[2] = local_z * scale_z + c.robot_z_mid[side_idx]
