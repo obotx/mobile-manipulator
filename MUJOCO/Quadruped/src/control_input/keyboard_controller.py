@@ -1,18 +1,8 @@
-"""
-Handles keyboard input for manual robot control.
-Extracted from the monolithic robot class for clarity.
-"""
 import numpy as np
 import glfw
-from utils.logger import setup_logger
-
-logger = setup_logger("KeyboardController")
-
+from utils.logger import log_debug
 
 class KeyboardController:
-    """
-    Processes keyboard input and applies it to the robot.
-    """
 
     GRIPPER_OPEN_POS = -1.0
     GRIPPER_CLOSED_POS = 1.2218
@@ -32,7 +22,6 @@ class KeyboardController:
         self.robot = robot
 
     def handle_key(self, key: int) -> None:
-        """Process a single key press."""
         self._handle_gripper_keys(key)
         self._handle_bearing_keys(key)
         self._handle_wrist_keys(key)
@@ -76,7 +65,7 @@ class KeyboardController:
         current = self.robot.data.ctrl[act_id]
         new_val = np.clip(current + increment, self.BEARING_MIN, self.BEARING_MAX)
         self.robot.data.ctrl[act_id] = new_val
-        logger.debug(f"EE BEARING: {new_val:.4f}")
+        log_debug(f"EE BEARING: {new_val:.4f}", tag="KEYBOARD")
 
     def _handle_wrist_keys(self, key: int) -> None:
         """A/D for left wrist Z, LEFT/RIGHT for right wrist Z."""
@@ -123,7 +112,6 @@ class KeyboardController:
 
     @staticmethod
     def print_controls() -> None:
-        """Print keyboard bindings to console."""
         lines = [
             "MuJoCo Controller - Key Bindings",
             "",

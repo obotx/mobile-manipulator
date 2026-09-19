@@ -7,7 +7,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from modules.pubsub import IPCPubSub
 
 def parse_value(value_str, value_type):
-    """Parse string value based on type"""
     if value_type == "bool":
         return value_str.lower() in ("true", "1", "yes", "on")
     elif value_type == "float":
@@ -25,7 +24,7 @@ def parse_value(value_str, value_type):
             else:
                 raise ValueError(f"Cannot parse list: {value_str}")
     else:
-        return value_str 
+        return value_str
 
 def main():
     parser = argparse.ArgumentParser(description="CLI publisher for IPC topics")

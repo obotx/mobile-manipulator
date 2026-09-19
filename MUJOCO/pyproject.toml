@@ -18,6 +18,7 @@ dependencies = [
     "loop-rate-limiters>=1.2.0",
     "mink>=1.2.0",
     "babyros",
+    "rich>=15.0.0",
 ]
 
 [tool.uv.workspace]

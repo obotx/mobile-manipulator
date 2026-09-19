@@ -2,15 +2,11 @@ import mujoco
 import glfw
 from typing import Optional, Callable
 from rendering.viewer_base import Viewer
-from utils.logger import setup_logger
-
-logger = setup_logger("GlfwViewer")
-
 
 class GlfwViewer(Viewer):
-    def __init__(self, 
-                 width: int = 1200, 
-                 height: int = 900, 
+    def __init__(self,
+                 width: int = 1200,
+                 height: int = 900,
                  title: str = "Gripper Simulation",
                  scroll_factor: float = 0.01,
                  drag_factor: float = 0.001,
@@ -19,7 +15,7 @@ class GlfwViewer(Viewer):
         self.width = width
         self.height = height
         self.title = title
-        
+
         self.scroll_factor = scroll_factor
         self.drag_factor = drag_factor
         self.middle_zoom_multiplier = middle_zoom_multiplier
@@ -37,7 +33,7 @@ class GlfwViewer(Viewer):
         self._mouse_right_pressed = False
         self._mouse_middle_pressed = False
 
-    def setup(self, model: mujoco.MjModel, camera: mujoco.MjvCamera, 
+    def setup(self, model: mujoco.MjModel, camera: mujoco.MjvCamera,
               scene: mujoco.MjvScene, opt: mujoco.MjvOption) -> None:
         if not glfw.init():
             raise RuntimeError("GLFW failed to initialize")
@@ -46,29 +42,25 @@ class GlfwViewer(Viewer):
             glfw.terminate()
             raise RuntimeError("GLFW failed to create window")
         glfw.make_context_current(self.window)
-        
+
         self.ctx = mujoco.MjrContext(model, mujoco.mjtFontScale.mjFONTSCALE_150)
         self.viewport = mujoco.MjrRect(0, 0, self.width, self.height)
         self.model = model
         self.camera = camera
         self.scene = scene
         self.opt = opt
-        
-        # Set camera to free mode
+
         self.camera.type = mujoco.mjtCamera.mjCAMERA_FREE
-        
-        # Register callbacks
+
         glfw.set_key_callback(self.window, self._on_key)
         glfw.set_cursor_pos_callback(self.window, self._cursor_pos_callback)
         glfw.set_mouse_button_callback(self.window, self._mouse_button_callback)
         glfw.set_scroll_callback(self.window, self._scroll_callback)
 
     def set_reset_callback(self, callback: Callable) -> None:
-        """Set callback for reset action (Enter key)."""
         self.reset_callback = callback
 
     def set_key_callback(self, callback: Callable) -> None:
-        """Set callback for general key presses."""
         self.key_callback = callback
 
     def _on_key(self, window, key, scancode, action, mods):
@@ -80,15 +72,12 @@ class GlfwViewer(Viewer):
         if key == glfw.KEY_ENTER and self.reset_callback:
             self.reset_callback()
             return
-        # Route other keys to the robot's handler
         if self.key_callback:
             self.key_callback(key)
 
     def _scroll_callback(self, window, xoffset, yoffset):
         if self.camera.type != mujoco.mjtCamera.mjCAMERA_FREE:
             return
-            
-        # Uses the configurable scroll_factor
         mujoco.mjv_moveCamera(
             self.model, mujoco.mjtMouse.mjMOUSE_ZOOM,
             0, yoffset * self.scroll_factor, self.scene, self.camera
@@ -112,8 +101,7 @@ class GlfwViewer(Viewer):
         dx = xpos - self._last_mouse_x
         dy = ypos - self._last_mouse_y
         self._last_mouse_x, self._last_mouse_y = xpos, ypos
-        
-        # Uses the configurable drag_factor
+
         if self._mouse_left_pressed:
             mujoco.mjv_moveCamera(
                 self.model, mujoco.mjtMouse.mjMOUSE_ROTATE_H,
@@ -125,7 +113,6 @@ class GlfwViewer(Viewer):
                 dx * self.drag_factor, dy * self.drag_factor, self.scene, self.camera
             )
         elif self._mouse_middle_pressed:
-            # Uses both drag_factor and middle_zoom_multiplier
             mujoco.mjv_moveCamera(
                 self.model, mujoco.mjtMouse.mjMOUSE_ZOOM,
                 0.0, dy * self.drag_factor * self.middle_zoom_multiplier, self.scene, self.camera

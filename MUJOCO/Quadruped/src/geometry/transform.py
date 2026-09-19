@@ -1,5 +1,6 @@
 import numpy as np
 from typing import Optional, List, Union
+from utils.skeleton import SKELETON_FORMATS
 
 class StaticTransform:
     def __init__(self, x: float = 0.0, y: float = 0.0, z: float = 0.0,
@@ -31,199 +32,125 @@ class StaticTransform:
         return out
 
 class AnchoredTransform:
-    LEFT_ANKLE = 27; LEFT_HEEL = 29; LEFT_FOOT = 31
-    RIGHT_ANKLE = 28; RIGHT_HEEL = 30; RIGHT_FOOT = 32
-    FOOT_INDICES = [LEFT_ANKLE, LEFT_HEEL, LEFT_FOOT, RIGHT_ANKLE, RIGHT_HEEL, RIGHT_FOOT]
-
-    LEFT_HAND_WRIST = 33; RIGHT_HAND_WRIST = 54
-    LEFT_POSE_WRIST = 15; RIGHT_POSE_WRIST = 16
-
-    def __init__(self, 
-                 origin: str = 'hip',
-                 lock_ori: Union[Optional[str], List[str]] = None,
-                 anchor_init: bool = True,
+    def __init__(self,
+                 skeleton_format: str = 'coco_wholebody_133',
+                 origin: str = 'shoulder',
                  foot_on_ground: bool = False,
                  ground_level: float = 0.0,
                  foot_offset: float = 0.0):
-        
-        if origin not in ('hip', 'shoulder', 'source'):
-            raise ValueError("origin must be 'hip', 'shoulder', or 'source'")
-            
-        # Normalize lock_ori into a list
-        if lock_ori is None:
-            self.lock_ori_list = []
-        elif isinstance(lock_ori, str):
-            self.lock_ori_list = [lock_ori]
+
+        if origin not in ('hip', 'shoulder', 'foot', 'source'):
+            raise ValueError("origin must be 'hip', 'shoulder', 'foot', or 'source'")
+
+        self.skeleton_config = SKELETON_FORMATS.get(skeleton_format, SKELETON_FORMATS["coco_wholebody_133"])
+        parts = self.skeleton_config["parts"]
+
+        self.shoulder_indices = parts.get("shoulder", {}).get("indices", [11, 12])
+        self.hip_indices = parts.get("hip", {}).get("indices", [23, 24])
+
+        if "foot" in parts:
+            self.foot_indices = parts["foot"]["indices"]
         else:
-            self.lock_ori_list = list(lock_ori)
-            
-        for item in self.lock_ori_list:
-            if item not in ('hip', 'shoulder'):
-                raise ValueError("lock_ori items must be 'hip' or 'shoulder'")
-                
+            left_foot = parts.get("left_foot", {}).get("indices", [])
+            right_foot = parts.get("right_foot", {}).get("indices", [])
+            self.foot_indices = left_foot + right_foot
+
         self.origin = origin
-        self.anchor_init = anchor_init  
         self.foot_on_ground = foot_on_ground
         self.ground_level = ground_level
         self.foot_offset = foot_offset
 
-        self.initial_hip_pos: Optional[np.ndarray] = None
         self.current_hip_pos: Optional[np.ndarray] = None
         self.current_shoulder_pos: Optional[np.ndarray] = None
-        
-        self.initial_ref_yaw: float = 0.0
-        self.current_ref_yaw: float = 0.0
-        self.initialized = False
+
+        self.last_anchor: np.ndarray = np.zeros(3)
 
     def reset(self):
-        self.initial_hip_pos = None
         self.current_hip_pos = None
         self.current_shoulder_pos = None
-        self.initial_ref_yaw = 0.0
-        self.current_ref_yaw = 0.0
-        self.initialized = False
+        self.last_anchor = np.zeros(3)
 
-    def _glue_hand_to_wrist(self, pts: np.ndarray, hand_start: int, hand_end: int, pose_wrist_idx: int) -> None:
-        if hand_end > len(pts) or pose_wrist_idx >= len(pts):
-            return
-        offset = pts[pose_wrist_idx] - pts[hand_start]
-        pts[hand_start:hand_end] += offset
+    @staticmethod
+    def _is_valid(pt: np.ndarray) -> bool:
+        return np.linalg.norm(pt) > 1e-3
 
-    def _level_segment(self, pts: np.ndarray, seg_start: int, seg_end: int, pivot: np.ndarray) -> None:
-        """Rotates the whole skeleton around `pivot` to make the segment perfectly horizontal (Z=0)."""
-        vec = pts[seg_start] - pts[seg_end]
-        vec_target = np.array([vec[0], vec[1], 0.0])
-        
-        norm_orig = np.linalg.norm(vec)
-        norm_target = np.linalg.norm(vec_target)
-        
-        if norm_orig > 1e-5 and norm_target > 1e-5:
-            u = vec / norm_orig
-            v = vec_target / norm_target
-            
-            axis = np.cross(u, v)
-            axis_norm = np.linalg.norm(axis)
-            
-            if axis_norm > 1e-5:
-                axis = axis / axis_norm
-                angle = np.arccos(np.clip(np.dot(u, v), -1.0, 1.0))
-                
-                K = np.array([
-                    [0, -axis[2], axis[1]],
-                    [axis[2], 0, -axis[0]],
-                    [-axis[1], axis[0], 0]
-                ])
-                R_level = np.eye(3) + np.sin(angle) * K + (1 - np.cos(angle)) * (K @ K)
-                
-                pts[:] = ((pts - pivot) @ R_level.T) + pivot
+    def _get_robust_center(self, pts: np.ndarray, indices: List[int], fallback: np.ndarray) -> np.ndarray:
+        valid_pts = [pts[i] for i in indices if i < len(pts) and self._is_valid(pts[i])]
+        if valid_pts:
+            return np.mean(valid_pts, axis=0)
+        return fallback if fallback is not None else np.zeros(3)
 
     def transform(self, points: np.ndarray, parent_pos: np.ndarray, parent_mat: np.ndarray) -> np.ndarray:
-        if len(points) < 25:
-            # If no lock_ori, just return raw points without parent transform
-            if not self.lock_ori_list:
-                return points.copy()
-            return (points @ parent_mat.T) + parent_pos
+        if len(points) < 5:
+            return points.copy()
 
         pts = points.copy()
-        
-        self._glue_hand_to_wrist(pts, self.LEFT_HAND_WRIST, 54, self.LEFT_POSE_WRIST)
-        self._glue_hand_to_wrist(pts, self.RIGHT_HAND_WRIST, 75, self.RIGHT_POSE_WRIST)
 
-        for align_target in self.lock_ori_list:
-            if align_target == 'hip':
-                hip_center = (pts[23] + pts[24]) / 2.0
-                self._level_segment(pts, 23, 24, hip_center)
-            elif align_target == 'shoulder':
-                shoulder_center = (pts[11] + pts[12]) / 2.0
-                self._level_segment(pts, 11, 12, shoulder_center)
+        # Calculate ALL centers (but we'll only use the one we need)
+        hip_center = self._get_robust_center(pts, self.hip_indices, self.current_hip_pos)
+        shoulder_center = self._get_robust_center(pts, self.shoulder_indices, self.current_shoulder_pos)
 
-        hip_center = (pts[23] + pts[24]) / 2.0
-        shoulder_center = (pts[11] + pts[12]) / 2.0
-        hip_vec_leveled = pts[23] - pts[24]
-        shoulder_vec_leveled = pts[11] - pts[12]
+        valid_foot_pts = [pts[i] for i in self.foot_indices if i < len(pts) and self._is_valid(pts[i])]
+        foot_center = np.mean(valid_foot_pts, axis=0) if valid_foot_pts else np.zeros(3)
 
-        if self.origin == 'hip':
-            current_origin_point = hip_center
-        elif self.origin == 'shoulder':
-            current_origin_point = shoulder_center
-        else: # 'source'
-            current_origin_point = np.zeros(3, dtype=np.float64)
+        # COMPLETELY ISOLATED ANCHOR LOGIC
+        # Each origin mode ONLY looks at its own points - no cross-contamination
 
-        if self.lock_ori_list:
-            ref_target = self.lock_ori_list[-1]
-            ref_vec = hip_vec_leveled if ref_target == "hip" else shoulder_vec_leveled
-            ref_angle = np.arctan2(ref_vec[1], ref_vec[0])
-            self.current_ref_yaw = ref_angle
-
-            if not self.initialized:
-                self.initial_hip_pos = hip_center.copy()
-                self.initial_ref_yaw = ref_angle
-                self.initialized = True
-
-            global_forward_angle = 0.0  
-            delta_rotation = global_forward_angle - ref_angle
-            
-            c, s = np.cos(delta_rotation), np.sin(delta_rotation)
-            Rz_body = np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]])
-
-            # --- UPDATED LOGIC FOR HIP VS SHOULDER LOCK ---
-            if ref_target == "shoulder":
-                # Pivot exactly at the shoulder center
-                pivot_point = shoulder_center
-                # Rotate ONLY shoulders (11, 12), arms/hands/face (13-22), and extra hand joints (33-74)
-                rotate_indices = list(range(11, 23)) + list(range(33, 75))
+        if self.origin == 'shoulder':
+            # STRICTLY use shoulders only
+            if self._is_valid(shoulder_center):
+                anchor = shoulder_center
+            elif self.current_shoulder_pos is not None:
+                anchor = self.current_shoulder_pos
             else:
-                # 'hip': Pivot around the main origin point (hip/shoulder/source)
-                pivot_point = current_origin_point
-                # Rotate ALL upper-body (0-22) and extra hand joints (33-74)
-                rotate_indices = list(range(0, 23)) + list(range(33, 75))
-            
-            for idx in rotate_indices:
-                if idx < len(pts):
-                    pts[idx] = (Rz_body @ (pts[idx] - pivot_point)) + pivot_point
-            # ----------------------------------------------
-            
-            pts = pts - current_origin_point
-            parent_pts = (pts @ parent_mat.T) + parent_pos
-        else:
-            if not self.initialized:
-                self.initial_hip_pos = hip_center.copy()
-                self.initialized = True
-            pts = pts - current_origin_point
-            parent_pts = pts 
+                anchor = np.zeros(3)
 
-        self.current_hip_pos = (pts[23] + pts[24]) / 2.0
-        self.current_shoulder_pos = (pts[11] + pts[12]) / 2.0
+        elif self.origin == 'hip':
+            # STRICTLY use hips only
+            if self._is_valid(hip_center):
+                anchor = hip_center
+            elif self.current_hip_pos is not None:
+                anchor = self.current_hip_pos
+            else:
+                anchor = np.zeros(3)
 
-        if self.foot_on_ground and len(points) > max(self.FOOT_INDICES):
-            foot_points = parent_pts[self.FOOT_INDICES]
-            lowest_foot_z = np.min(foot_points[:, 2])
-            target_foot_z = self.ground_level + self.foot_offset
-            z_shift = target_foot_z - lowest_foot_z
-            parent_pts[:, 2] += z_shift
+        elif self.origin == 'foot':
+            # STRICTLY use feet only
+            if self._is_valid(foot_center):
+                anchor = foot_center
+            elif self.current_hip_pos is not None:
+                anchor = self.current_hip_pos
+            else:
+                anchor = np.zeros(3)
+
+        else:  # 'source'
+            anchor = np.zeros(3, dtype=np.float64)
+
+        # Save anchor for visualization
+        self.last_anchor = anchor.copy()
+
+        # "Glue" the skeleton to the anchor
+        pts = pts - anchor
+
+        # Apply parent transform
+        parent_pts = (pts @ parent_mat.T) + parent_pos
+
+        # Update state - ONLY update the relevant anchor's history
+        if self.origin == 'shoulder' and self._is_valid(shoulder_center):
+            self.current_shoulder_pos = shoulder_center
+        elif self.origin == 'hip' and self._is_valid(hip_center):
+            self.current_hip_pos = hip_center
+        elif self.origin == 'foot' and self._is_valid(foot_center):
+            self.current_hip_pos = hip_center  # Store as fallback
+
+        # Keep feet on ground (only for foot origin)
+        if self.origin == 'foot' and self.foot_on_ground and len(self.foot_indices) > 0 and len(points) > max(self.foot_indices):
+            foot_points = parent_pts[self.foot_indices]
+            valid_feet = [fp for fp in foot_points if self._is_valid(fp)]
+            if valid_feet:
+                lowest_foot_z = np.min([fp[2] for fp in valid_feet])
+                target_foot_z = self.ground_level + self.foot_offset
+                z_shift = target_foot_z - lowest_foot_z
+                parent_pts[:, 2] += z_shift
 
         return parent_pts
-
-    def transform_single_point(self, point: np.ndarray, parent_pos: np.ndarray, parent_mat: np.ndarray) -> np.ndarray:
-        if self.current_hip_pos is None:
-            if not self.lock_ori_list:
-                return point.copy()
-            return (point @ parent_mat.T) + parent_pos
-
-        if self.origin == 'hip':
-            origin_point = self.current_hip_pos
-        elif self.origin == 'shoulder':
-            origin_point = self.current_shoulder_pos
-        else:
-            origin_point = np.zeros(3, dtype=np.float64)
-            
-        point = point - origin_point
-        
-        if self.lock_ori_list:
-            delta_yaw = self.current_ref_yaw - self.initial_ref_yaw
-            c, s = np.cos(-delta_yaw), np.sin(-delta_yaw)
-            Rz_inv = np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]])
-            point = Rz_inv @ point
-            return (point @ parent_mat.T) + parent_pos
-        else:
-            return point
